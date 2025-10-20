@@ -28,7 +28,12 @@ onMounted(() => {
 
 <template>
   <div>
-    <h1>Här är dashboard för en förare</h1>
+    <h1>Här är dashboard för en förare</h1>`
+    
+    
+    <h1>{{ prices }}</h1>
+    
+    `
 
     <div v-if="loading">Laddar priser…</div>
     <div v-else-if="error">Fel vid hämtning av priser: {{ error }}</div>
@@ -39,6 +44,7 @@ onMounted(() => {
       </li>
       <li v-if="prices.length === 0">Inga priser hittades</li>
     </ul>
+  
   </div>
 </template>
     
