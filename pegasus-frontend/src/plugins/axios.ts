@@ -2,12 +2,11 @@ import axios, { AxiosError } from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
-  withCredentials: false,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   }
 });
-console.log('Base URL:', import.meta.env.VITE_BACKEND_URL); // Check what it is
 
 
 api.interceptors.response.use(
