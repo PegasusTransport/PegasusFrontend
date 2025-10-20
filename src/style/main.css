@@ -17,9 +17,11 @@
   h3,
   h4,
   h5 {
-    font-family: 'Oswald', sans-serif ;
+    font-family: "Oswald", sans-serif;
   }
-  body{
-    font-family: 'Open Sans', sans-serif;
+  body,
+  label,
+  input {
+    font-family: "Open Sans", sans-serif;
   }
 }
