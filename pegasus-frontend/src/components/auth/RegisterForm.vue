@@ -12,7 +12,7 @@ interface RegisterFormData extends RegistrationRequestDto {
 const toast = useToast();
 
 const registerForm = ref<RegisterFormData>({
-  userName: "",
+  username: "",
   firstName: "",
   lastName: "",
   email: "",
@@ -78,7 +78,7 @@ const validatePhone = (phoneNumber: string) => {
 };
 
 watch(
-  () => registerForm.value.userName,
+  () => registerForm.value.username,
   (newValue: string) => {
     errors.value.userName = validateUsername(newValue);
   }
@@ -145,7 +145,7 @@ const checkForm = computed(() => {
     !errors.value.phoneNumber &&
     !errors.value.password &&
     !errors.value.confirmPassword &&
-    registerForm.value.userName &&
+    registerForm.value.username &&
     registerForm.value.firstName &&
     registerForm.value.lastName &&
     registerForm.value.email &&
@@ -169,7 +169,7 @@ const register = async () => {
 
     setTimeout(() => {
       registerForm.value = {
-        userName: "",
+        username: "",
         firstName: "",
         lastName: "",
         email: "",
@@ -230,7 +230,7 @@ const register = async () => {
             <h2
               class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
             >
-              Skapa konto hos Pegasus Transport
+              Create an account at Pegasus Transport
             </h2>
           </div>
 
@@ -238,11 +238,11 @@ const register = async () => {
             <label
               for="userName"
               class="block text-sm/6 font-medium text-gray-900 mt-4"
-              >Användarnamn</label
+              >Username</label
             >
             <div class="mt-2">
               <input
-                v-model="registerForm.userName"
+                v-model="registerForm.username"
                 type="text"
                 autocomplete="username"
                 required
@@ -263,7 +263,7 @@ const register = async () => {
             <label
               for="firstName"
               class="block text-sm/6 font-medium text-gray-900"
-              >Förnamn</label
+              >Name</label
             >
             <div class="mt-2">
               <input
@@ -288,7 +288,7 @@ const register = async () => {
             <label
               for="lastName"
               class="block text-sm/6 font-medium text-gray-900"
-              >Efternamn</label
+              >Last Name</label
             >
             <div class="mt-2">
               <input
@@ -313,7 +313,7 @@ const register = async () => {
             <label
               for="phoneNumber"
               class="block text-sm/6 font-medium text-gray-900"
-              >Telefonnummer</label
+              >Phone number</label
             >
             <div class="mt-2">
               <input
@@ -336,7 +336,7 @@ const register = async () => {
 
           <div>
             <label for="email" class="block text-sm/6 font-medium text-gray-900"
-              >Email address</label
+              >Email</label
             >
             <div class="mt-2">
               <input
@@ -363,7 +363,7 @@ const register = async () => {
             <label
               for="password"
               class="block text-sm/6 font-medium text-gray-900"
-              >Lösenord</label
+              >Password</label
             >
             <div class="mt-2">
               <input
@@ -390,7 +390,7 @@ const register = async () => {
             <label
               for="confirmPassword"
               class="block text-sm/6 font-medium text-gray-900"
-              >Konfirmera Lösenord</label
+              >Confirm Password</label
             >
             <div class="mt-2">
               <input
@@ -427,19 +427,19 @@ const register = async () => {
                   : 'bg-gray-400 cursor-not-allowed',
               ]"
             >
-              {{ isLoading ? "Registrerar..." : "Registera" }}
+              {{ isLoading ? "Registering..." : "Register" }}
             </Button>
           </div>
         </form>
       </div>
 
       <p class="mt-10 text-center text-sm/6 text-white">
-        Har du redan ett konto?
+       Do you already have an account?
         {{ " " }}
         <RouterLink
           :to="{ name: 'Login' }"
           class="font-semibold text-pg-secondary hover:text-pg-accent"
-          >Logga in</RouterLink
+          >Login</RouterLink
         >
       </p>
     </div>
