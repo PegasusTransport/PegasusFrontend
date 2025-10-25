@@ -6,11 +6,11 @@
 import { UserRoles } from "./user-roles";
 
 export interface RegistrationRequestDto {
-    userName: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-    role?: UserRoles;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  role?: UserRoles;
 }
