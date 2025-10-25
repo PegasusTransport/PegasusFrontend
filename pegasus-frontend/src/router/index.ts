@@ -14,16 +14,15 @@ import DriverProfile from "@/pages/Driver/DriverProfile.vue";
 import DriverBookings from "@/pages/Driver/DriverBookings.vue";
 import DriverCar from "@/pages/Driver/DriverCar.vue";
 import DriverOverview from "@/pages/Driver/DriverOverview.vue";
-import Register from "@/pages/Auth/register.vue";
+import Register from "@/pages/Auth/Register.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
     {
       path: "/register",
-      name:"Register",
-      component: Register
+      name: "Register",
+      component: Register,
     },
     {
       path: "/driver",
