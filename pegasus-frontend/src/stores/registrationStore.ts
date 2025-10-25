@@ -5,6 +5,7 @@ import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 export const useRegistrationStore = defineStore("registration", {
   state: () => {
     return {
+      hasRegistered: false,
       firstName: "",
       email: "",
     };
