@@ -1,120 +1,259 @@
 <script setup lang="ts">
-import { authApi } from "@/endpoints/auth";
-import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 import { ref } from "vue";
+import { useRegistrationStore } from "@/stores/registrationStore";
+import { type DefaultField } from "@/hooks/useFormValidation";
+import useFormValidation from "@/hooks/useFormValidation";
+import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 
-interface RegisterFormData extends RegistrationRequestDto {
-  confirmPassword: string;
-}
+const store = useRegistrationStore();
 
-const registerForm = ref<RegisterFormData>({
-  userName: "",
-  firstName: "",
-  lastName: "",
-  email: "",
-  phoneNumber: "",
-  password: "",
-  confirmPassword: "",
-  role: 0,
-});
+const {
+  createDefaultField,
+  validateField,
+  validateEmail,
+  validatePhoneNumber,
+  validatePassword,
+  validateConfirmedPassword,
+  isValidForm,
+} = useFormValidation();
 
-const message = ref<string>("");
+const username = ref<DefaultField>(createDefaultField());
+const firstName = ref<DefaultField>(createDefaultField());
+const lastName = ref<DefaultField>(createDefaultField());
+const email = ref<DefaultField>(createDefaultField());
+const phoneNumber = ref<DefaultField>(createDefaultField());
+const password = ref<DefaultField>(createDefaultField());
+const confirmedPassword = ref<DefaultField>(createDefaultField());
+
+const validateUsernameField = () => validateField(username.value, "Username");
+const validateFirstNameField = () =>
+  validateField(firstName.value, "First name");
+const validateLastNameField = () => validateField(lastName.value, "Last name");
+const validateEmailField = () => validateEmail(email.value);
+const validatePhoneNumberField = () => validatePhoneNumber(phoneNumber.value);
+const validatePasswordField = () => validatePassword(password.value, true);
+const validateConfirmedPasswordField = () =>
+  validateConfirmedPassword(confirmedPassword.value, password.value);
+
+const createRegistrationRequest = (): RegistrationRequestDto => {
+  return {
+    username: username.value.value,
+    firstName: firstName.value.value,
+    lastName: lastName.value.value,
+    email: email.value.value,
+    phoneNumber: phoneNumber.value.value,
+    password: password.value.value,
+    role: 0,
+  };
+};
 
 const register = async () => {
-  if (registerForm.value.password !== registerForm.value.confirmPassword) {
-    message.value = "Lösenord matchar inte!";
+  validateUsernameField();
+  validateFirstNameField();
+  validateLastNameField();
+  validateEmailField();
+  validatePhoneNumberField();
+  validatePasswordField();
+  validateConfirmedPasswordField();
+
+  if (
+    !isValidForm([
+      username,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      password,
+      confirmedPassword,
+    ])
+  )
     return;
-  }
-  try {
-    const response = await authApi.register(registerForm.value);
-    console.log(response.data);   
-console.log(response.message); 
-    message.value = `Anändare är registrerad. Namn: ${response.data.firstName}`;
-  } catch (error: any) {
-    message.value =
-     error.response?.data?.message ||
-      "Det gick inte att registrera en användare";
-  }
+
+  const response = await store.register(createRegistrationRequest());
+  response.success
+    ? console.log("Success" + " " + response.message) // Change to toast
+    : console.log("Error" + " " + response.message);
 };
 </script>
 
 <template>
-  <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div
+    class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8"
+  >
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <img class="mx-auto h-10 w-auto" src="/src/assets/img/Pegasus.png" alt="Your Company" />
-      <h2 class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Registrera dig</h2>
+      <img
+        class="mx-auto h-10 w-auto"
+        src="/src/assets/img/Pegasus.png"
+        alt="Your Company"
+      />
+      <h2
+        class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+      >
+        Register
+      </h2>
     </div>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
       <div class="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
-        <form @submit.prevent="register" class="space-y-6" >
+        <form @submit.prevent="register" class="space-y-6">
           <div>
-            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
+            <label
+              for="user-name"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Username</label
+            >
             <div class="mt-2">
-              <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input
+                v-model.trim="username.value"
+                @blur="validateUsernameField"
+                type="text"
+                name="user-name"
+                id="user-name"
+                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              />
             </div>
+            <p v-if="!username.isValid" class="mt-1 text-sm text-red-600">
+              {{ username.errorMessage }}
+            </p>
           </div>
 
           <div>
-            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
+            <label
+              for="first-name"
+              class="block text-sm/6 font-medium text-gray-900"
+              >First name</label
+            >
             <div class="mt-2">
-              <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input
+                v-model.trim="firstName.value"
+                @blur="validateFirstNameField"
+                type="text"
+                name="first-name"
+                id="first-name"
+                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              />
             </div>
+            <p v-if="!firstName.isValid" class="mt-1 text-sm text-red-600">
+              {{ firstName.errorMessage }}
+            </p>
           </div>
 
           <div>
-            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
+            <label
+              for="last-name"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Last name</label
+            >
             <div class="mt-2">
-              <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input
+                v-model.trim="lastName.value"
+                @blur="validateLastNameField"
+                type="text"
+                name="last-name"
+                id="last-name"
+                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              />
             </div>
+            <p v-if="!lastName.isValid" class="mt-1 text-sm text-red-600">
+              {{ lastName.errorMessage }}
+            </p>
           </div>
 
           <div>
-            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
+            <label for="email" class="block text-sm/6 font-medium text-gray-900"
+              >Email address</label
+            >
             <div class="mt-2">
-              <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input
+                v-model.trim="email.value"
+                @blur="validateEmailField"
+                type="email"
+                name="email"
+                id="email"
+                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              />
             </div>
+            <p v-if="!email.isValid" class="mt-1 text-sm text-red-600">
+              {{ email.errorMessage }}
+            </p>
           </div>
 
           <div>
-            <label for="password" class="block text-sm/6 font-medium text-gray-900">Password</label>
+            <label
+              for="phone-number"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Phone number</label
+            >
             <div class="mt-2">
-              <input type="password" name="password" id="password" autocomplete="current-password" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input
+                v-model.trim="phoneNumber.value"
+                @blur="validatePhoneNumberField"
+                type="text"
+                name="phone-number"
+                id="phone-number"
+                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              />
             </div>
-          </div>
-
-          <div class="flex items-center justify-between">
-            <div class="flex gap-3">
-              <div class="flex h-6 shrink-0 items-center">
-                <div class="group grid size-4 grid-cols-1">
-                  <input id="remember-me" name="remember-me" type="checkbox" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
-                  <svg class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25" viewBox="0 0 14 14" fill="none">
-                    <path class="opacity-0 group-has-checked:opacity-100" d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path class="opacity-0 group-has-indeterminate:opacity-100" d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </div>
-              </div>
-              <label for="remember-me" class="block text-sm/6 text-gray-900">Remember me</label>
-            </div>
-
-            <div class="text-sm/6">
-              <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
-            </div>
+            <p v-if="!phoneNumber.isValid" class="mt-1 text-sm text-red-600">
+              {{ phoneNumber.errorMessage }}
+            </p>
           </div>
 
           <div>
-            <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Registera</button>
+            <label
+              for="password"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Password</label
+            >
+            <div class="mt-2">
+              <input
+                v-model.trim="password.value"
+                @blur="validatePasswordField"
+                type="password"
+                name="password"
+                id="password"
+                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              />
+            </div>
+            <p v-if="!password.isValid" class="mt-1 text-sm text-red-600">
+              {{ password.errorMessage }}
+            </p>
+          </div>
+
+          <div>
+            <label
+              for="confirm-password"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Confirm password</label
+            >
+            <div class="mt-2">
+              <input
+                v-model.trim="confirmedPassword.value"
+                @blur="validateConfirmedPasswordField"
+                type="password"
+                name="confirm-password"
+                id="confirm-password"
+                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              />
+            </div>
+            <p
+              v-if="!confirmedPassword.isValid"
+              class="mt-1 text-sm text-red-600"
+            >
+              {{ confirmedPassword.errorMessage }}
+            </p>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Create account
+            </button>
           </div>
         </form>
-
-        
       </div>
-
-      <p class="mt-10 text-center text-sm/6 text-gray-500">
-        Not a member?
-        {{ ' ' }}
-        <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Start a 14 day free trial</a>
-      </p>
     </div>
   </div>
 </template>
