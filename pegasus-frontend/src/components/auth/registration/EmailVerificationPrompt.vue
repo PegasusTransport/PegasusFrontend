@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useRegistrationStore } from "@/stores/registrationStore";
-const store = useRegistrationStore();
-
 defineProps<{
   firstName: string;
   email: string;
