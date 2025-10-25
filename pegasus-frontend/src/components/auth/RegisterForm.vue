@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { authApi } from "@/endpoints/auth";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
-import { ref } from "vue";
+import { computed, ref, watch } from "vue";
+import Button from "../reusables/Button.vue";
+import { useToast } from "vue-toastification";
 
 interface RegisterFormData extends RegistrationRequestDto {
   confirmPassword: string;
 }
 
+const toast = useToast();
+
 const registerForm = ref<RegisterFormData>({
-  userName: "",
+  username: "",
   firstName: "",
   lastName: "",
   email: "",
@@ -18,102 +22,425 @@ const registerForm = ref<RegisterFormData>({
   role: 0,
 });
 
-const message = ref<string>("");
+const errors = ref({
+  userName: "",
+  firstName: "",
+  lastName: "",
+  email: "",
+  phoneNumber: "",
+  password: "",
+  confirmPassword: "",
+});
+
+const validateUsername = (userName: string) => {
+  if (!userName) return "Användarnamn är obligatorisk";
+  if (userName.length < 3) return "Anändarnamn ska innehålla minst 3 tecken";
+  if (!/^[a-zA-Z0-9_]+$/.test(userName))
+    return "Användarnamn får inte innehålla symboler";
+  return "";
+};
+
+const validateFirstName = (firstName: string) => {
+  if (!firstName) return "Namnet är obligatorisk";
+  return "";
+};
+
+const validateLastName = (lastName: string) => {
+  if (!lastName) return "Efternamn är obligatorisk";
+  return "";
+};
+
+const validateEmail = (email: string) => {
+  if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email))
+    return "Email adressen är inte korrekt";
+  return "";
+};
+
+const validatePassword = (password: string) => {
+  if (!password) return "Du måste ange ett lösenord";
+  if (password.length < 6) return "Lösenordet ska innehålla minst 6 tecken";
+  if (!/^(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{6,}$/.test(password))
+    return "Lösenordet ska innehålla minst 6 tecken, 1 versal och 1 symbol";
+  return "";
+};
+
+const validateConfirmPassword = (confirmPassword: string, password: string) => {
+  if (!confirmPassword) return "Du måste bekräfta lösenordet";
+  if (confirmPassword != password) return "Lösenord ska vara likadana";
+  return "";
+};
+
+const validatePhone = (phoneNumber: string) => {
+  if (!phoneNumber) return "Ange ditt telefonnumer";
+  if (!/^\+?\d{10,15}$/.test(phoneNumber))
+    return "Ange en giltigt telfonnummer";
+  return "";
+};
+
+watch(
+  () => registerForm.value.username,
+  (newValue: string) => {
+    errors.value.userName = validateUsername(newValue);
+  }
+);
+
+watch(
+  () => registerForm.value.firstName,
+  (newValue: string) => {
+    errors.value.firstName = validateFirstName(newValue);
+  }
+);
+
+watch(
+  () => registerForm.value.lastName,
+  (newValue: string) => {
+    errors.value.lastName = validateLastName(newValue);
+  }
+);
+
+watch(
+  () => registerForm.value.password,
+  (newValue: string) => {
+    errors.value.password = validatePassword(newValue);
+
+    if (registerForm.value.confirmPassword) {
+      errors.value.confirmPassword = validateConfirmPassword(
+        registerForm.value.confirmPassword,
+        newValue
+      );
+    }
+  }
+);
+
+watch(
+  () => registerForm.value.confirmPassword,
+  (newValue: string) => {
+    errors.value.confirmPassword = validateConfirmPassword(
+      newValue,
+      registerForm.value.password
+    );
+  }
+);
+
+watch(
+  () => registerForm.value.email,
+  (newValue: string) => {
+    errors.value.email = validateEmail(newValue);
+  }
+);
+
+watch(
+  () => registerForm.value.phoneNumber,
+  (newValue: string) => {
+    errors.value.phoneNumber = validatePhone(newValue);
+  }
+);
+
+const checkForm = computed(() => {
+  return (
+    !errors.value.userName &&
+    !errors.value.firstName &&
+    !errors.value.lastName &&
+    !errors.value.email &&
+    !errors.value.phoneNumber &&
+    !errors.value.password &&
+    !errors.value.confirmPassword &&
+    registerForm.value.username &&
+    registerForm.value.firstName &&
+    registerForm.value.lastName &&
+    registerForm.value.email &&
+    registerForm.value.phoneNumber &&
+    registerForm.value.password &&
+    registerForm.value.confirmPassword
+  );
+});
+
+const isLoading = ref<boolean>(false);
 
 const register = async () => {
-  if (registerForm.value.password !== registerForm.value.confirmPassword) {
-    message.value = "Lösenord matchar inte!";
-    return;
-  }
+  isLoading.value = true;
+
   try {
-    const response = await authApi.register(registerForm.value);
-    console.log(response.data);   
-console.log(response.message); 
-    message.value = `Anändare är registrerad. Namn: ${response.data.firstName}`;
+    await authApi.register(registerForm.value);
+
+    toast.success("Ditt konto har skapats! Du kan nu logga in.", {
+      timeout: 5000,
+    });
+
+    setTimeout(() => {
+      registerForm.value = {
+        username: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        password: "",
+        confirmPassword: "",
+        role: 0,
+      };
+    }, 1000);
   } catch (error: any) {
-    message.value =
-     error.response?.data?.message ||
-      "Det gick inte att registrera en användare";
+    console.error("Registration error:", error);
+    console.error("Error response:", error.response);
+
+    const errorMessage = error.response?.data?.message || "";
+    const statusCode = error.response?.status;
+
+    if (statusCode === 429) {
+      toast.error("För många försök. Vänta lite och försök igen.", {
+        timeout: 5000,
+      });
+    } else if (errorMessage === "User exist") {
+      toast.error("Detta mejl används redan", {
+        timeout: 5000,
+      });
+    } else if (errorMessage.includes("Failed to create user")) {
+      toast.error("Detta användarnamn används redan", {
+        timeout: 5000,
+      });
+    } else {
+      toast.error(
+        errorMessage ||
+          error.response?.data?.error ||
+          "Någonting gick fel, prova igen",
+        {
+          timeout: 5000,
+        }
+      );
+    }
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
 
 <template>
-  <div class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <img class="mx-auto h-10 w-auto" src="/src/assets/img/Pegasus.png" alt="Your Company" />
-      <h2 class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Registrera dig</h2>
-    </div>
-
+  <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-      <div class="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
-        <form @submit.prevent="register" class="space-y-6" >
+      <div
+        class="bg-pg-secondary px-3 py-3 shadow sm:rounded-lg sm:px-12 border-2 border-white"
+      >
+        <form class="space-y-1" @submit.prevent="register">
+          <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <img
+              class="mx-auto h-20 w-auto"
+              src="/src/assets/img/Pegasus.png"
+              alt="Pegasus Trasnport logo"
+            />
+            <h2
+              class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+            >
+              Create an account at Pegasus Transport
+            </h2>
+          </div>
+
           <div>
-            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
+            <label
+              for="userName"
+              class="block text-sm/6 font-medium text-gray-900 mt-4"
+              >Username</label
+            >
             <div class="mt-2">
-              <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input
+                v-model="registerForm.username"
+                type="text"
+                autocomplete="username"
+                required
+                :class="[
+                  'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                  errors.userName
+                    ? 'outline-red-500 focus:outline-red-600'
+                    : 'outline-gray-300 focus:outline-pg-persian',
+                ]"
+              />
+              <p v-if="errors.userName" class="mt-2 text-sm text-red-600">
+                {{ errors.userName }}
+              </p>
             </div>
           </div>
 
           <div>
-            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
+            <label
+              for="firstName"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Name</label
+            >
             <div class="mt-2">
-              <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input
+                v-model="registerForm.firstName"
+                type="text"
+                autocomplete="given-name"
+                required
+                :class="[
+                  'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                  errors.firstName
+                    ? 'outline-red-500 focus:outline-red-600'
+                    : 'outline-gray-300 focus:outline-pg-persian',
+                ]"
+              />
+              <p v-if="errors.firstName" class="mt-2 text-sm text-red-600">
+                {{ errors.firstName }}
+              </p>
             </div>
           </div>
 
           <div>
-            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
+            <label
+              for="lastName"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Last Name</label
+            >
             <div class="mt-2">
-              <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input
+                v-model="registerForm.lastName"
+                type="text"
+                autocomplete="family-name"
+                required
+                :class="[
+                  'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                  errors.lastName
+                    ? 'outline-red-500 focus:outline-red-600'
+                    : 'outline-gray-300 focus:outline-pg-persian',
+                ]"
+              />
+              <p v-if="errors.lastName" class="mt-2 text-sm text-red-600">
+                {{ errors.lastName }}
+              </p>
             </div>
           </div>
 
           <div>
-            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
+            <label
+              for="phoneNumber"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Phone number</label
+            >
             <div class="mt-2">
-              <input type="email" name="email" id="email" autocomplete="email" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+              <input
+                v-model="registerForm.phoneNumber"
+                type="tel"
+                autocomplete="tel"
+                required
+                :class="[
+                  'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                  errors.phoneNumber
+                    ? 'outline-red-500 focus:outline-red-600'
+                    : 'outline-gray-300 focus:outline-pg-persian',
+                ]"
+              />
+              <p v-if="errors.phoneNumber" class="mt-2 text-sm text-red-600">
+                {{ errors.phoneNumber }}
+              </p>
             </div>
           </div>
 
           <div>
-            <label for="password" class="block text-sm/6 font-medium text-gray-900">Password</label>
+            <label for="email" class="block text-sm/6 font-medium text-gray-900"
+              >Email</label
+            >
             <div class="mt-2">
-              <input type="password" name="password" id="password" autocomplete="current-password" required class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between">
-            <div class="flex gap-3">
-              <div class="flex h-6 shrink-0 items-center">
-                <div class="group grid size-4 grid-cols-1">
-                  <input id="remember-me" name="remember-me" type="checkbox" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
-                  <svg class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25" viewBox="0 0 14 14" fill="none">
-                    <path class="opacity-0 group-has-checked:opacity-100" d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path class="opacity-0 group-has-indeterminate:opacity-100" d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </div>
-              </div>
-              <label for="remember-me" class="block text-sm/6 text-gray-900">Remember me</label>
-            </div>
-
-            <div class="text-sm/6">
-              <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
+              <input
+                v-model="registerForm.email"
+                type="email"
+                name="email"
+                id="email"
+                autocomplete="email"
+                required
+                :class="[
+                  'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                  errors.email
+                    ? 'outline-red-500 focus:outline-red-600'
+                    : 'outline-gray-300 focus:outline-pg-persian',
+                ]"
+              />
+              <p v-if="errors.email" class="mt-2 text-sm text-red-600">
+                {{ errors.email }}
+              </p>
             </div>
           </div>
 
           <div>
-            <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Registera</button>
+            <label
+              for="password"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Password</label
+            >
+            <div class="mt-2">
+              <input
+                v-model="registerForm.password"
+                type="password"
+                name="password"
+                id="password"
+                required
+                autocomplete="new-password"
+                :class="[
+                  'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                  errors.password
+                    ? 'outline-red-500 focus:outline-red-600'
+                    : 'outline-gray-300 focus:outline-pg-persian',
+                ]"
+              />
+              <p v-if="errors.password" class="mt-2 text-sm text-red-600">
+                {{ errors.password }}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="confirmPassword"
+              class="block text-sm/6 font-medium text-gray-900"
+              >Confirm Password</label
+            >
+            <div class="mt-2">
+              <input
+                v-model="registerForm.confirmPassword"
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                required
+                autocomplete="new-password"
+                :class="[
+                  'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                  errors.confirmPassword
+                    ? 'outline-red-500 focus:outline-red-600'
+                    : 'outline-gray-300 focus:outline-pg-persian',
+                ]"
+              />
+              <p
+                v-if="errors.confirmPassword"
+                class="mt-2 text-sm text-red-600"
+              >
+                {{ errors.confirmPassword }}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <Button
+              type="submit"
+              :disabled="!checkForm || isLoading"
+              :class="[
+                'flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 my-5',
+                checkForm && !isLoading
+                  ? 'bg-indigo-600 hover:bg-indigo-500 focus-visible:outline-indigo-600'
+                  : 'bg-gray-400 cursor-not-allowed',
+              ]"
+            >
+              {{ isLoading ? "Registering..." : "Register" }}
+            </Button>
           </div>
         </form>
-
-        
       </div>
 
-      <p class="mt-10 text-center text-sm/6 text-gray-500">
-        Not a member?
-        {{ ' ' }}
-        <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Start a 14 day free trial</a>
+      <p class="mt-10 text-center text-sm/6 text-white">
+       Do you already have an account?
+        {{ " " }}
+        <RouterLink
+          :to="{ name: 'Login' }"
+          class="font-semibold text-pg-secondary hover:text-pg-accent"
+          >Login</RouterLink
+        >
       </p>
     </div>
   </div>

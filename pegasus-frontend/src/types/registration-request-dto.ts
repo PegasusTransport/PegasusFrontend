@@ -6,7 +6,7 @@
 import { UserRoles } from "./user-roles";
 
 export interface RegistrationRequestDto {
-    userName: string;
+    username: string;
     firstName: string;
     lastName: string;
     email: string;

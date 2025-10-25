@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import RegisterForm from "@/components/auth/RegisterForm.vue";
+import LoginForm from "@/components/auth/LoginForm.vue";
 </script>
 
 <template>
   <div class="bg-pg-primary md:p-0 p-4">
-    <RegisterForm />
+    <LoginForm />
   </div>
 </template>
