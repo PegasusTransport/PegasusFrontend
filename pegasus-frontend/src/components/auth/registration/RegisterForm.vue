@@ -2,11 +2,13 @@
 import { ref } from "vue";
 import EmailVerificationPrompt from "./EmailVerificationPrompt.vue";
 import { useRegistrationStore } from "@/stores/registrationStore";
+import { useToast } from "vue-toastification";
 import { type DefaultField } from "@/hooks/useFormValidation";
 import useFormValidation from "@/hooks/useFormValidation";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 
 const store = useRegistrationStore();
+const toast = useToast();
 
 const {
   createDefaultField,
@@ -72,10 +74,14 @@ const register = async () => {
 
   const response = await store.register(createRegistrationRequest());
   if (response.success) {
-    console.log("Success" + " " + response.message); // Change to toast
     store.hasRegistered = true;
+    toast.success("Account created successfully!", {
+      timeout: 5000,
+    });
   } else {
-    console.log("Error" + " " + response.message);
+    toast.error(response.message, {
+      timeout: 10000,
+    });
   }
 };
 </script>
