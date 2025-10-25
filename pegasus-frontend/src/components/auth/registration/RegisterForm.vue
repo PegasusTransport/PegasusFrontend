@@ -71,20 +71,23 @@ const register = async () => {
     return;
 
   const response = await store.register(createRegistrationRequest());
-  response.success
-    ? console.log("Success" + " " + response.message) // Change to toast
-    : console.log("Error" + " " + response.message);
+  if (response.success) {
+    console.log("Success" + " " + response.message); // Change to toast
+    store.hasRegistered = true;
+  } else {
+    console.log("Error" + " " + response.message);
+  }
 };
 </script>
 
 <template>
-  <div>
+  <div v-if="store.hasRegistered">
     <EmailVerificationPrompt
       :first-name="store.firstName"
       :email="store.email"
     />
   </div>
-  <div>
+  <div v-else>
     <div
       class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8"
     >
