@@ -104,29 +104,29 @@ const register = async () => {
       />
     </div>
     <div v-else key="registration">
-      <div
-        class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8"
-      >
-        <div class="sm:mx-auto sm:w-full sm:max-w-md">
-          <img
-            class="mx-auto h-10 w-auto"
-            src="/src/assets/img/Pegasus.png"
-            alt="Your Company"
-          />
-          <h2
-            class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
-          >
-            Register
-          </h2>
-        </div>
-
+      <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-          <div class="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
-            <form @submit.prevent="register" class="space-y-6">
+          <div
+            class="bg-pg-secondary px-3 py-3 shadow sm:rounded-lg sm:px-12 border-2 border-white"
+          >
+            <form class="space-y-1" @submit.prevent="register">
+              <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                <img
+                  class="mx-auto h-20 w-auto"
+                  src="/src/assets/img/Pegasus.png"
+                  alt="Pegasus Transport logo"
+                />
+                <h2
+                  class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+                >
+                  Create an account at Pegasus Transport
+                </h2>
+              </div>
+
               <div>
                 <label
                   for="user-name"
-                  class="block text-sm/6 font-medium text-gray-900"
+                  class="block text-sm/6 font-medium text-gray-900 mt-4"
                   >Username</label
                 >
                 <div class="mt-2">
@@ -136,19 +136,25 @@ const register = async () => {
                     type="text"
                     name="user-name"
                     id="user-name"
-                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    required
+                    :class="[
+                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                      !username.isValid
+                        ? 'outline-red-500 focus:outline-red-600'
+                        : 'outline-gray-300 focus:outline-pg-persian',
+                    ]"
                   />
+                  <p v-if="!username.isValid" class="mt-2 text-sm text-red-600">
+                    {{ username.errorMessage }}
+                  </p>
                 </div>
-                <p v-if="!username.isValid" class="mt-1 text-sm text-red-600">
-                  {{ username.errorMessage }}
-                </p>
               </div>
 
               <div>
                 <label
                   for="first-name"
                   class="block text-sm/6 font-medium text-gray-900"
-                  >First name</label
+                  >Name</label
                 >
                 <div class="mt-2">
                   <input
@@ -157,19 +163,29 @@ const register = async () => {
                     type="text"
                     name="first-name"
                     id="first-name"
-                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    autocomplete="given-name"
+                    required
+                    :class="[
+                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                      !firstName.isValid
+                        ? 'outline-red-500 focus:outline-red-600'
+                        : 'outline-gray-300 focus:outline-pg-persian',
+                    ]"
                   />
+                  <p
+                    v-if="!firstName.isValid"
+                    class="mt-2 text-sm text-red-600"
+                  >
+                    {{ firstName.errorMessage }}
+                  </p>
                 </div>
-                <p v-if="!firstName.isValid" class="mt-1 text-sm text-red-600">
-                  {{ firstName.errorMessage }}
-                </p>
               </div>
 
               <div>
                 <label
                   for="last-name"
                   class="block text-sm/6 font-medium text-gray-900"
-                  >Last name</label
+                  >Last Name</label
                 >
                 <div class="mt-2">
                   <input
@@ -178,33 +194,19 @@ const register = async () => {
                     type="text"
                     name="last-name"
                     id="last-name"
-                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    autocomplete="family-name"
+                    required
+                    :class="[
+                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                      !lastName.isValid
+                        ? 'outline-red-500 focus:outline-red-600'
+                        : 'outline-gray-300 focus:outline-pg-persian',
+                    ]"
                   />
+                  <p v-if="!lastName.isValid" class="mt-2 text-sm text-red-600">
+                    {{ lastName.errorMessage }}
+                  </p>
                 </div>
-                <p v-if="!lastName.isValid" class="mt-1 text-sm text-red-600">
-                  {{ lastName.errorMessage }}
-                </p>
-              </div>
-
-              <div>
-                <label
-                  for="email"
-                  class="block text-sm/6 font-medium text-gray-900"
-                  >Email address</label
-                >
-                <div class="mt-2">
-                  <input
-                    v-model.trim="email.value"
-                    @blur="validateEmailField"
-                    type="email"
-                    name="email"
-                    id="email"
-                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                  />
-                </div>
-                <p v-if="!email.isValid" class="mt-1 text-sm text-red-600">
-                  {{ email.errorMessage }}
-                </p>
               </div>
 
               <div>
@@ -217,18 +219,53 @@ const register = async () => {
                   <input
                     v-model.trim="phoneNumber.value"
                     @blur="validatePhoneNumberField"
-                    type="text"
+                    type="tel"
                     name="phone-number"
                     id="phone-number"
-                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    autocomplete="tel"
+                    required
+                    :class="[
+                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                      !phoneNumber.isValid
+                        ? 'outline-red-500 focus:outline-red-600'
+                        : 'outline-gray-300 focus:outline-pg-persian',
+                    ]"
                   />
+                  <p
+                    v-if="!phoneNumber.isValid"
+                    class="mt-2 text-sm text-red-600"
+                  >
+                    {{ phoneNumber.errorMessage }}
+                  </p>
                 </div>
-                <p
-                  v-if="!phoneNumber.isValid"
-                  class="mt-1 text-sm text-red-600"
+              </div>
+
+              <div>
+                <label
+                  for="email"
+                  class="block text-sm/6 font-medium text-gray-900"
+                  >Email</label
                 >
-                  {{ phoneNumber.errorMessage }}
-                </p>
+                <div class="mt-2">
+                  <input
+                    v-model.trim="email.value"
+                    @blur="validateEmailField"
+                    type="email"
+                    name="email"
+                    id="email"
+                    autocomplete="email"
+                    required
+                    :class="[
+                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                      !email.isValid
+                        ? 'outline-red-500 focus:outline-red-600'
+                        : 'outline-gray-300 focus:outline-pg-persian',
+                    ]"
+                  />
+                  <p v-if="!email.isValid" class="mt-2 text-sm text-red-600">
+                    {{ email.errorMessage }}
+                  </p>
+                </div>
               </div>
 
               <div>
@@ -244,19 +281,26 @@ const register = async () => {
                     type="password"
                     name="password"
                     id="password"
-                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    required
+                    autocomplete="new-password"
+                    :class="[
+                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                      !password.isValid
+                        ? 'outline-red-500 focus:outline-red-600'
+                        : 'outline-gray-300 focus:outline-pg-persian',
+                    ]"
                   />
+                  <p v-if="!password.isValid" class="mt-2 text-sm text-red-600">
+                    {{ password.errorMessage }}
+                  </p>
                 </div>
-                <p v-if="!password.isValid" class="mt-1 text-sm text-red-600">
-                  {{ password.errorMessage }}
-                </p>
               </div>
 
               <div>
                 <label
                   for="confirm-password"
                   class="block text-sm/6 font-medium text-gray-900"
-                  >Confirm password</label
+                  >Confirm Password</label
                 >
                 <div class="mt-2">
                   <input
@@ -265,27 +309,44 @@ const register = async () => {
                     type="password"
                     name="confirm-password"
                     id="confirm-password"
-                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    required
+                    autocomplete="new-password"
+                    :class="[
+                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
+                      !confirmedPassword.isValid
+                        ? 'outline-red-500 focus:outline-red-600'
+                        : 'outline-gray-300 focus:outline-pg-persian',
+                    ]"
                   />
+                  <p
+                    v-if="!confirmedPassword.isValid"
+                    class="mt-2 text-sm text-red-600"
+                  >
+                    {{ confirmedPassword.errorMessage }}
+                  </p>
                 </div>
-                <p
-                  v-if="!confirmedPassword.isValid"
-                  class="mt-1 text-sm text-red-600"
-                >
-                  {{ confirmedPassword.errorMessage }}
-                </p>
               </div>
 
               <div>
                 <button
                   type="submit"
-                  class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-5"
                 >
                   Create account
                 </button>
               </div>
             </form>
           </div>
+
+          <p class="mt-10 text-center text-sm/6 text-white">
+            Do you already have an account?
+            {{ " " }}
+            <RouterLink
+              :to="{ name: 'Login' }"
+              class="font-semibold text-pg-secondary hover:text-pg-accent"
+              >Login</RouterLink
+            >
+          </p>
         </div>
       </div>
     </div>

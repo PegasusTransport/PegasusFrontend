@@ -11,24 +11,25 @@ defineProps<{
     enter-from-class="opacity-0 translate-y-12"
     enter-to-class="opacity-100 translate-y-0"
   >
-    <div
-      class="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8"
-    >
-      <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
-          class="mx-auto h-10 w-auto"
-          src="/src/assets/img/Pegasus.png"
-          alt="Your Company"
-        />
-        <h2
-          class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
-        >
-          Check your email
-        </h2>
-      </div>
+    <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-        <div class="bg-white px-6 py-12 shadow-sm sm:rounded-lg sm:px-12">
-          <div class="text-center space-y-4">
+        <div
+          class="bg-pg-secondary px-3 py-3 shadow sm:rounded-lg sm:px-12 border-2 border-white"
+        >
+          <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <img
+              class="mx-auto h-20 w-auto"
+              src="/src/assets/img/Pegasus.png"
+              alt="Pegasus Transport logo"
+            />
+            <h2
+              class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+            >
+              Check your email
+            </h2>
+          </div>
+
+          <div class="text-center space-y-4 mt-6">
             <!-- Icon -->
             <div
               class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100"
@@ -80,6 +81,16 @@ defineProps<{
             </div>
           </div>
         </div>
+
+        <p class="mt-10 text-center text-sm/6 text-white">
+          Need help?
+          {{ " " }}
+          <a
+            href="#"
+            class="font-semibold text-pg-secondary hover:text-pg-accent"
+            >Contact Support</a
+          >
+        </p>
       </div>
     </div>
   </transition>
