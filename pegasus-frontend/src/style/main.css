@@ -11,7 +11,13 @@
   --font-oswald: "Oswald", sans-serif;
   --font-open: "Open Sans", sans-serif;
 }
+
 @layer base {
+  html {
+    height: 100%;
+    background-color: var(--color-pg-primary);
+  }
+
   h1,
   h2,
   h3,
@@ -19,13 +25,16 @@
   h5 {
     font-family: "Oswald", sans-serif;
   }
+
   body,
   label,
   input {
     font-family: "Open Sans", sans-serif;
   }
 
-  body{
+  body {
+    height: 100%;
+
     margin: 0;
     padding: 0;
   }
