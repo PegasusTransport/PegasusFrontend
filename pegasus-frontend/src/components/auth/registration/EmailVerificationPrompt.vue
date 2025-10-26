@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Button from "@/components/reusables/Button.vue";
-
 defineProps<{
   firstName: string;
   email: string;
@@ -65,13 +63,12 @@ defineProps<{
             </div>
             <!-- Actions -->
             <div class="mt-6 space-y-3">
-              <Button
-                link
+              <router-link
                 to="/login"
-                class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
+                class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors duration-200"
               >
                 Go to login
-              </Button>
+              </router-link>
               <p class="text-sm text-gray-600">
                 Didn't receive the email?
                 <button
