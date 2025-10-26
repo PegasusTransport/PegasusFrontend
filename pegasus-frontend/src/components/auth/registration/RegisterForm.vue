@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import EmailVerificationPrompt from "./EmailVerificationPrompt.vue";
+
+import { type DefaultField } from "@/hooks/useFormValidation";
+import type { RegistrationRequestDto } from "@/types/registration-request-dto";
+
 import { useRegistrationStore } from "@/stores/registrationStore";
 import { useToast } from "vue-toastification";
-import { type DefaultField } from "@/hooks/useFormValidation";
 import useFormValidation from "@/hooks/useFormValidation";
 import userScrollActions from "@/hooks/useScrollActions";
-import type { RegistrationRequestDto } from "@/types/registration-request-dto";
+
+import TextInput from "@/components/reusables/Forms/TextInput.vue";
+import Button from "@/components/reusables/Button.vue";
+import EmailVerificationPrompt from "./EmailVerificationPrompt.vue";
 
 const store = useRegistrationStore();
 const toast = useToast();
@@ -89,6 +94,7 @@ const register = async () => {
 
 <template>
   <Transition
+    appear
     mode="out-in"
     enter-active-class="transition-all duration-500 ease-out"
     enter-from-class="opacity-0 scale-95"
@@ -119,221 +125,118 @@ const register = async () => {
                 <h2
                   class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
                 >
-                  Create an account at Pegasus Transport
+                  Register
                 </h2>
               </div>
 
               <div>
-                <label
-                  for="user-name"
-                  class="block text-sm/6 font-medium text-gray-900 mt-4"
-                  >Username</label
+                <TextInput
+                  name="first-name"
+                  :isValid="firstName.isValid"
+                  v-model="firstName.value"
+                  @blur="validateFirstNameField"
                 >
-                <div class="mt-2">
-                  <input
-                    v-model.trim="username.value"
-                    @blur="validateUsernameField"
-                    type="text"
-                    name="user-name"
-                    id="user-name"
-                    required
-                    :class="[
-                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
-                      !username.isValid
-                        ? 'outline-red-500 focus:outline-red-600'
-                        : 'outline-gray-300 focus:outline-pg-persian',
-                    ]"
-                  />
-                  <p v-if="!username.isValid" class="mt-2 text-sm text-red-600">
-                    {{ username.errorMessage }}
-                  </p>
-                </div>
+                  First name
+                </TextInput>
+                <p v-if="!firstName.isValid" class="mt-2 text-sm text-red-600">
+                  {{ firstName.errorMessage }}
+                </p>
               </div>
 
               <div>
-                <label
-                  for="first-name"
-                  class="block text-sm/6 font-medium text-gray-900"
-                  >Name</label
+                <TextInput
+                  name="last-name"
+                  :isValid="lastName.isValid"
+                  v-model="lastName.value"
+                  @blur="validateLastNameField"
                 >
-                <div class="mt-2">
-                  <input
-                    v-model.trim="firstName.value"
-                    @blur="validateFirstNameField"
-                    type="text"
-                    name="first-name"
-                    id="first-name"
-                    autocomplete="given-name"
-                    required
-                    :class="[
-                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
-                      !firstName.isValid
-                        ? 'outline-red-500 focus:outline-red-600'
-                        : 'outline-gray-300 focus:outline-pg-persian',
-                    ]"
-                  />
-                  <p
-                    v-if="!firstName.isValid"
-                    class="mt-2 text-sm text-red-600"
-                  >
-                    {{ firstName.errorMessage }}
-                  </p>
-                </div>
+                  Last name
+                </TextInput>
+                <p v-if="!lastName.isValid" class="mt-2 text-sm text-red-600">
+                  {{ lastName.errorMessage }}
+                </p>
               </div>
 
               <div>
-                <label
-                  for="last-name"
-                  class="block text-sm/6 font-medium text-gray-900"
-                  >Last Name</label
+                <TextInput
+                  name="Username"
+                  :isValid="username.isValid"
+                  v-model="username.value"
+                  @blur="validateUsernameField"
                 >
-                <div class="mt-2">
-                  <input
-                    v-model.trim="lastName.value"
-                    @blur="validateLastNameField"
-                    type="text"
-                    name="last-name"
-                    id="last-name"
-                    autocomplete="family-name"
-                    required
-                    :class="[
-                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
-                      !lastName.isValid
-                        ? 'outline-red-500 focus:outline-red-600'
-                        : 'outline-gray-300 focus:outline-pg-persian',
-                    ]"
-                  />
-                  <p v-if="!lastName.isValid" class="mt-2 text-sm text-red-600">
-                    {{ lastName.errorMessage }}
-                  </p>
-                </div>
+                  Username
+                </TextInput>
+                <p v-if="!username.isValid" class="mt-2 text-sm text-red-600">
+                  {{ username.errorMessage }}
+                </p>
               </div>
 
               <div>
-                <label
-                  for="phone-number"
-                  class="block text-sm/6 font-medium text-gray-900"
-                  >Phone number</label
+                <TextInput
+                  name="email"
+                  :isValid="email.isValid"
+                  v-model="email.value"
+                  @blur="validateEmailField"
                 >
-                <div class="mt-2">
-                  <input
-                    v-model.trim="phoneNumber.value"
-                    @blur="validatePhoneNumberField"
-                    type="tel"
-                    name="phone-number"
-                    id="phone-number"
-                    autocomplete="tel"
-                    required
-                    :class="[
-                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
-                      !phoneNumber.isValid
-                        ? 'outline-red-500 focus:outline-red-600'
-                        : 'outline-gray-300 focus:outline-pg-persian',
-                    ]"
-                  />
-                  <p
-                    v-if="!phoneNumber.isValid"
-                    class="mt-2 text-sm text-red-600"
-                  >
-                    {{ phoneNumber.errorMessage }}
-                  </p>
-                </div>
+                  Email
+                </TextInput>
+                <p v-if="!email.isValid" class="mt-2 text-sm text-red-600">
+                  {{ email.errorMessage }}
+                </p>
               </div>
 
               <div>
-                <label
-                  for="email"
-                  class="block text-sm/6 font-medium text-gray-900"
-                  >Email</label
+                <TextInput
+                  name="phone-number"
+                  :isValid="phoneNumber.isValid"
+                  v-model="phoneNumber.value"
+                  @blur="validatePhoneNumberField"
                 >
-                <div class="mt-2">
-                  <input
-                    v-model.trim="email.value"
-                    @blur="validateEmailField"
-                    type="email"
-                    name="email"
-                    id="email"
-                    autocomplete="email"
-                    required
-                    :class="[
-                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
-                      !email.isValid
-                        ? 'outline-red-500 focus:outline-red-600'
-                        : 'outline-gray-300 focus:outline-pg-persian',
-                    ]"
-                  />
-                  <p v-if="!email.isValid" class="mt-2 text-sm text-red-600">
-                    {{ email.errorMessage }}
-                  </p>
-                </div>
+                  Phone number
+                </TextInput>
+                <p
+                  v-if="!phoneNumber.isValid"
+                  class="mt-2 text-sm text-red-600"
+                >
+                  {{ phoneNumber.errorMessage }}
+                </p>
               </div>
 
               <div>
-                <label
-                  for="password"
-                  class="block text-sm/6 font-medium text-gray-900"
-                  >Password</label
+                <TextInput
+                  name="password"
+                  type="password"
+                  :isValid="password.isValid"
+                  v-model="password.value"
+                  @blur="validatePasswordField"
                 >
-                <div class="mt-2">
-                  <input
-                    v-model.trim="password.value"
-                    @blur="validatePasswordField"
-                    type="password"
-                    name="password"
-                    id="password"
-                    required
-                    autocomplete="new-password"
-                    :class="[
-                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
-                      !password.isValid
-                        ? 'outline-red-500 focus:outline-red-600'
-                        : 'outline-gray-300 focus:outline-pg-persian',
-                    ]"
-                  />
-                  <p v-if="!password.isValid" class="mt-2 text-sm text-red-600">
-                    {{ password.errorMessage }}
-                  </p>
-                </div>
+                  Password
+                </TextInput>
+                <p v-if="!password.isValid" class="mt-2 text-sm text-red-600">
+                  {{ password.errorMessage }}
+                </p>
               </div>
 
               <div>
-                <label
-                  for="confirm-password"
-                  class="block text-sm/6 font-medium text-gray-900"
-                  >Confirm Password</label
+                <TextInput
+                  name="confirmed-password"
+                  type="password"
+                  :isValid="confirmedPassword.isValid"
+                  v-model="confirmedPassword.value"
+                  @blur="validateConfirmedPasswordField"
                 >
-                <div class="mt-2">
-                  <input
-                    v-model.trim="confirmedPassword.value"
-                    @blur="validateConfirmedPasswordField"
-                    type="password"
-                    name="confirm-password"
-                    id="confirm-password"
-                    required
-                    autocomplete="new-password"
-                    :class="[
-                      'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6',
-                      !confirmedPassword.isValid
-                        ? 'outline-red-500 focus:outline-red-600'
-                        : 'outline-gray-300 focus:outline-pg-persian',
-                    ]"
-                  />
-                  <p
-                    v-if="!confirmedPassword.isValid"
-                    class="mt-2 text-sm text-red-600"
-                  >
-                    {{ confirmedPassword.errorMessage }}
-                  </p>
-                </div>
+                  Confirm password
+                </TextInput>
+                <p
+                  v-if="!confirmedPassword.isValid"
+                  class="mt-2 text-sm text-red-600"
+                >
+                  {{ confirmedPassword.errorMessage }}
+                </p>
               </div>
 
               <div>
-                <button
-                  type="submit"
-                  class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 my-5"
-                >
-                  Create account
-                </button>
+                <Button type="submit"> Create account </Button>
               </div>
             </form>
           </div>
