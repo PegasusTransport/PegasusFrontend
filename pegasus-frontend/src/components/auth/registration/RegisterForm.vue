@@ -236,7 +236,12 @@ const register = async () => {
               </div>
 
               <div>
-                <Button type="submit"> Create account </Button>
+                <Button
+                  type="submit"
+                  class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
+                >
+                  Create account
+                </Button>
               </div>
             </form>
           </div>
