@@ -17,8 +17,11 @@ const value = defineModel<string | null>();
 </script>
 
 <template>
-  <div class="mt-2">
-    <label :for="name" class="block text-sm/6 font-medium text-gray-900 mt-4">
+  <div>
+    <label
+      :for="name"
+      class="block mb-2 text-sm/6 font-medium text-gray-900 mt-4"
+    >
       <slot></slot>
     </label>
     <dd v-if="!editingField" class="mt-1 text-sm">
