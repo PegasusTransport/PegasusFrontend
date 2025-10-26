@@ -5,10 +5,13 @@ import { useRegistrationStore } from "@/stores/registrationStore";
 import { useToast } from "vue-toastification";
 import { type DefaultField } from "@/hooks/useFormValidation";
 import useFormValidation from "@/hooks/useFormValidation";
+import userScrollActions from "@/hooks/useScrollActions";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 
 const store = useRegistrationStore();
 const toast = useToast();
+
+const { scrollToTop } = userScrollActions();
 
 const {
   createDefaultField,
@@ -48,15 +51,6 @@ const createRegistrationRequest = (): RegistrationRequestDto => {
     password: password.value.value,
     role: 0,
   };
-};
-
-const scrollToTop = (functions: Function[], delayInMs: number = 1000) => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-  setTimeout(() => {
-    if (functions.length > 0) {
-      functions.forEach((fn) => fn());
-    }
-  }, delayInMs);
 };
 
 const register = async () => {
