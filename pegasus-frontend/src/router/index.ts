@@ -20,16 +20,15 @@ import Login from "@/pages/Auth/Login.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
     {
       path: "/register",
-      name:"Register",
-      component: Register
+      name: "Register",
+      component: Register,
     },
     {
       path: "/login",
       name: "Login",
-      component: Login
+      component: Login,
     },
     {
       path: "/driver",
