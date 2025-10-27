@@ -48,9 +48,3 @@ const value = defineModel<string | null>();
     />
   </div>
 </template>
-
-<style scoped>
-input:invalid {
-  border-color: red;
-}
-</style>
