@@ -61,8 +61,6 @@ const createRegistrationRequest = (): RegistrationRequestDto => {
 };
 
 const register = async () => {
-  console.log("Clicked!");
-
   validateUsernameField();
   validateFirstNameField();
   validateLastNameField();
