@@ -79,9 +79,9 @@ watch(value, () => {
     <input
       :class="[
         'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6 transition-colors',
-        finalIsValid === false
+        !finalIsValid
           ? 'outline-red-500 focus:outline-red-600'
-          : finalIsValid === true && value !== null && value !== undefined
+          : finalIsValid && value !== null && value !== undefined
           ? 'outline-green-500 focus:outline-green-600'
           : 'outline-gray-300 focus:outline-pg-persian',
       ]"
