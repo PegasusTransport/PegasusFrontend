@@ -9,9 +9,9 @@ defineProps<{
 <template>
   <transition
     appear
-    enter-active-class="transition-all duration-700 ease-out"
-    enter-from-class="opacity-0 translate-y-12"
-    enter-to-class="opacity-100 translate-y-0"
+    enter-active-class="transition-opacity duration-700 ease-out"
+    enter-from-class="opacity-0"
+    enter-to-class="opacity-100"
   >
     <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
