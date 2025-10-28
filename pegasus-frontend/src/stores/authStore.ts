@@ -36,9 +36,7 @@ export const useAuthStore = defineStore("auth", {
     ): Promise<{ success: boolean; message: string }> {
       this.email = credentials.email;
 
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-
-      this.hasLoggedIn = true;
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       return { success: true, message: "Hello from the auth store!" };
     },
