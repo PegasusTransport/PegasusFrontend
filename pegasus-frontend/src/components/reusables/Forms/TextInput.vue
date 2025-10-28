@@ -14,6 +14,7 @@ withDefaults(
   {
     editingField: true,
     type: "text",
+    isValid: true,
   }
 );
 
