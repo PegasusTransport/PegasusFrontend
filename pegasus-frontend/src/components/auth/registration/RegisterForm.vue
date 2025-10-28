@@ -115,7 +115,7 @@ const register = async () => {
           <div
             class="bg-pg-secondary px-3 py-3 shadow sm:rounded-lg sm:px-12 border-2 border-white"
           >
-            <form class="space-y-1" @submit.prevent="register">
+            <form class="space-y-4" @submit.prevent="register">
               <div class="sm:mx-auto sm:w-full sm:max-w-md">
                 <img
                   class="mx-auto h-20 w-auto"
@@ -123,7 +123,7 @@ const register = async () => {
                   alt="Pegasus Transport logo"
                 />
                 <h2
-                  class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+                  class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900 mb-4"
                 >
                   Register
                 </h2>

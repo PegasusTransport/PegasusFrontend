@@ -24,7 +24,7 @@ const value = defineModel<string | null>();
   <div>
     <label
       :for="name"
-      class="block mb-2 text-sm/6 font-medium text-gray-900 mt-4"
+      class="block mb-2 text-sm/6 font-medium text-gray-900"
     >
       <slot></slot>
     </label>
