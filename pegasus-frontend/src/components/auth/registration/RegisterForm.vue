@@ -28,6 +28,8 @@ const {
   isValidForm,
 } = useFormValidation();
 
+const isLoading = ref<boolean>(false);
+
 const username = ref<DefaultField>(createDefaultField());
 const firstName = ref<DefaultField>(createDefaultField());
 const lastName = ref<DefaultField>(createDefaultField());
@@ -80,12 +82,14 @@ const register = async () => {
   )
     return;
 
+  isLoading.value = true;
   const response = await store.register(createRegistrationRequest());
+  isLoading.value = false;
+
   if (response.success) {
-    scrollToTop([
-      () => toast.success("Account created successfully!", { timeout: 5000 }),
-      () => (store.hasRegistered = true),
-    ]);
+    scrollToTop();
+    toast.success("Account created successfully!", { timeout: 3000 });
+    store.hasRegistered = true;
   } else {
     toast.error(response.message, { timeout: 10000 });
   }
@@ -237,6 +241,7 @@ const register = async () => {
 
               <div>
                 <Button
+                  :disabled="isLoading"
                   type="submit"
                   class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
                 >
