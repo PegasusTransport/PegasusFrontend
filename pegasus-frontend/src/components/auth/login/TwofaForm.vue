@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
 
 defineProps<{
-  firstName: string;
   email: string;
 }>();
 </script>
@@ -32,7 +32,6 @@ defineProps<{
           </div>
 
           <div class="text-center space-y-4 mt-6">
-            <!-- Icon -->
             <div
               class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100"
             >
@@ -50,27 +49,28 @@ defineProps<{
                 />
               </svg>
             </div>
-            <!-- Message -->
             <div class="space-y-2">
               <p class="text-base text-gray-900">
-                Hello, {{ firstName }}! We've sent a verification link to
+                We've sent an authentication code to
               </p>
               <p v-if="email" class="text-sm font-semibold text-indigo-600">
                 {{ email }}
               </p>
               <p class="text-sm text-gray-600">
-                Click the link in the email to verify your account and complete
-                registration.
+                Copy the code in your email and paste it here
               </p>
             </div>
-            <!-- Actions -->
+
+            <div>
+              <TextInput name="two-fa-code"></TextInput>
+              <p class="mt-2 text-sm text-red-600"></p>
+            </div>
+
             <div class="mt-6 space-y-3">
               <Button
-                link
-                to="/login"
                 class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
               >
-                Go to login
+                Send
               </Button>
               <p class="text-sm text-gray-600">
                 Didn't receive the email?
