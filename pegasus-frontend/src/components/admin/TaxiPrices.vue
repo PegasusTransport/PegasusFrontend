@@ -174,47 +174,59 @@ onMounted(async () => {
 
       <div class="flex flex-col gap-4">
         <div>
-          <InputLabel>SEK per km:</InputLabel>
           <NumberInput
+            name="sek-km"
             v-model="formData.kmPrice"
             :editing-field="true"
             :min-value="1"
             :max-value="200"
             class="mt-2"
-          />
+            :is-valid="true"
+          >
+            Sek per km:
+          </NumberInput>
         </div>
 
         <div>
-          <InputLabel>SEK per min:</InputLabel>
           <NumberInput
+            name="sek-min"
             v-model="formData.minutePrice"
             :editing-field="true"
             :min-value="1"
             :max-value="50"
             class="mt-2"
-          />
+            :is-valid="true"
+          >
+            SEK per min:
+          </NumberInput>
         </div>
 
         <div>
-          <InputLabel>Start Price:</InputLabel>
           <NumberInput
+            name="start-price"
             v-model="formData.startPrice"
             :editing-field="true"
             :min-value="1"
             :max-value="1000"
             class="mt-2"
-          />
+            :is-valid="true"
+          >
+            Start Price:
+          </NumberInput>
         </div>
 
         <div>
-          <InputLabel>Zone Price:</InputLabel>
           <NumberInput
+            name="zone-price"
             v-model="formData.zonePrice"
             :editing-field="true"
             :min-value="1"
             :max-value="2000"
             class="mt-2"
-          />
+            :is-valid="true"
+          >
+            Zone Price:
+          </NumberInput>
         </div>
       </div>
 
