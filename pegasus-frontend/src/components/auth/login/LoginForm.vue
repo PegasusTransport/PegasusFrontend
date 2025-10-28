@@ -19,6 +19,7 @@ const { createDefaultField, validateEmail, validatePassword } =
   useFormValidation();
 
 const isLoading = ref<boolean>(false);
+
 const email = ref<DefaultField>(createDefaultField());
 const password = ref<DefaultField>(createDefaultField());
 
@@ -40,8 +41,9 @@ const login = async () => {
   isLoading.value = false;
 
   if (result.success) {
+    store.hasLoggedIn = true;
   } else {
-    toast.error("Invalid email or password");
+    toast.error("Invalid email or password", { timeout: 10000 });
   }
 };
 </script>
