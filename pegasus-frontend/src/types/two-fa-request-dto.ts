@@ -4,6 +4,6 @@
  */
 
 export interface TwoFARequestDto {
-    firstname: string;
-    verificationCode: string;
+  email: string;
+  verificationCode: string;
 }
