@@ -64,6 +64,7 @@ export const useAuthStore = defineStore("auth", {
             error instanceof Error ? error.message : "Something went wrong...",
         };
       }
-    },
-  },
+      role: [],
+    };
+  }
 });
