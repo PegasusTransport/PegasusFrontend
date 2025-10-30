@@ -60,10 +60,7 @@ const login = async () => {
     leave-to-class="opacity-0 scale-95"
   >
     <div>
-      <TwofaForm
-        v-if="store.hasLoggedIn"
-        email="Corte.Mauricio98@gmail.com"
-      ></TwofaForm>
+      <TwofaForm v-if="store.hasLoggedIn" :email="store.email"></TwofaForm>
 
       <div
         v-else

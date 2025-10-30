@@ -1,11 +1,42 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { useAuthStore } from "@/stores/authStore";
+import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
+import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
 
-defineProps<{
+const props = defineProps<{
   email: string;
 }>();
+
+const store = useAuthStore();
+const router = useRouter();
+const toast = useToast();
+
+const isLoading = ref<boolean>(false);
+const verificationCode = ref<string>("");
+
+const verifyTwoFA = async () => {
+  const twoFaRequest: TwoFARequestDto = {
+    email: props.email,
+    verificationCode: verificationCode.value,
+  };
+
+  isLoading.value = true;
+  const result = await store.verifyTwoFA(twoFaRequest);
+  isLoading.value = false;
+
+  if (result.success) {
+    router.push("/admin"); // Placeholder. Will push depending on role
+    toast.success("log in successful");
+  } else {
+    toast.error(result.message);
+  }
+};
 </script>
+
 <template>
   <transition
     appear
@@ -62,12 +93,17 @@ defineProps<{
             </div>
 
             <div>
-              <TextInput name="two-fa-code"></TextInput>
+              <TextInput
+                v-model="verificationCode"
+                name="two-fa-code"
+              ></TextInput>
               <p class="mt-2 text-sm text-red-600"></p>
             </div>
 
             <div class="mt-6 space-y-3">
               <Button
+                @click="verifyTwoFA"
+                :disabled="isLoading"
                 class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
               >
                 Send
