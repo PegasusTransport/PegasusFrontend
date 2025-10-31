@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "@/stores/authStore";
 import DriverLayout from "@/pages/Driver/DriverLayout.vue";
 import AdminLayout from "@/pages/Admin/AdminLayout.vue";
 import AdminDrivers from "@/pages/Admin/AdminDrivers.vue";
@@ -24,16 +25,19 @@ const router = createRouter({
       path: "/register",
       name: "Register",
       component: Register,
+      meta: { guestOnly: true },
     },
     {
       path: "/login",
       name: "Login",
       component: Login,
+      meta: { guestOnly: true },
     },
     {
       path: "/driver",
       name: "Driver Dashboard",
       component: DriverLayout,
+      meta: { requiresAuth: true },
       children: [
         {
           path: "",
@@ -112,6 +116,23 @@ const router = createRouter({
       ],
     },
   ],
+});
+
+router.beforeEach(async (to, _, next) => {
+  const store = useAuthStore();
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
+  if (!store.isAuthenticated) {
+    await store.initializeAuth();
+  }
+
+  if (requiresAuth && !store.isAuthenticated) {
+    next("/login");
+  } else if (to.meta.guestOnly && store.isAuthenticated) {
+    next("/admin");
+  } else {
+    next();
+  }
 });
 
 export default router;
