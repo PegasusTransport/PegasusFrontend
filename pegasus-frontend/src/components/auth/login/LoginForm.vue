@@ -5,15 +5,12 @@ import type { LoginRequestDto } from "@/types/login-request-dto";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore";
 import useFormValidation from "@/hooks/useFormValidation";
-import userScrollActions from "@/hooks/useScrollActions";
 import TwofaForm from "./TwofaForm.vue";
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
 
 const toast = useToast();
 const store = useAuthStore();
-
-const { scrollToTop } = userScrollActions();
 
 const { createDefaultField, validateEmail, validatePassword } =
   useFormValidation();
@@ -34,8 +31,6 @@ const createLoginRequest = (): LoginRequestDto => {
 };
 
 const login = async () => {
-  console.log("Clicked!");
-
   isLoading.value = true;
   const result = await store.login(createLoginRequest());
   isLoading.value = false;
