@@ -7,8 +7,6 @@ export const useAuthStore = defineStore("auth", {
   state: () => {
     return {
       isAuthenticated: false,
-      hasLoggedIn: false,
-      email: "",
       sessionDuration: 0,
     };
   },
@@ -26,11 +24,7 @@ export const useAuthStore = defineStore("auth", {
       credentials: LoginRequestDto
     ): Promise<{ success: boolean; message: string }> {
       try {
-        const { data, message } = await authApi.login(credentials);
-
-        this.email = data.email;
-        this.hasLoggedIn = true;
-
+        const { message } = await authApi.login(credentials);
         return { success: true, message: message };
       } catch (error) {
         return {
