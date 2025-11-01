@@ -39,7 +39,7 @@ const login = async () => {
   if (result.success) {
     hasLoggedIn.value = true;
   } else {
-    toast.error("Invalid email or password", { timeout: 10000 });
+    toast.error(result.message, { timeout: 10000 });
   }
 };
 </script>
