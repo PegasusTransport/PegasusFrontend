@@ -29,6 +29,7 @@ const {
 } = useFormValidation();
 
 const isLoading = ref<boolean>(false);
+const hasRegistered = ref<boolean>(false);
 
 const username = ref<DefaultField>(createDefaultField());
 const firstName = ref<DefaultField>(createDefaultField());
@@ -89,7 +90,7 @@ const register = async () => {
   if (response.success) {
     scrollToTop();
     toast.success("Account created successfully!", { timeout: 3000 });
-    store.hasRegistered = true;
+    hasRegistered.value = true;
   } else {
     toast.error(response.message, { timeout: 10000 });
   }
@@ -107,10 +108,10 @@ const register = async () => {
     leave-from-class="opacity-100 scale-100"
     leave-to-class="opacity-0 scale-95"
   >
-    <div v-if="store.hasRegistered" key="verification">
+    <div v-if="hasRegistered" key="verification">
       <EmailVerificationPrompt
-        :first-name="store.firstName"
-        :email="store.email"
+        :first-name="firstName.value"
+        :email="email.value"
       />
     </div>
     <div v-else key="registration">
