@@ -81,15 +81,15 @@ const register = async () => {
     return;
 
   isLoading.value = true;
-  const response = await store.register(createRegistrationRequest());
+  const result = await store.register(createRegistrationRequest());
   isLoading.value = false;
 
-  if (response.success) {
+  if (result.success) {
     scrollToTop();
     toast.success("Account created successfully!", { timeout: 3000 });
     hasRegistered.value = true;
   } else {
-    toast.error(response.message, { timeout: 10000 });
+    toast.error(result.message, { timeout: 10000 });
   }
 };
 </script>
