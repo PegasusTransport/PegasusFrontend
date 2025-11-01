@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
-
 import { type DefaultField } from "@/hooks/useFormValidation";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
-
-import { useRegistrationStore } from "@/stores/registrationStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "vue-toastification";
 import useFormValidation from "@/hooks/useFormValidation";
 import userScrollActions from "@/hooks/useScrollActions";
-
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
 import EmailVerificationPrompt from "./EmailVerificationPrompt.vue";
 
-const store = useRegistrationStore();
+const store = useAuthStore();
 const toast = useToast();
 
 const { scrollToTop } = userScrollActions();

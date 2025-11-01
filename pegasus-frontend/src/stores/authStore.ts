@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { authApi } from "@/endpoints/auth";
+import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 import type { LoginRequestDto } from "@/types/login-request-dto";
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
 
@@ -11,12 +12,27 @@ export const useAuthStore = defineStore("auth", {
     };
   },
   actions: {
+    async register(
+      registrationRequest: RegistrationRequestDto
+    ): Promise<{ success: boolean; message: string }> {
+      try {
+        const { message } = await authApi.register(registrationRequest);
+        return { success: true, message };
+      } catch (error) {
+        console.log(error);
+        return {
+          success: false,
+          message: "Something went wrong. Try again later",
+        };
+      }
+    },
+
     async initializeAuth() {
       try {
         await authApi.verifyAuth();
         this.isAuthenticated = true;
       } catch (error) {
-        console.error("Something went wrong...");
+        console.error("Unauthorized");
       }
     },
 
@@ -29,8 +45,7 @@ export const useAuthStore = defineStore("auth", {
       } catch (error) {
         return {
           success: false,
-          message:
-            error instanceof Error ? error.message : "Something went wrong...",
+          message: "Invalid email or password",
         };
       }
     },
@@ -49,7 +64,7 @@ export const useAuthStore = defineStore("auth", {
         return {
           success: false,
           message:
-            error instanceof Error ? error.message : "Something went wrong...",
+            "Something went wrong. Make sure you're using the correct code",
         };
       }
     },
