@@ -1,48 +1,54 @@
 import { defineStore } from "pinia";
 import { authApi } from "@/endpoints/auth";
+import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 import type { LoginRequestDto } from "@/types/login-request-dto";
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
-import { UserRoles } from "@/types/models";
 
 export const useAuthStore = defineStore("auth", {
   state: () => {
     return {
-      hasLoggedIn: false,
-      email: "",
       isAuthenticated: false,
-      roles: [] as UserRoles[],
       sessionDuration: 0,
     };
   },
   actions: {
-    async login(
-      credentials: LoginRequestDto
+    async register(
+      registrationRequest: RegistrationRequestDto
     ): Promise<{ success: boolean; message: string }> {
       try {
-        const { data, message } = await authApi.login(credentials);
-
-        this.email = data.email;
-        this.hasLoggedIn = true;
-
-        return { success: true, message: message };
+        const { message } = await authApi.register(registrationRequest);
+        return { success: true, message };
       } catch (error) {
+        console.log(error);
         return {
           success: false,
-          message:
-            error instanceof Error ? error.message : "Something went wrong...",
+          message: "Something went wrong. Try again later",
         };
       }
     },
 
-    // async login(
-    //   credentials: LoginRequestDto
-    // ): Promise<{ success: boolean; message: string }> {
-    //   this.email = credentials.email;
+    async initializeAuth() {
+      try {
+        await authApi.verifyAuth();
+        this.isAuthenticated = true;
+      } catch (error) {
+        console.error("Unauthorized");
+      }
+    },
 
-    //   await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    //   return { success: true, message: "Hello from the auth store!" };
-    // },
+    async login(
+      credentials: LoginRequestDto
+    ): Promise<{ success: boolean; message: string }> {
+      try {
+        const { message } = await authApi.login(credentials);
+        return { success: true, message: message };
+      } catch (error) {
+        return {
+          success: false,
+          message: "Invalid email or password",
+        };
+      }
+    },
 
     async verifyTwoFA(
       twoFARequest: TwoFARequestDto
@@ -50,10 +56,7 @@ export const useAuthStore = defineStore("auth", {
       try {
         const { data, message } = await authApi.verifyTwoFA(twoFARequest);
 
-        console.log(data, message);
-
         this.isAuthenticated = data.isAuthenticated;
-        this.roles = data.roles;
         this.sessionDuration = data.accessTokenExpiresIn;
 
         return { success: true, message: message };
@@ -61,7 +64,7 @@ export const useAuthStore = defineStore("auth", {
         return {
           success: false,
           message:
-            error instanceof Error ? error.message : "Something went wrong...",
+            "Something went wrong. Make sure you're using the correct code",
         };
       }
     },

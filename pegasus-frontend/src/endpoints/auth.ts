@@ -8,6 +8,10 @@ import type { RegistrationResponseDto } from "@/types/registration-response-dto"
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
 
 export const authApi = {
+  async verifyAuth() {
+    await api.get("/api/Auth/VerifyAuth");
+  },
+
   async register(
     data: RegistrationRequestDto
   ): Promise<ApiResponse<RegistrationResponseDto>> {
