@@ -16,6 +16,7 @@ const { createDefaultField, validateEmail, validatePassword } =
   useFormValidation();
 
 const isLoading = ref<boolean>(false);
+const hasLoggedIn = ref<boolean>(false);
 
 const email = ref<DefaultField>(createDefaultField());
 const password = ref<DefaultField>(createDefaultField());
@@ -36,7 +37,7 @@ const login = async () => {
   isLoading.value = false;
 
   if (result.success) {
-    store.hasLoggedIn = true;
+    hasLoggedIn.value = true;
   } else {
     toast.error("Invalid email or password", { timeout: 10000 });
   }
@@ -55,7 +56,7 @@ const login = async () => {
     leave-to-class="opacity-0 scale-95"
   >
     <div>
-      <TwofaForm v-if="store.hasLoggedIn" :email="store.email"></TwofaForm>
+      <TwofaForm v-if="hasLoggedIn" :email="email.value"></TwofaForm>
 
       <div
         v-else
