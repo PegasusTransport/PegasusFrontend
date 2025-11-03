@@ -6,12 +6,14 @@ import { useToast } from "vue-toastification";
 import useFormValidation, {
   type DefaultField,
 } from "@/hooks/useFormValidation";
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import type { UpdateUserRequestDto } from "@/types/update-user-request-dto";
 import { userApi } from "@/endpoints/user";
+import type { UserResponseDto } from "@/types/user-response-dto";
 
 const toast = useToast();
 const isLoading = ref(false);
+const userDetails = ref<UserResponseDto | null>(null);
 
 const {
   createDefaultField,
@@ -26,6 +28,29 @@ const firstName = ref<DefaultField>(createDefaultField());
 const lastName = ref<DefaultField>(createDefaultField());
 const email = ref<DefaultField>(createDefaultField());
 const phoneNumber = ref<DefaultField>(createDefaultField());
+
+const populateFormFields = (user: UserResponseDto) => {
+  username.value = createDefaultField();
+  username.value.value = user.userName || "";
+  firstName.value = createDefaultField();
+  firstName.value.value = user.firstName || "";
+  lastName.value = createDefaultField();
+  lastName.value.value = user.lastName || "";
+  email.value = createDefaultField();
+  email.value.value = user.email || "";
+  phoneNumber.value = createDefaultField();
+  phoneNumber.value.value = user.phoneNumber || "";
+};
+
+watch(
+  userDetails,
+  (newUserDetails) => {
+    if (newUserDetails) {
+      populateFormFields(newUserDetails);
+    }
+  },
+  { immediate: true }
+);
 
 const validateUsernameField = () => validateField(username.value, "Username");
 const validateFirstNameField = () =>
@@ -64,6 +89,17 @@ const updateProfile = async () => {
     isLoading.value = false;
   }
 };
+
+const getUser = async () => {
+  try {
+    const response = await userApi.getUserProfile();
+    userDetails.value = response.data;
+    console.log(userDetails.value);
+  } catch (err) {
+    toast.error("Error fetching user details");
+  }
+};
+onMounted(() => getUser());
 </script>
 
 <template>
