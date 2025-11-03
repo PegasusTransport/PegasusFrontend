@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
-
 import { type DefaultField } from "@/hooks/useFormValidation";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
-
-import { useRegistrationStore } from "@/stores/registrationStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "vue-toastification";
 import useFormValidation from "@/hooks/useFormValidation";
 import userScrollActions from "@/hooks/useScrollActions";
-
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
 import EmailVerificationPrompt from "./EmailVerificationPrompt.vue";
 
-const store = useRegistrationStore();
+const store = useAuthStore();
 const toast = useToast();
 
 const { scrollToTop } = userScrollActions();
@@ -29,6 +26,7 @@ const {
 } = useFormValidation();
 
 const isLoading = ref<boolean>(false);
+const hasRegistered = ref<boolean>(false);
 
 const username = ref<DefaultField>(createDefaultField());
 const firstName = ref<DefaultField>(createDefaultField());
@@ -83,15 +81,15 @@ const register = async () => {
     return;
 
   isLoading.value = true;
-  const response = await store.register(createRegistrationRequest());
+  const result = await store.register(createRegistrationRequest());
   isLoading.value = false;
 
-  if (response.success) {
+  if (result.success) {
     scrollToTop();
     toast.success("Account created successfully!", { timeout: 3000 });
-    store.hasRegistered = true;
+    hasRegistered.value = true;
   } else {
-    toast.error(response.message, { timeout: 10000 });
+    toast.error(result.message, { timeout: 10000 });
   }
 };
 </script>
@@ -107,10 +105,10 @@ const register = async () => {
     leave-from-class="opacity-100 scale-100"
     leave-to-class="opacity-0 scale-95"
   >
-    <div v-if="store.hasRegistered" key="verification">
+    <div v-if="hasRegistered" key="verification">
       <EmailVerificationPrompt
-        :first-name="store.firstName"
-        :email="store.email"
+        :first-name="firstName.value"
+        :email="email.value"
       />
     </div>
     <div v-else key="registration">
