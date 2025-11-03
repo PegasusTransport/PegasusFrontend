@@ -5,7 +5,6 @@ import type { LoginRequestDto } from "@/types/login-request-dto";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore";
 import useFormValidation from "@/hooks/useFormValidation";
-import userScrollActions from "@/hooks/useScrollActions";
 import TwofaForm from "./TwofaForm.vue";
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
@@ -13,12 +12,11 @@ import Button from "@/components/reusables/Button.vue";
 const toast = useToast();
 const store = useAuthStore();
 
-const { scrollToTop } = userScrollActions();
-
 const { createDefaultField, validateEmail, validatePassword } =
   useFormValidation();
 
 const isLoading = ref<boolean>(false);
+const hasLoggedIn = ref<boolean>(false);
 
 const email = ref<DefaultField>(createDefaultField());
 const password = ref<DefaultField>(createDefaultField());
@@ -34,16 +32,14 @@ const createLoginRequest = (): LoginRequestDto => {
 };
 
 const login = async () => {
-  console.log("Clicked!");
-
   isLoading.value = true;
   const result = await store.login(createLoginRequest());
   isLoading.value = false;
 
   if (result.success) {
-    store.hasLoggedIn = true;
+    hasLoggedIn.value = true;
   } else {
-    toast.error("Invalid email or password", { timeout: 10000 });
+    toast.error(result.message, { timeout: 10000 });
   }
 };
 </script>
@@ -60,7 +56,7 @@ const login = async () => {
     leave-to-class="opacity-0 scale-95"
   >
     <div>
-      <TwofaForm v-if="store.hasLoggedIn" :email="store.email"></TwofaForm>
+      <TwofaForm v-if="hasLoggedIn" :email="email.value"></TwofaForm>
 
       <div
         v-else
