@@ -1,11 +1,42 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { useAuthStore } from "@/stores/authStore";
+import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
+import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
+import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
 
-defineProps<{
-  firstName: string;
+const props = defineProps<{
   email: string;
 }>();
+
+const store = useAuthStore();
+const router = useRouter();
+const toast = useToast();
+
+const isLoading = ref<boolean>(false);
+const verificationCode = ref<string>("");
+
+const verifyTwoFA = async () => {
+  const twoFaRequest: TwoFARequestDto = {
+    email: props.email,
+    verificationCode: verificationCode.value,
+  };
+
+  isLoading.value = true;
+  const result = await store.verifyTwoFA(twoFaRequest);
+  isLoading.value = false;
+
+  if (result.success) {
+    router.push("/admin"); // Placeholder. Will push depending on role
+    toast.success("log in successful");
+  } else {
+    toast.error(result.message);
+  }
+};
 </script>
+
 <template>
   <transition
     appear
@@ -32,7 +63,6 @@ defineProps<{
           </div>
 
           <div class="text-center space-y-4 mt-6">
-            <!-- Icon -->
             <div
               class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100"
             >
@@ -50,27 +80,33 @@ defineProps<{
                 />
               </svg>
             </div>
-            <!-- Message -->
             <div class="space-y-2">
               <p class="text-base text-gray-900">
-                Hello, {{ firstName }}! We've sent a verification link to
+                We've sent an authentication code to
               </p>
               <p v-if="email" class="text-sm font-semibold text-indigo-600">
                 {{ email }}
               </p>
               <p class="text-sm text-gray-600">
-                Click the link in the email to verify your account and complete
-                registration.
+                Copy the code in your email and paste it here
               </p>
             </div>
-            <!-- Actions -->
+
+            <div>
+              <TextInput
+                v-model="verificationCode"
+                name="two-fa-code"
+              ></TextInput>
+              <p class="mt-2 text-sm text-red-600"></p>
+            </div>
+
             <div class="mt-6 space-y-3">
               <Button
-                link
-                to="/login"
+                @click="verifyTwoFA"
+                :disabled="isLoading"
                 class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
               >
-                Go to login
+                Send
               </Button>
               <p class="text-sm text-gray-600">
                 Didn't receive the email?
