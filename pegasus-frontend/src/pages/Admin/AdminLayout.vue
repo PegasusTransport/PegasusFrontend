@@ -5,7 +5,7 @@ import AdminSidebar from "@/components/sidebars/AdminSidebar.vue";
 <template>
   <div class="flex h-screen">
     <!-- Sidebar -->
-    <div class="w-64 flex-shrink-0">
+    <div class="lg:flex lg:h-screen">
       <AdminSidebar />
     </div>
 
