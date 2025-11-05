@@ -5,12 +5,14 @@ import type { LoginRequestDto } from "@/types/login-request-dto";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore";
 import useFormValidation from "@/hooks/useFormValidation";
-import TwofaForm from "./TwofaForm.vue";
+// import TwofaForm from "./TwofaForm.vue";
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
+import { useRouter } from "vue-router";
 
 const toast = useToast();
 const store = useAuthStore();
+const router = useRouter(); // For testing
 
 const { createDefaultField, validateEmail, validatePassword } =
   useFormValidation();
@@ -33,14 +35,16 @@ const createLoginRequest = (): LoginRequestDto => {
 
 const login = async () => {
   isLoading.value = true;
-  const result = await store.login(createLoginRequest());
+  // use devLogin during development
+  const result = await store.devLogin(createLoginRequest());
   isLoading.value = false;
+  router.push("/admin"); // Placeholder. Will push depending on role
 
-  if (result.success) {
-    hasLoggedIn.value = true;
-  } else {
-    toast.error(result.message, { timeout: 10000 });
-  }
+  // if (result.success) {
+  //   hasLoggedIn.value = true;
+  // } else {
+  //   toast.error(result.message, { timeout: 10000 });
+  // }
 };
 </script>
 
@@ -56,10 +60,10 @@ const login = async () => {
     leave-to-class="opacity-0 scale-95"
   >
     <div>
-      <TwofaForm v-if="hasLoggedIn" :email="email.value"></TwofaForm>
+      <!-- <TwofaForm v-if="hasLoggedIn" :email="email.value"></TwofaForm> -->
 
+      <!-- v-else -->
       <div
-        v-else
         key="login-form"
         class="flex flex-col justify-center py-12 sm:px-6 lg:px-8 h-screen"
       >

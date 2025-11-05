@@ -1,10 +1,13 @@
 import { defineStore } from "pinia";
 import { useToast } from "vue-toastification";
+import api from "@/plugins/axios";
 import { authApi } from "@/endpoints/auth";
 import authCookies from "@/utils/auth/cookies";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 import type { LoginRequestDto } from "@/types/login-request-dto";
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
+import type { ApiResponse } from "@/types/api-response-dto";
+import type { LoginResponseDto } from "@/types/login-response-dto";
 
 const toast = useToast();
 
@@ -88,6 +91,28 @@ export const useAuthStore = defineStore("auth", {
       } finally {
         authCookies.removeIsAuthenticatedCookie();
         window.location.assign("/login");
+      }
+    },
+
+    async devLogin(LoginRequest: LoginRequestDto) {
+      try {
+        const response = await api.authApi.post<ApiResponse<LoginResponseDto>>(
+          "/api/Auth/DevLogin",
+          LoginRequest
+        );
+        const result = response.data;
+
+        // console.log(result.data);
+        // console.log(result.message);
+
+        this.isAuthenticated = true;
+        authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
+      } catch (error) {
+        console.log(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong on dev log in"
+        );
       }
     },
   },
