@@ -1,14 +1,18 @@
 import { defineStore } from "pinia";
+import { useToast } from "vue-toastification";
 import { authApi } from "@/endpoints/auth";
+import authCookies from "@/utils/auth/cookies";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 import type { LoginRequestDto } from "@/types/login-request-dto";
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
+
+const toast = useToast();
 
 export const useAuthStore = defineStore("auth", {
   state: () => {
     return {
       isAuthenticated: false,
-      sessionDuration: 0,
+      refreshTokenExpiration: 7, // Might be handled inside action.
     };
   },
   actions: {
@@ -28,10 +32,11 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async initializeAuth() {
-      try {
-        await authApi.verifyAuth();
+      if (authCookies.isUserAuthenticated()) {
         this.isAuthenticated = true;
-      } catch (error) {
+        authApi.refreshToken();
+        authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
+      } else {
         console.error("Unauthorized");
       }
     },
@@ -41,6 +46,7 @@ export const useAuthStore = defineStore("auth", {
     ): Promise<{ success: boolean; message: string }> {
       try {
         const { message } = await authApi.login(credentials);
+        toast.clear();
         return { success: true, message: message };
       } catch (error) {
         return {
@@ -55,9 +61,10 @@ export const useAuthStore = defineStore("auth", {
     ): Promise<{ success: boolean; message: string }> {
       try {
         const { data, message } = await authApi.verifyTwoFA(twoFARequest);
+        // getCookiesExpirationTimes ---> gets the expiration time of cookies
 
-        this.isAuthenticated = data.isAuthenticated;
-        this.sessionDuration = data.accessTokenExpiresIn;
+        this.isAuthenticated = true;
+        authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration); // Expires in 10 days
 
         return { success: true, message: message };
       } catch (error) {
@@ -66,6 +73,21 @@ export const useAuthStore = defineStore("auth", {
           message:
             "Something went wrong. Make sure you're using the correct code",
         };
+      }
+    },
+
+    async logout() {
+      try {
+        await authApi.logout();
+      } catch (error) {
+        console.log(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong while trying to log out"
+        );
+      } finally {
+        authCookies.removeIsAuthenticatedCookie();
+        window.location.assign("/login");
       }
     },
   },
