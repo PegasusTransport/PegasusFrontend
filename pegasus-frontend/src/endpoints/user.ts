@@ -8,14 +8,13 @@ export const userApi = {
   async updateProfile(
     data: UpdateUserRequestDto
   ): Promise<ApiResponse<UpdateUserResponseDto>> {
-    const response = await api.put<ApiResponse<UpdateUserResponseDto>>(
-      "/api/User/UpdateUser",
-      data
-    );
+    const response = await api.defaultApi.put<
+      ApiResponse<UpdateUserResponseDto>
+    >("/api/User/UpdateUser", data);
     return response.data;
   },
   async getUserProfile(): Promise<ApiResponse<UserResponseDto>> {
-    const response = await api.get<ApiResponse<UserResponseDto>>(
+    const response = await api.defaultApi.get<ApiResponse<UserResponseDto>>(
       "/api/User/GetLoggedInUserData"
     );
     return response.data;
