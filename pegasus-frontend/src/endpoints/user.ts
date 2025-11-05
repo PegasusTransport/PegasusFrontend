@@ -13,6 +13,7 @@ export const userApi = {
     >("/api/User/UpdateUser", data);
     return response.data;
   },
+
   async getUserProfile(): Promise<ApiResponse<UserResponseDto>> {
     const response = await api.defaultApi.get<ApiResponse<UserResponseDto>>(
       "/api/User/GetLoggedInUserData"
