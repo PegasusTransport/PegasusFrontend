@@ -5,7 +5,7 @@ import type { NewTaxiSettingsDTO } from "@/types/new-taxi-settings-dto";
 
 export const adminApi = {
   async getTaximeterPrice(): Promise<ApiResponse<TaxiSettings>> {
-    const response = await api.get<ApiResponse<TaxiSettings>>(
+    const response = await api.defaultApi.get<ApiResponse<TaxiSettings>>(
       "/api/Admin/GetAllTaxiPrices"
     );
     return response.data;
@@ -14,7 +14,10 @@ export const adminApi = {
   async editTaximeterPrice(
     data: NewTaxiSettingsDTO
   ): Promise<ApiResponse<TaxiSettings>> {
-    const response = await api.post("/api/Admin/CreateNewTaxiPrices", data);
+    const response = await api.defaultApi.post(
+      "/api/Admin/CreateNewTaxiPrices",
+      data
+    );
     return response.data;
   },
 };

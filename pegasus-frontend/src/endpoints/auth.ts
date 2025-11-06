@@ -9,23 +9,22 @@ import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
 
 export const authApi = {
   async verifyAuth() {
-    await api.get("/api/Auth/VerifyAuth");
+    await api.authApi.get("/api/Auth/VerifyAuth");
   },
 
   async register(
     data: RegistrationRequestDto
   ): Promise<ApiResponse<RegistrationResponseDto>> {
-    const response = await api.post<ApiResponse<RegistrationResponseDto>>(
-      "/api/User/Registration",
-      data
-    );
+    const response = await api.authApi.post<
+      ApiResponse<RegistrationResponseDto>
+    >("/api/User/Registration", data);
     return response.data;
   },
 
   async login(
     LoginRequest: LoginRequestDto
   ): Promise<ApiResponse<LoginResponseDto>> {
-    const response = await api.post<ApiResponse<LoginResponseDto>>(
+    const response = await api.authApi.post<ApiResponse<LoginResponseDto>>(
       "/api/Auth/Login",
       LoginRequest
     );
@@ -35,10 +34,20 @@ export const authApi = {
   async verifyTwoFA(
     twoFARequest: TwoFARequestDto
   ): Promise<ApiResponse<AuthResponseDto>> {
-    const response = await api.post<ApiResponse<AuthResponseDto>>(
+    const response = await api.authApi.post<ApiResponse<AuthResponseDto>>(
       "/api/Auth/VerifyTwoFA",
       twoFARequest
     );
+    return response.data;
+  },
+
+  async logout(): Promise<ApiResponse<boolean>> {
+    const response = await api.authApi.post("/api/Auth/Logout");
+    return response.data;
+  },
+
+  async refreshToken(): Promise<ApiResponse<string>> {
+    const response = await api.authApi.post("/api/Auth/RefreshToken");
     return response.data;
   },
 };
