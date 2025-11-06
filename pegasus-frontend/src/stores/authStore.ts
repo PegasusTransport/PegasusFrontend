@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import router from "@/router"; // Import the router instance directly
 import { useToast } from "vue-toastification";
 import api from "@/plugins/axios";
 import { authApi } from "@/endpoints/auth";
@@ -89,8 +90,9 @@ export const useAuthStore = defineStore("auth", {
             : "Something went wrong while trying to log out"
         );
       } finally {
+        this.isAuthenticated = false;
         authCookies.removeIsAuthenticatedCookie();
-        window.location.assign("/login");
+        router.push("/login");
       }
     },
 
