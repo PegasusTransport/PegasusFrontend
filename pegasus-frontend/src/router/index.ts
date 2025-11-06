@@ -123,14 +123,13 @@ const router = createRouter({
 router.beforeEach(async (to, _, next) => {
   const store = useAuthStore();
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const guestOnly = to.matched.some((record) => record.meta.guestOnly);
 
-  if (!store.isAuthenticated) {
-    await store.initializeAuth();
-  }
+  if (!store.isAuthenticated) store.initializeAuth();
 
   if (requiresAuth && !store.isAuthenticated) {
     next("/login");
-  } else if (to.meta.guestOnly && store.isAuthenticated) {
+  } else if (guestOnly && store.isAuthenticated) {
     next("/admin");
   } else {
     next();
