@@ -4,6 +4,7 @@ import type { AutoCompleteSuggestionDto } from "@/types/autocomplete";
 import type { CoordinateDto } from "@/types/coordinate-dto";
 import { autoComplete } from "@/endpoints/autoComplete";
 import type { ApiResponse } from "@/types/api-response-dto";
+import TextInput from "./Forms/TextInput.vue";
 
 const props = defineProps({
   modelValue: String,
@@ -141,10 +142,11 @@ watch(() => props.modelValue, (newValue) => {
 
 <template>
   <div class="relative">
-    <input
+    <TextInput
       v-model="query"
+      name="autocomplete-input"
       :placeholder="placeholder || 'Enter address'"
-      class="w-full p-2 border border-gray-300 rounded"
+      :editing-field="true"
       @keydown="handleKeydown"
     />
 
