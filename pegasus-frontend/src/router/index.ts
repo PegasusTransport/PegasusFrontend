@@ -17,6 +17,8 @@ import DriverCar from "@/pages/Driver/DriverCar.vue";
 import DriverOverview from "@/pages/Driver/DriverOverview.vue";
 import Register from "@/pages/Auth/Register.vue";
 import Login from "@/pages/Auth/Login.vue";
+import { useUserStore } from "@/stores/userStore";
+import { UserRoles } from "@/types/user-roles";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,7 +39,7 @@ const router = createRouter({
       path: "/driver",
       name: "Driver Dashboard",
       component: DriverLayout,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, requiredRole: UserRoles.Driver },
       children: [
         {
           path: "",
@@ -65,7 +67,10 @@ const router = createRouter({
       path: "/admin",
       name: "admin",
       component: AdminLayout,
-      meta: { requiresAuth: true },
+      meta: {
+        requiresAuth: true,
+        requiredRole: UserRoles.Admin,
+      },
       children: [
         {
           path: "",
@@ -98,7 +103,7 @@ const router = createRouter({
       path: "/customer",
       name: "CustomerDashboard",
       component: CustomerLayout,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, requiredRole: UserRoles.User },
       children: [
         {
           path: "",
@@ -121,16 +126,25 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _, next) => {
-  const store = useAuthStore();
+  const authStore = useAuthStore();
+  const userStore = useUserStore();
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const guestOnly = to.matched.some((record) => record.meta.guestOnly);
+  const requiredRole = to.meta.requiredRole;
+  const roles = userStore.user?.roles || [];
 
-  if (!store.isAuthenticated) store.initializeAuth();
+  if (!authStore.isAuthenticated) {
+    await authStore.initializeAuth();
+  }
 
-  if (requiresAuth && !store.isAuthenticated) {
+  const route = userStore.loadRouteBasedOnRole();
+
+  if (requiresAuth && !authStore.isAuthenticated) {
     next("/login");
-  } else if (guestOnly && store.isAuthenticated) {
-    next("/admin");
+  } else if (guestOnly && authStore.isAuthenticated) {
+    next(route);
+  } else if (requiredRole !== undefined && !roles.includes(requiredRole)) {
+    next(route);
   } else {
     next();
   }

@@ -29,9 +29,9 @@ export const useUserStore = defineStore("user", {
 
       if (!roles || roles.length === 0) return "/login";
       if (requiredRoles.every((role) => roles.includes(role))) return "/admin";
+      if (roles.includes(UserRoles.User)) return "/customer";
       if (roles.includes(UserRoles.Admin)) return "/admin";
       if (roles.includes(UserRoles.Driver)) return "/driver";
-      if (roles.includes(UserRoles.User)) return "/customer";
       return "/login";
     },
   },

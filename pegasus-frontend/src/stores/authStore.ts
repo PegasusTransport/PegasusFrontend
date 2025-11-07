@@ -43,10 +43,16 @@ export const useAuthStore = defineStore("auth", {
 
     async initializeAuth() {
       if (authCookies.isUserAuthenticated()) {
-        this.isAuthenticated = true;
-        authApi.refreshToken();
-        authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
-        await getUserProfile();
+        try {
+          await authApi.refreshToken();
+          await getUserProfile();
+          this.isAuthenticated = true;
+          authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
+        } catch (error) {
+          console.log(
+            error instanceof Error ? error.message : "Something went wrong"
+          );
+        }
       } else {
         console.error("Unauthorized");
       }
