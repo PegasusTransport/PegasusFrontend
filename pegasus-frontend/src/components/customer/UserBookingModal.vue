@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
-import type { UpdateBookingDto } from "@/types/update-booking-dto";
 import { useToast } from "vue-toastification";
-import { adminApi } from "@/endpoints/admin";
+import { userApi } from "@/endpoints/user";
+import type { UpdateBookingDto } from "@/types/update-booking-dto";
+import { BookingStatus } from "@/types/booking";
 import {
   Dialog,
   DialogPanel,
@@ -11,12 +12,10 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
-import { XMarkIcon } from "@heroicons/vue/24/outline";
-import { BookingStatus, getBookingStatusString } from "@/types/booking";
 import Button from "../reusables/Button.vue";
-import CancelButton from "../reusables/CancelButton.vue";
 import AutoCompleteInput from "../reusables/AutoCompleteInput.vue";
-import { formatHours } from "@/utils/timeFormatter";
+import CancelButton from "../reusables/CancelButton.vue";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
 import TextInput from "../reusables/Forms/TextInput.vue";
 import { validateFlightNumber } from "@/utils/flightValidator";
 import { validateBookingDateTime } from "@/utils/auth/time48HoursValidator";
@@ -28,6 +27,11 @@ const error = ref<string | null>(null);
 const isEditing = ref(false);
 const toast = useToast();
 
+interface SelectedPlace {
+  formatted_address: string;
+  lat: number;
+  lng: number;
+}
 
 const props = defineProps<{
   open: boolean;
@@ -38,8 +42,6 @@ const emit = defineEmits<{
   close: [];
   updated: [booking: BookingResponseDto];
 }>();
-
-const editForm = reactive<Record<string, any>>({});
 
 const isDateTimeValid = computed(() => {
   return (
@@ -52,6 +54,7 @@ const isFlightNumberValid = computed(() => {
     !editForm.flightnumber || validateFlightNumber(editForm.flightnumber)
   );
 });
+
 const hasRequiredFields = computed(() => {
   return !!(
     editForm.pickUpDateTime?.trim() &&
@@ -72,21 +75,25 @@ const canEditBooking = computed(() => {
   );
 });
 
-const getStatusColor = (status: BookingStatus) => {
-  const colors = {
-    [BookingStatus.Completed]:
-      "text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs",
-    [BookingStatus.Cancelled]:
-      "text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs",
-    [BookingStatus.Confirmed]:
-      "text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs",
-    [BookingStatus.PendingEmailConfirmation]:
-      "text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full text-xs",
-  };
-  return (
-    colors[status] || "text-gray-600 bg-gray-100 px-2 py-1 rounded-full text-xs"
-  );
-};
+const editForm = reactive<
+  Partial<UpdateBookingDto> & {
+    pickUpDateTime: string;
+    pickUpAddress: string;
+    firstStopAddress: string;
+    secondStopAddress: string;
+    dropOffAddress: string;
+    flightnumber: string;
+    comment: string;
+  }
+>({
+  pickUpDateTime: "",
+  pickUpAddress: "",
+  firstStopAddress: "",
+  secondStopAddress: "",
+  dropOffAddress: "",
+  flightnumber: "",
+  comment: "",
+});
 
 watch(
   () => props.bookingId,
@@ -98,68 +105,49 @@ watch(
 
 watch(
   () => props.open,
-  async (isOpen) => {
+  (isOpen) => {
     if (isOpen && props.bookingId) {
-      await getBookingById(props.bookingId);
-    } else {
+      getBookingById(props.bookingId);
+    } else if (!isOpen) {
       resetComponent();
     }
   }
 );
-const handlePickupCoordinatesCleared = () => {
-  editForm.pickUpLatitude = null;
-  editForm.pickUpLongitude = null;
+
+// adresses
+const handlePickupAddressSelected = (place: SelectedPlace) => {
+  editForm.pickUpAddress = place.formatted_address;
+  editForm.pickUpLatitude = place.lat;
+  editForm.pickUpLongitude = place.lng;
 };
 
-const handleFirstStopCoordinatesCleared = () => {
-  editForm.firstStopLatitude = null;
-  editForm.firstStopLongitude = null;
+const handleFirstStopAddressSelected = (place: SelectedPlace) => {
+  editForm.firstStopAddress = place.formatted_address;
+  editForm.firstStopLatitude = place.lat;
+  editForm.firstStopLongitude = place.lng;
 };
 
-const handleSecondStopCoordinatesCleared = () => {
-  editForm.secondStopLatitude = null;
-  editForm.secondStopLongitude = null;
+const handleSecondStopAddressSelected = (place: SelectedPlace) => {
+  editForm.secondStopAddress = place.formatted_address;
+  editForm.secondStopLatitude = place.lat;
+  editForm.secondStopLongitude = place.lng;
 };
 
-const handleDropOffCoordinatesCleared = () => {
-  editForm.dropOffLatitude = null;
-  editForm.dropOffLongitude = null;
-};
-// addresses
-const handlePickupAddressSelected = (place: any) => {
-  editForm.pickUpAddress = place.formatted_address || place.description;
-  editForm.pickUpLatitude = place.lat || place.latitude;
-  editForm.pickUpLongitude = place.lng || place.longitude;
+const handleDropOffAddressSelected = (place: SelectedPlace) => {
+  editForm.dropOffAddress = place.formatted_address;
+  editForm.dropOffLatitude = place.lat;
+  editForm.dropOffLongitude = place.lng;
 };
 
-const handleFirstStopAddressSelected = (place: any) => {
-  editForm.firstStopAddress = place.formatted_address || place.description;
-  editForm.firstStopLatitude = place.lat || place.latitude;
-  editForm.firstStopLongitude = place.lng || place.longitude;
-};
-
-const handleSecondStopAddressSelected = (place: any) => {
-  editForm.secondStopAddress = place.formatted_address || place.description;
-  editForm.secondStopLatitude = place.lat || place.latitude;
-  editForm.secondStopLongitude = place.lng || place.longitude;
-};
-
-const handleDropOffAddressSelected = (place: any) => {
-  editForm.dropOffAddress = place.formatted_address || place.description;
-  editForm.dropOffLatitude = place.lat || place.latitude;
-  editForm.dropOffLongitude = place.lng || place.longitude;
-};
-
-// methods
 const getBookingById = async (id: number) => {
   try {
     loading.value = true;
     error.value = null;
-    const response = await adminApi.getBookingByID(id);
+    const response = await userApi.getBookingById(id);
     bookingDetails.value = response.data;
   } catch (err) {
     error.value = "Error fetching booking details";
-    toast.error("Error fetching booking details");
+    toast.error("Error fetching bookings details");
   } finally {
     loading.value = false;
   }
@@ -196,12 +184,11 @@ const cancelEditing = () => {
 };
 
 const handleUpdateBooking = async () => {
-  if (!editForm.bookingId && !canSubmit.value) return;
+  if (!editForm.bookingId || !canSubmit.value) return;
 
   try {
     updateLoading.value = true;
     error.value = null;
-    
 
     const updateData: UpdateBookingDto = {
       bookingId: editForm.bookingId,
@@ -212,27 +199,23 @@ const handleUpdateBooking = async () => {
       dropOffAddress: editForm.dropOffAddress!,
       dropOffLatitude: editForm.dropOffLatitude!,
       dropOffLongitude: editForm.dropOffLongitude!,
-      ...(editForm.firstStopAddress?.trim() &&
-        editForm.firstStopLatitude &&
-        editForm.firstStopLongitude && {
-          firstStopAddress: editForm.firstStopAddress,
-          firstStopLatitude: editForm.firstStopLatitude,
-          firstStopLongitude: editForm.firstStopLongitude,
-        }),
-      ...(editForm.secondStopAddress?.trim() &&
-        editForm.secondStopLatitude &&
-        editForm.secondStopLongitude && {
-          secondStopAddress: editForm.secondStopAddress,
-          secondStopLatitude: editForm.secondStopLatitude,
-          secondStopLongitude: editForm.secondStopLongitude,
-        }),
+      ...(editForm.firstStopAddress?.trim() && {
+        firstStopAddress: editForm.firstStopAddress,
+        firstStopLatitude: editForm.firstStopLatitude,
+        firstStopLongitude: editForm.firstStopLongitude,
+      }),
+      ...(editForm.secondStopAddress?.trim() && {
+        secondStopAddress: editForm.secondStopAddress,
+        secondStopLatitude: editForm.secondStopLatitude,
+        secondStopLongitude: editForm.secondStopLongitude,
+      }),
       ...(editForm.flightnumber?.trim() && {
         flightnumber: editForm.flightnumber,
       }),
       ...(editForm.comment?.trim() && { comment: editForm.comment }),
     };
 
-    const response = await adminApi.updateBooking(updateData);
+    const response = await userApi.updateBooking(updateData);
     bookingDetails.value = response.data;
     toast.success("Booking updated successfully");
     emit("updated", response.data);
@@ -296,20 +279,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                         >
                           Edit Booking
                         </Button>
-                        <div
-                          v-else-if="
-                            !isEditing && bookingDetails && !canEditBooking
-                          "
-                          class="text-sm text-gray-500"
-                        >
-                          Cannot edit
-                          {{
-                            getBookingStatusString(
-                              bookingDetails.status
-                            ).toLowerCase()
-                          }}
-                          booking
-                        </div>
+
                         <button
                           type="button"
                           class="relative cursor-pointer rounded-md text-gray-400 hover:text-gray-500"
@@ -343,104 +313,6 @@ const formatDateTimeForInput = (date: Date | string) =>
 
                     <!-- Booking Details -->
                     <div v-else-if="bookingDetails" class="space-y-6">
-                      <!-- Status Alert -->
-                      <div
-                        v-if="!canEditBooking"
-                        class="rounded-md bg-yellow-50 p-4"
-                      >
-                        <h3 class="text-sm font-medium text-yellow-800">
-                          Booking Status:
-                          {{ getBookingStatusString(bookingDetails.status) }}
-                        </h3>
-                        <p class="mt-2 text-sm text-yellow-700">
-                          This booking cannot be edited because it is
-                          {{
-                            getBookingStatusString(
-                              bookingDetails.status
-                            ).toLowerCase()
-                          }}.
-                        </p>
-                      </div>
-
-                      <!-- Customer Information -->
-                      <div class="bg-gray-50 rounded-lg p-4">
-                        <h3 class="text-sm font-medium text-gray-900 mb-3">
-                          Customer Information
-                        </h3>
-                        <div
-                          class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm"
-                        >
-                          <div>
-                            <span class="text-gray-500">Name:</span>
-                            <p class="font-medium">
-                              {{ bookingDetails.firstName }}
-                              {{ bookingDetails.lastName }}
-                            </p>
-                          </div>
-                          <div>
-                            <span class="text-gray-500">Email:</span>
-                            <p class="font-medium">
-                              {{ bookingDetails.email }}
-                            </p>
-                          </div>
-                          <div>
-                            <span class="text-gray-500">Phone:</span>
-                            <p class="font-medium">
-                              {{ bookingDetails.phoneNumber }}
-                            </p>
-                          </div>
-                          <div>
-                            <span class="text-gray-500">Guest Booking:</span>
-                            <p class="font-medium">
-                              {{ bookingDetails.isGuestBooking ? "Yes" : "No" }}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- Booking Information -->
-                      <div class="bg-gray-50 rounded-lg p-4">
-                        <h3 class="text-sm font-medium text-gray-900 mb-3">
-                          Booking Information
-                        </h3>
-                        <div
-                          class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm"
-                        >
-                          <div>
-                            <span class="text-gray-500">Booking ID:</span>
-                            <p class="font-medium">
-                              #{{ bookingDetails.bookingId }}
-                            </p>
-                          </div>
-                          <div>
-                            <span class="text-gray-500">Status:</span>
-                            <span
-                              :class="getStatusColor(bookingDetails.status)"
-                              >{{
-                                getBookingStatusString(bookingDetails.status)
-                              }}</span
-                            >
-                          </div>
-                          <div>
-                            <span class="text-gray-500">Price:</span>
-                            <p class="font-medium">
-                              {{
-                                new Intl.NumberFormat("sv-SE", {
-                                  style: "currency",
-                                  currency: "SEK",
-                                }).format(bookingDetails.price)
-                              }}
-                            </p>
-                          </div>
-                          <div>
-                            <span class="text-gray-500">Confirmed:</span>
-                            <p class="font-medium">
-                              {{ bookingDetails.isConfirmed ? "Yes" : "No" }}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
                       <!-- Trip Details -->
                       <div class="bg-gray-50 rounded-lg p-4">
                         <h3 class="text-md font-medium text-gray-900 mb-3">
@@ -454,8 +326,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                           class="space-y-4"
                         >
                           <!-- Pick Up Date Time -->
-
-                         <div>
+                          <div>
                             <TextInput
                               v-model="editForm.pickUpDateTime"
                               name="pickup-time"
@@ -482,10 +353,8 @@ const formatDateTimeForInput = (date: Date | string) =>
                             <AutoCompleteInput
                               v-model="editForm.pickUpAddress"
                               placeholder="Enter pickup address"
+                              required
                               @place-selected="handlePickupAddressSelected"
-                              @coordinates-cleared="
-                                handlePickupCoordinatesCleared
-                              "
                             />
                           </div>
 
@@ -499,9 +368,6 @@ const formatDateTimeForInput = (date: Date | string) =>
                               v-model="editForm.firstStopAddress"
                               placeholder="Enter first stop address"
                               @place-selected="handleFirstStopAddressSelected"
-                              @coordinates-cleared="
-                                handleFirstStopCoordinatesCleared
-                              "
                             />
                           </div>
 
@@ -515,9 +381,6 @@ const formatDateTimeForInput = (date: Date | string) =>
                               v-model="editForm.secondStopAddress"
                               placeholder="Enter second stop address"
                               @place-selected="handleSecondStopAddressSelected"
-                              @coordinates-cleared="
-                                handleSecondStopCoordinatesCleared
-                              "
                             />
                           </div>
 
@@ -530,15 +393,13 @@ const formatDateTimeForInput = (date: Date | string) =>
                             <AutoCompleteInput
                               v-model="editForm.dropOffAddress"
                               placeholder="Enter drop-off address"
+                              required
                               @place-selected="handleDropOffAddressSelected"
-                              @coordinates-cleared="
-                                handleDropOffCoordinatesCleared
-                              "
                             />
                           </div>
 
                           <!-- Flight Number -->
-                           <div>
+                          <div>
                             <TextInput
                               name="flight-number"
                               v-model="editForm.flightnumber"
@@ -576,7 +437,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                             <CancelButton @click="cancelEditing"
                               >Cancel</CancelButton
                             >
-                            <Button type="submit" :disabled="updateLoading">
+                            <Button type="submit" :disabled="updateLoading || !canSubmit">
                               {{
                                 updateLoading ? "Updating..." : "Update Booking"
                               }}
@@ -591,19 +452,9 @@ const formatDateTimeForInput = (date: Date | string) =>
                               >Pick Up Date & Time:</span
                             >
                             <p class="font-medium">
-                               {{
-                          new Date(bookingDetails.pickUpDateTime).toLocaleString(
-                            "sv-SE",
-                            {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            }
-                          )
-                        }}
+                              {{
+                                formatDateTime(bookingDetails.pickUpDateTime)
+                              }}
                             </p>
                           </div>
                           <div>
@@ -647,7 +498,7 @@ const formatDateTimeForInput = (date: Date | string) =>
 
                       <!-- Trip Stats -->
                       <div class="bg-gray-50 rounded-lg p-4">
-                        <h3 class="text-sm font-medium text-gray-900 mb-3">
+                        <h3 class="font-medium text-gray-900 mb-3 text-md">
                           Trip Statistics
                         </h3>
                         <div
@@ -662,7 +513,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                           <div>
                             <span class="text-gray-500">Duration:</span>
                             <p class="font-medium">
-                              {{ formatHours(bookingDetails.durationMinutes) }}
+                              {{ bookingDetails.durationMinutes }} min
                             </p>
                           </div>
                           <div>
@@ -670,6 +521,17 @@ const formatDateTimeForInput = (date: Date | string) =>
                             <p class="font-medium">
                               {{
                                 formatDateTime(bookingDetails.bookingDateTime)
+                              }}
+                            </p>
+                          </div>
+                          <div>
+                            <span class="text-gray-500">Price:</span>
+                            <p class="font-medium">
+                              {{
+                                new Intl.NumberFormat("sv-SE", {
+                                  style: "currency",
+                                  currency: "SEK",
+                                }).format(bookingDetails.price)
                               }}
                             </p>
                           </div>
