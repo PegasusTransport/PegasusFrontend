@@ -1,32 +1,27 @@
 <script setup lang="ts">
-import { adminApi } from "@/endpoints/admin";
+import { ref, onMounted, computed, watch } from "vue";
+import { type BookingSearchRequestDto, SortOrder } from "@/types/booking";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
-import { computed, onMounted, ref, watch } from "vue";
-import { useToast } from "vue-toastification";
-import Button from "../reusables/Button.vue";
-import BookingModal from "./BookingModal.vue";
-import {
-  defaultBookingFilter,
-  SortOrder,
-  type BookingFilterRequestForAdminDto,
-} from "@/types/booking";
+import { userApi } from "@/endpoints/user";
 import { debounce } from "lodash-es";
-import BookingFilter from "../reusables/BookingFilter.vue";
-import BasePagination from "../reusables/BasePagination.vue";
 import { FunnelIcon } from "@heroicons/vue/24/outline";
+import BasePagination from "../reusables/BasePagination.vue";
+import Button from "../reusables/Button.vue";
+import CustomerBookingFilter from "../reusables/CustomerBookingFilter.vue";
+import UserBookingModal from "./UserBookingModal.vue";
 
-const toast = useToast();
-const loading = ref(false);
-const error = ref<string | null>(null);
 const bookings = ref<BookingResponseDto[]>([]);
-const openBookingModal = ref(false);
-const selectedBookingId = ref<number | null>(null);
 const sortBy = ref("pickUpDateTime");
 const currentPage = ref(1);
 const totalPages = ref(0);
 const hasNextPage = ref(false);
 const hasPreviousPage = ref(false);
+const isLoading = ref(false);
 const showFilterModal = ref(false);
+const fromDate = ref("");
+const toDate = ref("");
+const openBookingModal = ref(false);
+const selectedBookingId = ref<number | null>(null);
 
 const openBookingDetails = (bookingId: number) => {
   selectedBookingId.value = bookingId;
@@ -45,33 +40,20 @@ const onBookingUpdated = (updatedBooking: BookingResponseDto) => {
     bookings.value[index] = updatedBooking;
   }
 };
-const filterQuery = ref<BookingFilterRequestForAdminDto>({
-  ...defaultBookingFilter,
-});
-const activeFiltersCount = computed(() => {
-  let count = 0;
-  if (filterQuery.value.search) count++;
-  if (filterQuery.value.status !== undefined) count++;
-  if (filterQuery.value.driverAssigned !== undefined) count++;
-  if (filterQuery.value.fromDate) count++;
-  if (filterQuery.value.toDate) count++;
-  if (filterQuery.value.period !== undefined) count++;
-  if (filterQuery.value.pickupAddress) count++;
-  if (filterQuery.value.dropoffAddress) count++;
-  if (filterQuery.value.customerName) count++;
-  if (filterQuery.value.flightNumber) count++;
-  if (filterQuery.value.sortBy !== defaultBookingFilter.sortBy) count++;
-  if (filterQuery.value.sortOrder !== defaultBookingFilter.sortOrder) count++;
-  return count;
+
+const searchQuery = ref<BookingSearchRequestDto>({
+  page: 1,
+  pageSize: 5,
+  sortBy: "pickUpDateTime",
+  sortOrder: SortOrder.Desc,
+  upcomingOnly: false,
 });
 
 const fetchBookings = async () => {
   try {
-    loading.value = true;
-    error.value = null;
-    filterQuery.value.page = currentPage.value;
+    isLoading.value = true;
+    const response = await userApi.getUserBookings(searchQuery.value);
 
-    const response = await adminApi.getAllBookings(filterQuery.value);
     if (response) {
       bookings.value = response.data.items;
       currentPage.value = response.data.page;
@@ -82,13 +64,21 @@ const fetchBookings = async () => {
   } catch (error) {
     console.error("Error fetching bookings:", error);
   } finally {
-    loading.value = false;
+    isLoading.value = false;
   }
 };
+
 const debouncedSearch = debounce(() => {
-  filterQuery.value.page = 1;
+  searchQuery.value.page = 1;
   fetchBookings();
 }, 300);
+
+const updateDateFilter = () => {
+  searchQuery.value.fromDate = fromDate.value || undefined;
+  searchQuery.value.toDate = toDate.value || undefined;
+  searchQuery.value.page = 1;
+  fetchBookings();
+};
 
 const openFilterModal = () => {
   showFilterModal.value = true;
@@ -97,51 +87,61 @@ const openFilterModal = () => {
 const closeFilterModal = () => {
   showFilterModal.value = false;
 };
-
-const applyFilters = () => {
-  filterQuery.value.page = 1;
-  currentPage.value = 1;
-  fetchBookings();
-};
+const activeFiltersCount = computed(() => {
+  let count = 0;
+  if (fromDate.value) count++;
+  if (toDate.value) count++;
+  if (searchQuery.value.upcomingOnly) count++;
+  if (sortBy.value !== "pickUpDateTime") count++;
+  return count;
+});
 
 const goToPage = (page: number) => {
-  filterQuery.value.page = page;
+  searchQuery.value.page = page;
   currentPage.value = page;
-
   fetchBookings();
 };
 
 const nextPage = () => {
   const next = currentPage.value + 1;
   currentPage.value = next;
-  filterQuery.value.page = next;
+  searchQuery.value.page = next;
   fetchBookings();
 };
 
 const previousPage = () => {
   const prev = Math.max(1, currentPage.value - 1);
   currentPage.value = prev;
-  filterQuery.value.page = prev;
+  searchQuery.value.page = prev;
   fetchBookings();
 };
 watch(sortBy, (newSortBy) => {
-  filterQuery.value.sortBy = newSortBy;
-  filterQuery.value.page = 1;
+  searchQuery.value.sortBy = newSortBy;
+  searchQuery.value.page = 1;
   fetchBookings();
 });
+
 const splitAddress = (address: string): string => {
   const parts = address.split(/[,;]/);
   if (parts.length > 1) {
     return parts.join("\n");
   }
+
+  // If no comma/semicolon, try to split at a reasonable length
+  if (address.length > 30) {
+    const words = address.split(" ");
+    const mid = Math.ceil(words.length / 2);
+    const firstLine = words.slice(0, mid).join(" ");
+    const secondLine = words.slice(mid).join(" ");
+    return `${firstLine}\n${secondLine}`;
+  }
+
   return address;
 };
-
-onMounted(async () => {
-  await fetchBookings();
+onMounted(() => {
+  fetchBookings();
 });
 </script>
-
 <template>
   <div class="bg-white p-4 m-4 rounded-2xl flex flex-col gap-4">
     <!-- Search filters -->
@@ -156,8 +156,8 @@ onMounted(async () => {
           </div>
           <div class="mt-4 flex gap-4 items-center">
             <input
-              class="flex-1 max-w-md rounded-md shadow-sm focus:border-pg-persian p-2"
-              v-model="filterQuery.search"
+              class="flex-1 max-w-md rounded-md shadow-sm p-2 focus:border-pg-persian"
+              v-model="searchQuery.search"
               placeholder="Search bookings..."
               @input="debouncedSearch"
             />
@@ -182,7 +182,7 @@ onMounted(async () => {
       </div>
     </div>
     <!-- Table -->
-    <div v-if="loading">Loading...</div>
+    <div v-if="isLoading">Loading...</div>
     <div v-else>
       <div
         class="px-3 py-8 text-center text-sm text-gray-500"
@@ -191,7 +191,7 @@ onMounted(async () => {
         <p>You don't have any bookings</p>
       </div>
       <div v-else class="px-4 sm:px-6 lg:px-8">
-        <!-- Mobile Cards -->
+        <!-- Mobile Cards (hidden on larger screens) -->
         <div class="block sm:hidden space-y-4">
           <div
             v-for="booking in bookings"
@@ -211,12 +211,12 @@ onMounted(async () => {
                   })
                 }}
               </div>
-              <div class="text-sm text-gray-500"> {{
+              <div class="text-sm text-gray-500">  {{
                                 new Intl.NumberFormat("sv-SE", {
                                   style: "currency",
                                   currency: "SEK",
                                 }).format(booking.price)
-                              }} SEK</div>
+                              }}</div>
             </div>
             <div class="space-y-1 text-sm text-gray-600 mb-3">
               <div>
@@ -247,12 +247,6 @@ onMounted(async () => {
                         class="py-3.5 pr-3 pl-4 text-left text-sm font-bold text-gray-900 sm:pl-6"
                       >
                         Pick Up Time
-                      </th>
-                        <th
-                        scope="col"
-                        class="py-3.5 pr-3 pl-4 text-left text-sm font-bold text-gray-900 sm:pl-6"
-                      >
-                        Name
                       </th>
                       <th
                         scope="col"
@@ -312,13 +306,6 @@ onMounted(async () => {
                         class="min-w-0 px-3 py-4 text-sm whitespace-pre-line text-gray-500"
                       >
                         <div class="leading-5">
-                          {{ booking.firstName }} {{ booking.lastName }}
-                        </div>
-                      </td>
-                      <td
-                        class="min-w-0 px-3 py-4 text-sm whitespace-pre-line text-gray-500"
-                      >
-                        <div class="leading-5">
                           {{ splitAddress(booking.pickUpAddress) }}
                         </div>
                       </td>
@@ -332,12 +319,13 @@ onMounted(async () => {
                       <td
                         class="px-3 py-4 text-sm whitespace-nowrap text-gray-900 font-bold"
                       >
- {{
+                         {{
                                 new Intl.NumberFormat("sv-SE", {
                                   style: "currency",
                                   currency: "SEK",
                                 }).format(booking.price)
-                              }}                      </td>
+                              }}
+                      </td>
                       <td
                         class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6"
                       >
@@ -364,19 +352,24 @@ onMounted(async () => {
       @previous-page="previousPage"
     />
   </div>
-
-  <BookingModal
+  <UserBookingModal
     :open="openBookingModal"
     :booking-id="selectedBookingId"
     @close="closeModal"
     @updated="onBookingUpdated"
   />
 
-  <BookingFilter
+  <CustomerBookingFilter
     :is-open="showFilterModal"
-    :filter-query="filterQuery"
+    :search-query="searchQuery"
+    :from-date="fromDate"
+    :to-date="toDate"
+    :sort-by="sortBy"
     @close="closeFilterModal"
-    @update:filter-query="filterQuery = $event"
-    @apply-filters="applyFilters"
+    @update:from-date="fromDate = $event"
+    @update:to-date="toDate = $event"
+    @update:search-query="searchQuery = $event"
+    @apply-filters="updateDateFilter"
+    @update:sort-by="sortBy = $event"
   />
 </template>
