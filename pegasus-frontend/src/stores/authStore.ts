@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import router from "@/router"; // Import the router instance directly
+import { useUserStore } from "./userStore";
 import { useToast } from "vue-toastification";
 import api from "@/plugins/axios";
 import { authApi } from "@/endpoints/auth";
@@ -9,6 +10,11 @@ import type { LoginRequestDto } from "@/types/login-request-dto";
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
 import type { ApiResponse } from "@/types/api-response-dto";
 import type { LoginResponseDto } from "@/types/login-response-dto";
+
+const getUserProfile = async () => {
+  const store = useUserStore();
+  await store.getUserProfile();
+};
 
 const toast = useToast();
 
@@ -40,6 +46,7 @@ export const useAuthStore = defineStore("auth", {
         this.isAuthenticated = true;
         authApi.refreshToken();
         authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
+        await getUserProfile();
       } else {
         console.error("Unauthorized");
       }
@@ -68,7 +75,8 @@ export const useAuthStore = defineStore("auth", {
         // getCookiesExpirationTimes ---> gets the expiration time of cookies
 
         this.isAuthenticated = true;
-        authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration); // Expires in 10 days
+        authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
+        await getUserProfile();
 
         return { success: true, message: message };
       } catch (error) {
@@ -109,6 +117,7 @@ export const useAuthStore = defineStore("auth", {
 
         this.isAuthenticated = true;
         authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
+        await getUserProfile();
       } catch (error) {
         console.log(
           error instanceof Error

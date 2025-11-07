@@ -6,7 +6,7 @@ import CustomerSidebar from '@/components/sidebars/CustomerSidebar.vue';
 <template>
     <div class="flex h-screen">
     <!-- Sidebar -->
-    <div class="w-64 flex-shrink-0">
+  <div class="lg:flex lg:h-screen">
       <CustomerSidebar />
     </div>
 
