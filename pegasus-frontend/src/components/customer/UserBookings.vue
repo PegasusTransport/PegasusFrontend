@@ -9,6 +9,7 @@ import BasePagination from "../reusables/BasePagination.vue";
 import Button from "../reusables/Button.vue";
 import CustomerBookingFilter from "../reusables/CustomerBookingFilter.vue";
 import UserBookingModal from "./UserBookingModal.vue";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 
 const bookings = ref<BookingResponseDto[]>([]);
 const sortBy = ref("pickUpDateTime");
@@ -182,7 +183,7 @@ onMounted(() => {
       </div>
     </div>
     <!-- Table -->
-    <div v-if="isLoading">Loading...</div>
+    <div v-if="isLoading"><TaxiSpinner size="large" /></div>
     <div v-else>
       <div
         class="px-3 py-8 text-center text-sm text-gray-500"
@@ -211,12 +212,14 @@ onMounted(() => {
                   })
                 }}
               </div>
-              <div class="text-sm text-gray-500">  {{
-                                new Intl.NumberFormat("sv-SE", {
-                                  style: "currency",
-                                  currency: "SEK",
-                                }).format(booking.price)
-                              }}</div>
+              <div class="text-sm text-gray-500">
+                {{
+                  new Intl.NumberFormat("sv-SE", {
+                    style: "currency",
+                    currency: "SEK",
+                  }).format(booking.price)
+                }}
+              </div>
             </div>
             <div class="space-y-1 text-sm text-gray-600 mb-3">
               <div>
@@ -319,12 +322,12 @@ onMounted(() => {
                       <td
                         class="px-3 py-4 text-sm whitespace-nowrap text-gray-900 font-bold"
                       >
-                         {{
-                                new Intl.NumberFormat("sv-SE", {
-                                  style: "currency",
-                                  currency: "SEK",
-                                }).format(booking.price)
-                              }}
+                        {{
+                          new Intl.NumberFormat("sv-SE", {
+                            style: "currency",
+                            currency: "SEK",
+                          }).format(booking.price)
+                        }}
                       </td>
                       <td
                         class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6"

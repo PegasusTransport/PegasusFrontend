@@ -13,6 +13,7 @@ import { userApi } from "@/endpoints/user";
 import { driverApi } from "@/endpoints/driver"; 
 import type { UserResponseDto } from "@/types/user-response-dto";
 import type { DriverResponseDto } from "@/types/driver-info";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 
 const toast = useToast();
 const isLoading = ref(false);
@@ -147,11 +148,15 @@ const updateProfile = async () => {
 
 const getUser = async () => {
   try {
+    isLoading.value = true;
     const response = await userApi.getUserProfile();
     userDetails.value = response.data;
     console.log(userDetails.value);
   } catch (err) {
     toast.error("Error fetching user details");
+  }
+  finally{
+    isLoading.value=false;
   }
 };
 
@@ -173,6 +178,8 @@ onMounted(async () => {
 <template>
   <div>
     <main>
+      <div v-if="isLoading"> <TaxiSpinner size="large"/>
+    </div>
       <h1 class="sr-only">Account Settings</h1>
 
       <div class="divide-y divide-gray-300">

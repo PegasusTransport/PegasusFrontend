@@ -12,6 +12,7 @@ import { FunnelIcon } from "@heroicons/vue/24/outline";
 import { useToast } from "vue-toastification";
 import BookingFilter from "../reusables/BookingFilter.vue";
 import CustomerBookingFilter from "../reusables/CustomerBookingFilter.vue";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 
 const bookings = ref<BookingResponseDto[]>([]);
 const sortBy = ref("pickUpDateTime");
@@ -192,7 +193,9 @@ onMounted(() => {
       </div>
     </div>
     <!-- Table -->
-    <div v-if="isLoading">Loading...</div>
+    <div v-if="isLoading">
+      <TaxiSpinner size="large"/>
+    </div>
     <div v-else>
       <div
         class="px-3 py-8 text-center text-sm text-gray-500"

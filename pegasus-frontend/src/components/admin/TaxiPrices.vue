@@ -8,6 +8,7 @@ import Button from "../reusables/Button.vue";
 import InputLabel from "../reusables/Forms/InputLabel.vue";
 import NumberInput from "../reusables/Forms/NumberInput.vue";
 import CancelButton from "../reusables/CancelButton.vue";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 
 const taxiPrices = ref<TaxiSettings | null>(null);
 const loading = ref(false);
@@ -93,7 +94,7 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-if="loading" class="text-center py-4">Loading taxi prices</div>
+      <div v-if="loading"> <TaxiSpinner size="large"/></div>
 
       <div v-else-if="error" class="text-red-600 text-center py-4">
         {{ error }}
