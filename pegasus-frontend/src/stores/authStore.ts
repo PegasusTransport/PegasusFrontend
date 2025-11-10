@@ -33,8 +33,11 @@ const clearToast = () => {
 };
 
 const getUserProfile = async () => {
-  const store = useUserStore();
-  await store.getUserProfile();
+  await useUserStore().getUserProfile();
+};
+
+const clearUser = () => {
+  useUserStore().clearUser();
 };
 
 // Store
@@ -52,6 +55,7 @@ export const useAuthStore = defineStore("auth", {
         const { message } = await authApi.register(registrationRequest);
         return { success: true, message };
       } catch (error) {
+        console.error(error);
         return {
           success: false,
           message: ERROR_MESSAGES.GENERIC,
@@ -74,9 +78,7 @@ export const useAuthStore = defineStore("auth", {
           this.isAuthenticated = true;
           authCookies.setIsAuthenticatedCookie(sessionLifetime);
         } catch (error) {
-          console.error(
-            error instanceof Error ? error.message : "Something went wrong"
-          );
+          console.error(error);
         }
       }
     },
@@ -90,6 +92,7 @@ export const useAuthStore = defineStore("auth", {
         clearToast();
         return { success: true, message };
       } catch (error) {
+        console.error(error);
         if (axios.isAxiosError(error)) {
           const status = error.response?.status;
 
@@ -133,6 +136,7 @@ export const useAuthStore = defineStore("auth", {
         clearToast();
         return { success: true, message };
       } catch (error) {
+        console.error(error);
         if (axios.isAxiosError(error)) {
           const status = error.response?.status;
 
@@ -159,10 +163,9 @@ export const useAuthStore = defineStore("auth", {
       try {
         await authApi.logout();
       } catch (error) {
-        console.error(
-          error instanceof Error ? error.message : ERROR_MESSAGES.GENERIC
-        );
+        console.error(error);
       } finally {
+        clearUser();
         this.isAuthenticated = false;
         authCookies.removeIsAuthenticatedCookie();
         router.push("/login");
@@ -183,11 +186,7 @@ export const useAuthStore = defineStore("auth", {
         authCookies.setIsAuthenticatedCookie(sessionLifetime);
         await getUserProfile();
       } catch (error) {
-        console.log(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong on dev log in"
-        );
+        console.error(error);
       }
     },
   },
