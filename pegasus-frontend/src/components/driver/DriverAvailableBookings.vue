@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed, watch } from "vue";
-import { type BookingSearchRequestDto, SortOrder } from "@/types/booking";
+import { type BookingSearchRequestDto, BookingStatus, SortOrder } from "@/types/booking";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
 import { debounce } from "lodash-es";
 import Button from "../reusables/Button.vue";
@@ -100,6 +100,8 @@ const activeFiltersCount = computed(() => {
   if (sortBy.value !== "pickUpDateTime") count++;
   return count;
 });
+
+
 
 const goToPage = (page: number) => {
   searchQuery.value.page = page;
@@ -290,9 +292,11 @@ onMounted(() => {
                       <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
                         <span class="sr-only"></span>
                       </th>
-                      <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
+                     <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
                         <span class="sr-only"></span>
                       </th>
+                      
+                      
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200 bg-white">
@@ -396,7 +400,7 @@ onMounted(() => {
     <p v-if="selectedBooking?.firstStopAddress">
       <strong>First stop:</strong> {{ selectedBooking?.firstStopAddress }}
     </p>
-    <p v-if="selectedBooking?.firstStopAddress">
+    <p v-if="selectedBooking?.secondStopAddress">
       <strong>Second stop:</strong> {{ selectedBooking?.secondStopAddress }}
     </p>
     <p>
