@@ -36,7 +36,9 @@ export const adminApi = {
         ? new Date(query.toDate).toLocaleDateString()
         : undefined,
     };
-    const response = await api.defaultApi.get("api/Admin/getAllBookings", { params });
+    const response = await api.defaultApi.get("api/Admin/getAllBookings", {
+      params,
+    });
     return response.data;
   },
   async getBookingByID(id: number): Promise<ApiResponse<BookingResponseDto>> {

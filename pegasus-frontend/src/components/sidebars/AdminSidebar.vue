@@ -11,7 +11,12 @@ import {
 import { RouterLink } from "vue-router";
 
 import { ref } from "vue";
-import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from "@headlessui/vue";
+import {
+  Dialog,
+  DialogPanel,
+  TransitionChild,
+  TransitionRoot,
+} from "@headlessui/vue";
 
 const navigation = ref([
   {
