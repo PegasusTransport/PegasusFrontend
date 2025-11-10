@@ -146,11 +146,7 @@ router.beforeEach(async (to, _, next) => {
     next(defaultRoute);
   } else if (requiredRole !== undefined && !roles.includes(requiredRole)) {
     const lastRoute = localStorage.getItem("lastRoute");
-    if (lastRoute && lastRoute !== to.fullPath) {
-      next(lastRoute);
-    } else {
-      next(defaultRoute);
-    }
+    next(lastRoute ? lastRoute : defaultRoute);
   } else {
     next();
   }
