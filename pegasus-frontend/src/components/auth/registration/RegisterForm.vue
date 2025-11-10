@@ -18,6 +18,7 @@ const { scrollToTop } = userScrollActions();
 const {
   createDefaultField,
   validateField,
+  validateUsername,
   validateEmail,
   validatePhoneNumber,
   validatePassword,
@@ -28,18 +29,18 @@ const {
 const isLoading = ref<boolean>(false);
 const hasRegistered = ref<boolean>(false);
 
-const username = ref<DefaultField>(createDefaultField());
 const firstName = ref<DefaultField>(createDefaultField());
 const lastName = ref<DefaultField>(createDefaultField());
+const username = ref<DefaultField>(createDefaultField());
 const email = ref<DefaultField>(createDefaultField());
 const phoneNumber = ref<DefaultField>(createDefaultField());
 const password = ref<DefaultField>(createDefaultField());
 const confirmedPassword = ref<DefaultField>(createDefaultField());
 
-const validateUsernameField = () => validateField(username.value, "Username");
 const validateFirstNameField = () =>
   validateField(firstName.value, "First name");
 const validateLastNameField = () => validateField(lastName.value, "Last name");
+const validateUsernameField = () => validateUsername(username.value);
 const validateEmailField = () => validateEmail(email.value);
 const validatePhoneNumberField = () => validatePhoneNumber(phoneNumber.value);
 const validatePasswordField = () => validatePassword(password.value, true);
@@ -86,6 +87,7 @@ const register = async () => {
 
   if (result.success) {
     scrollToTop();
+    toast.clear();
     toast.success("Account created successfully!", { timeout: 3000 });
     hasRegistered.value = true;
   } else {
