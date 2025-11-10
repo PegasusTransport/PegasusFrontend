@@ -4,6 +4,7 @@ import { type DefaultField } from "@/hooks/useFormValidation";
 import type { LoginRequestDto } from "@/types/login-request-dto";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore";
+import { useUserStore } from "@/stores/userStore";
 import useFormValidation from "@/hooks/useFormValidation";
 // import TwofaForm from "./TwofaForm.vue";
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
@@ -11,7 +12,8 @@ import Button from "@/components/reusables/Button.vue";
 import { useRouter } from "vue-router";
 
 const toast = useToast();
-const store = useAuthStore();
+const authStore = useAuthStore();
+const userStore = useUserStore(); // For testing
 const router = useRouter(); // For testing
 
 const { createDefaultField, validateEmail, validatePassword } =
@@ -36,9 +38,12 @@ const createLoginRequest = (): LoginRequestDto => {
 const login = async () => {
   isLoading.value = true;
   // use devLogin during development
-  const result = await store.devLogin(createLoginRequest());
+  const result = await authStore.devLogin(createLoginRequest());
   isLoading.value = false;
-  router.push("/admin"); // Placeholder. Will push depending on role
+
+  const route = userStore.loadRouteBasedOnRole();
+  console.log(route);
+  router.push(route);
 
   // if (result.success) {
   //   hasLoggedIn.value = true;
@@ -81,7 +86,7 @@ const login = async () => {
                 <h2
                   class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
                 >
-                  Login
+                  Log in
                 </h2>
               </div>
 

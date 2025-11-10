@@ -2,11 +2,11 @@
 import Button from "./components/reusables/Button.vue";
 import { useAuthStore } from "./stores/authStore";
 
-const store = useAuthStore();
+const authStore = useAuthStore();
 </script>
 
 <template>
-  <Button @click="store.logout">Log out</Button>
+  <Button @click="authStore.logout">Log out</Button>
   <main>
     <router-view />
   </main>
