@@ -27,11 +27,6 @@ const NON_AXIOS_ERROR = {
   message: ERROR_MESSAGES.NETWORK,
 } as const;
 
-const clearToast = () => {
-  const toast = useToast();
-  toast.clear();
-};
-
 const getUserProfile = async () => {
   await useUserStore().getUserProfile();
 };
@@ -79,6 +74,7 @@ export const useAuthStore = defineStore("auth", {
           authCookies.setIsAuthenticatedCookie(sessionLifetime);
         } catch (error) {
           console.error(error);
+          this.logout();
         }
       }
     },
@@ -89,7 +85,6 @@ export const useAuthStore = defineStore("auth", {
       try {
         const { message } = await authApi.login(credentials);
 
-        clearToast();
         return { success: true, message };
       } catch (error) {
         console.error(error);
@@ -133,7 +128,6 @@ export const useAuthStore = defineStore("auth", {
         this.isAuthenticated = true;
         authCookies.setIsAuthenticatedCookie(sessionLifetime);
 
-        clearToast();
         return { success: true, message };
       } catch (error) {
         console.error(error);
@@ -167,6 +161,7 @@ export const useAuthStore = defineStore("auth", {
       } finally {
         clearUser();
         this.isAuthenticated = false;
+        localStorage.clear();
         authCookies.removeIsAuthenticatedCookie();
         router.push("/login");
       }

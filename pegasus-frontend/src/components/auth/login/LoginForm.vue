@@ -5,16 +5,16 @@ import type { LoginRequestDto } from "@/types/login-request-dto";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
+import { useRouter } from "vue-router";
 import useFormValidation from "@/hooks/useFormValidation";
-// import TwofaForm from "./TwofaForm.vue";
+import TwofaForm from "./TwofaForm.vue";
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
-import { useRouter } from "vue-router";
 
 const toast = useToast();
 const authStore = useAuthStore();
-const userStore = useUserStore(); // For testing
-const router = useRouter(); // For testing
+const userStore = useUserStore();
+const router = useRouter();
 
 const { createDefaultField, validateEmail, validatePassword } =
   useFormValidation();
@@ -35,21 +35,23 @@ const createLoginRequest = (): LoginRequestDto => {
   };
 };
 
-const login = async () => {
-  isLoading.value = true;
-  // use devLogin during development
-  const result = await authStore.devLogin(createLoginRequest());
-  isLoading.value = false;
+const login = async (isProd: boolean) => {
+  if (isProd) {
+    isLoading.value = true;
+    const result = await authStore.login(createLoginRequest());
+    isLoading.value = false;
 
-  const route = userStore.loadRouteBasedOnRole();
-  console.log(route);
-  router.push(route);
-
-  // if (result.success) {
-  //   hasLoggedIn.value = true;
-  // } else {
-  //   toast.error(result.message, { timeout: 10000 });
-  // }
+    if (result.success) {
+      toast.clear();
+      hasLoggedIn.value = true;
+    } else {
+      toast.error(result.message);
+    }
+  } else {
+    await authStore.devLogin(createLoginRequest());
+    const defaultRoute = userStore.loadRouteBasedOnRole();
+    router.push(defaultRoute);
+  }
 };
 </script>
 
@@ -65,10 +67,10 @@ const login = async () => {
     leave-to-class="opacity-0 scale-95"
   >
     <div>
-      <!-- <TwofaForm v-if="hasLoggedIn" :email="email.value"></TwofaForm> -->
+      <TwofaForm v-if="hasLoggedIn" :email="email.value"></TwofaForm>
 
-      <!-- v-else -->
       <div
+        v-else
         key="login-form"
         class="flex flex-col justify-center py-12 sm:px-6 lg:px-8 h-screen"
       >
@@ -76,7 +78,8 @@ const login = async () => {
           <div
             class="bg-pg-secondary px-6 py-6 shadow sm:rounded-lg sm:px-12 border-2 border-white"
           >
-            <form class="space-y-2" @submit.prevent="login">
+            <!-- Set to false when in development -->
+            <form class="space-y-2" @submit.prevent="login(true)">
               <div class="sm:mx-auto sm:w-full sm:max-w-md">
                 <img
                   class="mx-auto h-20 w-auto"
@@ -121,7 +124,6 @@ const login = async () => {
 
               <div>
                 <Button
-                  @click="login"
                   :disabled="isLoading"
                   type="submit"
                   class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"

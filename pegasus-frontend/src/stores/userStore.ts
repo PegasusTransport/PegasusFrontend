@@ -9,6 +9,12 @@ export const useUserStore = defineStore("user", {
       user: null as UserResponseDto | null,
     };
   },
+  getters: {
+    firstName: (state) => {
+      const firstName = state.user?.firstName;
+      return firstName ? firstName : "";
+    },
+  },
   actions: {
     async getUserProfile() {
       try {
