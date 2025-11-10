@@ -15,11 +15,7 @@ export const useUserStore = defineStore("user", {
         const response = await userApi.getUserProfile();
         this.user = response.data;
       } catch (error) {
-        console.error(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong while trying to get user data"
-        );
+        console.error(error);
 
         throw error;
       }
