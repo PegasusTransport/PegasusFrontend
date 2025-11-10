@@ -128,25 +128,37 @@ const router = createRouter({
 router.beforeEach(async (to, _, next) => {
   const authStore = useAuthStore();
   const userStore = useUserStore();
+
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const guestOnly = to.matched.some((record) => record.meta.guestOnly);
   const requiredRole = to.meta.requiredRole;
-  const roles = userStore.user?.roles || [];
 
   if (!authStore.isAuthenticated) {
     await authStore.initializeAuth();
   }
 
-  const route = userStore.loadRouteBasedOnRole();
+  const roles = userStore.user?.roles || [];
+  const defaultRoute = userStore.loadRouteBasedOnRole();
 
   if (requiresAuth && !authStore.isAuthenticated) {
     next("/login");
   } else if (guestOnly && authStore.isAuthenticated) {
-    next(route);
+    next(defaultRoute);
   } else if (requiredRole !== undefined && !roles.includes(requiredRole)) {
-    next(route);
+    const lastRoute = localStorage.getItem("lastRoute");
+    if (lastRoute && lastRoute !== to.fullPath) {
+      next(lastRoute);
+    } else {
+      next(defaultRoute);
+    }
   } else {
     next();
+  }
+});
+
+router.afterEach((to) => {
+  if (to.meta.requiresAuth) {
+    localStorage.setItem("lastRoute", to.fullPath);
   }
 });
 

@@ -5,6 +5,7 @@ import type { LoginRequestDto } from "@/types/login-request-dto";
 import type { LoginResponseDto } from "@/types/login-response-dto";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 import type { RegistrationResponseDto } from "@/types/registration-response-dto";
+import type { SessionLifetimeDto } from "@/types/session-lifetime-dto";
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
 
 export const authApi = {
@@ -38,6 +39,11 @@ export const authApi = {
       "/api/Auth/VerifyTwoFA",
       twoFARequest
     );
+    return response.data;
+  },
+
+  async getSessionLifetime(): Promise<ApiResponse<SessionLifetimeDto>> {
+    const response = await api.authApi.get("/api/Auth/SessionLifeTime");
     return response.data;
   },
 
