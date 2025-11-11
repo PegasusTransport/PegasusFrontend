@@ -30,7 +30,6 @@ jobs:
           VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}  
           VITE_GOOGLEMAPS: ${{ secrets.VITE_GOOGLEMAPS }}
         run: |
-          echo "VITE_BACKEND_URL is set to: $env:VITE_BACKEND_URL"
           npm install
           npm run build --if-present
           npm run test --if-present

@@ -96,7 +96,7 @@ export type BookingFilterParams = Partial<BookingFilterRequestForAdminDto>;
 
 export const defaultBookingFilter: BookingFilterRequestForAdminDto = {
   page: 1,
-  pageSize: 10,
+  pageSize: 5,
   sortBy: "pickUpDateTime",
-  sortOrder: SortOrder.Desc,
+  sortOrder: SortOrder.Asc,
 };
