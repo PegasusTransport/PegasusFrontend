@@ -13,22 +13,22 @@ import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from "@headlessu
 
 const navigation = ref([
   {
-    name: "Översikt",
+    name: "Summary",
     to: { name: "driverOverview" },
     icon: HomeIcon,
   },
   {
-    name: "Profil",
+    name: "Profile",
     to: { name: "driverProfile" },
     icon: UserGroupIcon,
   },
   {
-    name: "Bokningar",
+    name: "Bookings",
     to: { name: "driverBookings" },
     icon: CalendarIcon,
   },
   {
-    name: "Bil",
+    name: "Car",
     to: { name: "driverCar" },
     icon: markRaw(TaxiIcon),
   },

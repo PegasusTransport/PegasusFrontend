@@ -19,6 +19,7 @@ import Register from "@/pages/Auth/Register.vue";
 import Login from "@/pages/Auth/Login.vue";
 import { useUserStore } from "@/stores/userStore";
 import { UserRoles } from "@/types/user-roles";
+import Taxi404 from "@/pages/Taxi404.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +29,11 @@ const router = createRouter({
       name: "Register",
       component: Register,
       meta: { guestOnly: true },
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: Taxi404,
     },
     {
       path: "/login",

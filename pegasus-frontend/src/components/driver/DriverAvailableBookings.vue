@@ -1,14 +1,17 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, onMounted, computed, watch } from "vue";
-import { type BookingSearchRequestDto, BookingStatus, getBookingStatusString, SortOrder } from "@/types/booking";
+import { type BookingSearchRequestDto, BookingStatus, SortOrder } from "@/types/booking";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
-import { userApi } from "@/endpoints/user";
 import { debounce } from "lodash-es";
-import { FunnelIcon } from "@heroicons/vue/24/outline";
-import BasePagination from "../reusables/BasePagination.vue";
 import Button from "../reusables/Button.vue";
+import { driverApi } from "@/endpoints/driver";
+import GoogleMap from "./GoogleMap.vue";
+import Modal from "../reusables/Modal.vue";
+import BasePagination from "../reusables/BasePagination.vue";
+import { FunnelIcon } from "@heroicons/vue/24/outline";
+import { useToast } from "vue-toastification";
+import BookingFilter from "../reusables/BookingFilter.vue";
 import CustomerBookingFilter from "../reusables/CustomerBookingFilter.vue";
-import UserBookingModal from "./UserBookingModal.vue";
 
 const bookings = ref<BookingResponseDto[]>([]);
 const sortBy = ref("pickUpDateTime");
@@ -20,39 +23,28 @@ const isLoading = ref(false);
 const showFilterModal = ref(false);
 const fromDate = ref("");
 const toDate = ref("");
-const openBookingModal = ref(false);
+const openMapModal = ref(false);
 const selectedBookingId = ref<number | null>(null);
-
-const openBookingDetails = (bookingId: number) => {
-  selectedBookingId.value = bookingId;
-  openBookingModal.value = true;
-};
-
-const closeModal = () => {
-  openBookingModal.value = false;
-  selectedBookingId.value = null;
-};
-const onBookingUpdated = (updatedBooking: BookingResponseDto) => {
-  const index = bookings.value.findIndex(
-    (b) => b.bookingId === updatedBooking.bookingId
-  );
-  if (index !== -1) {
-    bookings.value[index] = updatedBooking;
-  }
-};
+const toast = useToast();
 
 const searchQuery = ref<BookingSearchRequestDto>({
   page: 1,
-  pageSize: 5,
+  pageSize: 4,
   sortBy: "pickUpDateTime",
   sortOrder: SortOrder.Desc,
   upcomingOnly: false,
 });
 
+const selectedBooking = computed(() => {
+  return (
+    bookings.value.find((b) => b.bookingId === selectedBookingId.value) || null
+  );
+});
+
 const fetchBookings = async () => {
   try {
     isLoading.value = true;
-    const response = await userApi.getUserBookings(searchQuery.value);
+    const response = await driverApi.getAvailableDriverBookings(searchQuery.value);
 
     if (response) {
       bookings.value = response.data.items;
@@ -67,7 +59,20 @@ const fetchBookings = async () => {
     isLoading.value = false;
   }
 };
+const acceptBooking = async (bookingId: number) => {
+  try {
+    isLoading.value = true;
+    await driverApi.acceptJob(bookingId);
 
+    toast.success("The booking was assigned to you!");
+  } catch (error) {
+    console.error("Error accepting booking:", error);
+    toast.error("Error accepting the booking");
+  } finally {
+    isLoading.value = false;
+    fetchBookings();
+  }
+};
 const debouncedSearch = debounce(() => {
   searchQuery.value.page = 1;
   fetchBookings();
@@ -95,6 +100,8 @@ const activeFiltersCount = computed(() => {
   if (sortBy.value !== "pickUpDateTime") count++;
   return count;
 });
+
+
 
 const goToPage = (page: number) => {
   searchQuery.value.page = page;
@@ -138,36 +145,23 @@ const splitAddress = (address: string): string => {
 
   return address;
 };
-const getStatusColor = (status: BookingStatus) => {
-  const colors = {
-    [BookingStatus.Completed]:
-      "text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs",
-    [BookingStatus.Cancelled]:
-      "text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs",
-    [BookingStatus.Confirmed]:
-      "text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs",
-    [BookingStatus.PendingEmailConfirmation]:
-      "text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full text-xs",
-  };
-  return (
-    colors[status] || "text-gray-600 bg-gray-100 px-2 py-1 rounded-full text-xs"
-  );
-};
-
 onMounted(() => {
   fetchBookings();
 });
 </script>
+
 <template>
   <div class="bg-white p-4 m-4 rounded-2xl flex flex-col gap-4">
     <!-- Search filters -->
     <div class="flex justify-between items-start">
       <div class="flex-1">
         <div class="p-3">
-          <h1 class="text-3xl font-semibold text-gray-900">Bookings</h1>
+          <h1 class="text-3xl font-semibold text-gray-900">
+            Available Bookings
+          </h1>
           <div class="sm:flex-auto">
             <p class="mt-2 text-sm text-gray-700">
-              A list of all your previous and current bookings.
+              A list of all available bookings to take.
             </p>
           </div>
           <div class="mt-4 flex gap-4 items-center">
@@ -204,7 +198,7 @@ onMounted(() => {
         class="px-3 py-8 text-center text-sm text-gray-500"
         v-if="bookings.length === 0"
       >
-        <p>You don't have any bookings</p>
+        <p>There are not any available bookings right now</p>
       </div>
       <div v-else class="px-4 sm:px-6 lg:px-8">
         <!-- Mobile Cards (hidden on larger screens) -->
@@ -227,12 +221,14 @@ onMounted(() => {
                   })
                 }}
               </div>
-              <div class="text-sm text-gray-500">  {{
-                                new Intl.NumberFormat("sv-SE", {
-                                  style: "currency",
-                                  currency: "SEK",
-                                }).format(booking.price)
-                              }}</div>
+              <div class="text-sm text-gray-500">
+                {{
+                  new Intl.NumberFormat("sv-SE", {
+                    style: "currency",
+                    currency: "SEK",
+                  }).format(booking.price)
+                }}
+              </div>
             </div>
             <div class="space-y-1 text-sm text-gray-600 mb-3">
               <div>
@@ -244,7 +240,18 @@ onMounted(() => {
                 {{ booking.dropOffAddress }}
               </div>
             </div>
-            <Button size="sm" class="w-full">See Details</Button>
+            <div class="flex justify-between">
+              <Button
+                @click="
+                  () => {
+                    selectedBookingId = booking.bookingId;
+                    openMapModal = true;
+                  }
+                "
+                >Trajectory</Button
+              >
+              <Button @click="acceptBooking(booking.bookingId)">Accept</Button>
+            </div>
           </div>
         </div>
         <div class="hidden sm:block mt-2">
@@ -282,16 +289,14 @@ onMounted(() => {
                       >
                         Price
                       </th>
-                    <th
-                        scope="col"
-                        class="px-3 py-3.5 text-left text-sm font-bold text-gray-900"
-                      >
-                        Status
-                      </th>
                       <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
-                        <span class="sr-only">Edit</span>
+                        <span class="sr-only"></span>
                       </th>
-                       
+                     <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
+                        <span class="sr-only"></span>
+                      </th>
+                      
+                      
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200 bg-white">
@@ -342,29 +347,31 @@ onMounted(() => {
                       <td
                         class="px-3 py-4 text-sm whitespace-nowrap text-gray-900 font-bold"
                       >
-                         {{
-                                new Intl.NumberFormat("sv-SE", {
-                                  style: "currency",
-                                  currency: "SEK",
-                                }).format(booking.price)
-                              }}
-                      </td>
-                      <td>
-                         <div>
-
-                            <span
-                              :class="getStatusColor(booking.status)"
-                              >{{
-                                getBookingStatusString(booking.status)
-                              }}</span
-                            >
-                          </div>
+                        {{
+                          new Intl.NumberFormat("sv-SE", {
+                            style: "currency",
+                            currency: "SEK",
+                          }).format(booking.price)
+                        }}
                       </td>
                       <td
                         class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6"
                       >
-                        <Button @click="openBookingDetails(booking.bookingId)"
-                          >Details</Button
+                        <Button
+                          @click="
+                            () => {
+                              selectedBookingId = booking.bookingId;
+                              openMapModal = true;
+                            }
+                          "
+                          >Trajectory</Button
+                        >
+                      </td>
+                      <td
+                        class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6"
+                      >
+                        <Button @click="acceptBooking(booking.bookingId)"
+                          >Accept</Button
                         >
                       </td>
                     </tr>
@@ -386,13 +393,21 @@ onMounted(() => {
       @previous-page="previousPage"
     />
   </div>
-  <UserBookingModal
-    :open="openBookingModal"
-    :booking-id="selectedBookingId"
-    @close="closeModal"
-    @updated="onBookingUpdated"
-  />
 
+  <Modal xl :open="openMapModal" @close="openMapModal = false">
+    <h3 class="mb-5 font-bold text-2xl">Trajectory Plan</h3>
+    <p><strong>Pickup Address:</strong> {{ selectedBooking?.pickUpAddress }}</p>
+    <p v-if="selectedBooking?.firstStopAddress">
+      <strong>First stop:</strong> {{ selectedBooking?.firstStopAddress }}
+    </p>
+    <p v-if="selectedBooking?.secondStopAddress">
+      <strong>Second stop:</strong> {{ selectedBooking?.secondStopAddress }}
+    </p>
+    <p>
+      <strong>Drop off Address:</strong> {{ selectedBooking?.dropOffAddress }}
+    </p>
+    <GoogleMap class="mt-4 h-96" :booking="selectedBooking!" />
+  </Modal>
   <CustomerBookingFilter
     :is-open="showFilterModal"
     :search-query="searchQuery"
