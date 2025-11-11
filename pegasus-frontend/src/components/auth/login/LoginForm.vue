@@ -56,101 +56,90 @@ const login = async (isProd: boolean) => {
 </script>
 
 <template>
-  <transition
-    appear
-    mode="out-in"
-    enter-active-class="transition-all duration-500 ease-out"
-    enter-from-class="opacity-0 scale-95"
-    enter-to-class="opacity-100 scale-100"
-    leave-active-class="transition-all duration-200 ease-in"
-    leave-from-class="opacity-100 scale-100"
-    leave-to-class="opacity-0 scale-95"
-  >
-    <div>
-      <TwofaForm v-if="hasLoggedIn" :email="email.value"></TwofaForm>
+  <div>
+    <TwofaForm v-if="hasLoggedIn" :email="email.value"></TwofaForm>
 
-      <div
-        v-else
-        key="login-form"
-        class="flex flex-col justify-center py-12 sm:px-6 lg:px-8 h-screen"
-      >
-        <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-          <div
-            class="bg-pg-secondary px-6 py-6 shadow sm:rounded-lg sm:px-12 border-2 border-white"
-          >
-            <!-- Set to false when in development -->
-            <form class="space-y-2" @submit.prevent="login(true)">
-              <div class="sm:mx-auto sm:w-full sm:max-w-md">
-                <img
-                  class="mx-auto h-20 w-auto"
-                  src="/src/assets/img/Pegasus.png"
-                  alt="Pegasus Transport logo"
-                />
-                <h2
-                  class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
-                >
-                  Log in
-                </h2>
-              </div>
+    <div
+      v-else
+      key="login-form"
+      class="flex flex-col justify-center py-12 sm:px-6 lg:px-8 h-screen"
+    >
+      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+        <div
+          class="bg-pg-secondary px-6 py-6 shadow sm:rounded-lg sm:px-12 border-2 border-white"
+        >
+          <!-- Set to false when in development -->
+          <form class="space-y-2" @submit.prevent="login(false)">
+            <div class="sm:mx-auto sm:w-full sm:max-w-md">
+              <img
+                class="mx-auto h-20 w-auto"
+                src="/src/assets/img/Pegasus.png"
+                alt="Pegasus Transport logo"
+              />
+              <h2
+                class="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+              >
+                Log in
+              </h2>
+            </div>
 
-              <div>
-                <TextInput
-                  name="email"
-                  :isValid="email.isValid"
-                  v-model="email.value"
-                  @blur="validateEmailField"
-                >
-                  Email
-                </TextInput>
-                <p v-if="!email.isValid" class="mt-2 text-sm text-red-600">
-                  {{ email.errorMessage }}
-                </p>
-              </div>
+            <div>
+              <TextInput
+                name="email"
+                :isValid="email.isValid"
+                v-model="email.value"
+                @blur="validateEmailField"
+              >
+                Email
+              </TextInput>
+              <p v-if="!email.isValid" class="mt-2 text-sm text-red-600">
+                {{ email.errorMessage }}
+              </p>
+            </div>
 
-              <div>
-                <TextInput
-                  name="password"
-                  type="password"
-                  :isValid="password.isValid"
-                  v-model="password.value"
-                  @blur="validatePasswordField"
-                >
-                  Password
-                </TextInput>
-                <p v-if="!password.isValid" class="mt-2 text-sm text-red-600">
-                  {{ password.errorMessage }}
-                </p>
-              </div>
+            <div>
+              <TextInput
+                name="password"
+                type="password"
+                :isValid="password.isValid"
+                v-model="password.value"
+                @blur="validatePasswordField"
+              >
+                Password
+              </TextInput>
+              <p v-if="!password.isValid" class="mt-2 text-sm text-red-600">
+                {{ password.errorMessage }}
+              </p>
+            </div>
 
-              <div>
-                <Button
-                  :disabled="isLoading"
-                  type="submit"
-                  class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
-                  >Login</Button
-                >
-              </div>
-            </form>
-          </div>
-
-          <p class="mt-10 text-center text-sm/6 text-white">
-            <RouterLink
-              :to="{ name: 'ForgotPassword' }"
-              class="font-semibold text-pg-secondary hover:text-pg-accent"
-              >Forgot your password?</RouterLink
-            >
-          </p>
-
-          <p class="mt-10 text-center text-sm/6 text-white">
-            Don't have an account?
-            <RouterLink
-              :to="{ name: 'Register' }"
-              class="font-semibold text-pg-secondary hover:text-pg-accent"
-              >Register here</RouterLink
-            >
-          </p>
+            <div>
+              <Button
+                :disabled="isLoading"
+                type="submit"
+                class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
+                >Login</Button
+              >
+            </div>
+          </form>
         </div>
+
+        <p class="mt-10 text-center text-sm/6 text-white">
+          <RouterLink
+            :to="{ name: 'ForgotPassword' }"
+            class="font-semibold text-pg-secondary hover:text-pg-accent"
+            >Forgot your password?</RouterLink
+          >
+        </p>
+
+        <p class="mt-10 text-center text-sm/6 text-white">
+          Don't have an account?
+          <RouterLink
+            :to="{ name: 'Register' }"
+            class="font-semibold text-pg-secondary hover:text-pg-accent"
+            >Register here</RouterLink
+          >
+        </p>
       </div>
     </div>
-  </transition>
+  </div>
 </template>

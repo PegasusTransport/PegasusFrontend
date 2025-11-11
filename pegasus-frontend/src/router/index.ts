@@ -20,10 +20,16 @@ import Login from "@/pages/Auth/Login.vue";
 import { useUserStore } from "@/stores/userStore";
 import { UserRoles } from "@/types/user-roles";
 import ForgotPassword from "@/pages/Auth/ForgotPassword.vue";
+import Taxi404 from "@/pages/Taxi404.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: "/",
+      name: "Home",
+      redirect: "/login",
+    },
     {
       path: "/register",
       name: "Register",
