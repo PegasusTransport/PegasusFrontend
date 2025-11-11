@@ -19,6 +19,7 @@ import { XMarkIcon } from "@heroicons/vue/24/outline";
 import TextInput from "../reusables/Forms/TextInput.vue";
 import { validateFlightNumber } from "@/utils/flightValidator";
 import { validateBookingDateTime } from "@/utils/auth/time48HoursValidator";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 
 const bookingDetails = ref<BookingResponseDto | null>(null);
 const loading = ref(false);
@@ -174,8 +175,8 @@ const cancelBoking = async (id: number) => {
   try {
     loading.value = true;
     error.value = null;
-     await userApi.cancelBooking(id);
-     toast.success("Your booking was cancelled!")
+    await userApi.cancelBooking(id);
+    toast.success("Your booking was cancelled!");
   } catch (error) {
     toast.error(
       "Failed to update booking. A booking can be cancelled 24 hours before. Contact the support."
@@ -327,10 +328,9 @@ const formatDateTimeForInput = (date: Date | string) =>
                   <!-- Content -->
                   <div class="relative mt-6 flex-1 px-4 sm:px-6">
                     <!-- Loading -->
-                    <div
-                      v-if="loading"
-                      class="flex items-center justify-center h-32"
-                    >
+                    <div v-if="loading">
+                      <TaxiSpinner size="large" />
+
                       <div
                         class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"
                       ></div>
@@ -464,7 +464,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                               class="mt-1 block w-full rounded-md bg-white p-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             ></textarea>
                           </div>
-                             <div>
+                          <div>
                             <span class="text-gray-500">Status:</span>
                             <span
                               :class="getStatusColor(bookingDetails.status)"
@@ -538,7 +538,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                               {{ bookingDetails.comment }}
                             </p>
                           </div>
-                             <div>
+                          <div>
                             <span class="text-gray-500">Status: </span>
                             <span
                               :class="getStatusColor(bookingDetails.status)"

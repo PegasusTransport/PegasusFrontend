@@ -14,6 +14,7 @@ import { debounce } from "lodash-es";
 import BookingFilter from "../reusables/BookingFilter.vue";
 import BasePagination from "../reusables/BasePagination.vue";
 import { FunnelIcon } from "@heroicons/vue/24/outline";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 
 const toast = useToast();
 const loading = ref(false);
@@ -182,7 +183,7 @@ onMounted(async () => {
       </div>
     </div>
     <!-- Table -->
-    <div v-if="loading">Loading...</div>
+    <div v-if="loading"><TaxiSpinner size="large" /></div>
     <div v-else>
       <div
         class="px-3 py-8 text-center text-sm text-gray-500"
@@ -211,12 +212,15 @@ onMounted(async () => {
                   })
                 }}
               </div>
-              <div class="text-sm text-gray-500"> {{
-                                new Intl.NumberFormat("sv-SE", {
-                                  style: "currency",
-                                  currency: "SEK",
-                                }).format(booking.price)
-                              }} SEK</div>
+              <div class="text-sm text-gray-500">
+                {{
+                  new Intl.NumberFormat("sv-SE", {
+                    style: "currency",
+                    currency: "SEK",
+                  }).format(booking.price)
+                }}
+                SEK
+              </div>
             </div>
             <div class="space-y-1 text-sm text-gray-600 mb-3">
               <div>
@@ -248,7 +252,7 @@ onMounted(async () => {
                       >
                         Pick Up Time
                       </th>
-                        <th
+                      <th
                         scope="col"
                         class="py-3.5 pr-3 pl-4 text-left text-sm font-bold text-gray-900 sm:pl-6"
                       >
@@ -332,12 +336,13 @@ onMounted(async () => {
                       <td
                         class="px-3 py-4 text-sm whitespace-nowrap text-gray-900 font-bold"
                       >
- {{
-                                new Intl.NumberFormat("sv-SE", {
-                                  style: "currency",
-                                  currency: "SEK",
-                                }).format(booking.price)
-                              }}                      </td>
+                        {{
+                          new Intl.NumberFormat("sv-SE", {
+                            style: "currency",
+                            currency: "SEK",
+                          }).format(booking.price)
+                        }}
+                      </td>
                       <td
                         class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6"
                       >
