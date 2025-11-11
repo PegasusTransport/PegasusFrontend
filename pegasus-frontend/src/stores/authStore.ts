@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import router from "@/router"; // Import the router instance directly
 import { useUserStore } from "./userStore";
-import { useToast } from "vue-toastification";
 import api from "@/plugins/axios";
 import { authApi } from "@/endpoints/auth";
 import authCookies from "@/utils/auth/cookies";
@@ -11,6 +10,7 @@ import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
 import type { ApiResponse } from "@/types/api-response-dto";
 import type { LoginResponseDto } from "@/types/login-response-dto";
 import axios from "axios";
+import type { RequestPasswordResetDto } from "@/types/request-password-reset-dto";
 
 // Helpers
 const ERROR_MESSAGES = {
@@ -164,6 +164,25 @@ export const useAuthStore = defineStore("auth", {
         localStorage.clear();
         authCookies.removeIsAuthenticatedCookie();
         router.push("/login");
+      }
+    },
+
+    async forgotPassword(
+      passwordResetRequest: RequestPasswordResetDto
+    ): Promise<{ success: Boolean; message: string }> {
+      try {
+        const { message } = await authApi.forgotPassword(passwordResetRequest);
+        return { success: true, message };
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+
+          if (status === 500) {
+            return { success: false, message: ERROR_MESSAGES.GENERIC };
+          }
+        }
+
+        return NON_AXIOS_ERROR;
       }
     },
 

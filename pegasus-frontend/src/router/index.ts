@@ -19,6 +19,7 @@ import Register from "@/pages/Auth/Register.vue";
 import Login from "@/pages/Auth/Login.vue";
 import { useUserStore } from "@/stores/userStore";
 import { UserRoles } from "@/types/user-roles";
+import ForgotPassword from "@/pages/Auth/ForgotPassword.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,12 @@ const router = createRouter({
       path: "/login",
       name: "Login",
       component: Login,
+      meta: { guestOnly: true },
+    },
+    {
+      path: "/forgot-password",
+      name: "ForgotPassword",
+      component: ForgotPassword,
       meta: { guestOnly: true },
     },
     {

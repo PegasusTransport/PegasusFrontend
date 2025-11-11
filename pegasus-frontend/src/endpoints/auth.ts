@@ -5,6 +5,7 @@ import type { LoginRequestDto } from "@/types/login-request-dto";
 import type { LoginResponseDto } from "@/types/login-response-dto";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 import type { RegistrationResponseDto } from "@/types/registration-response-dto";
+import type { RequestPasswordResetDto } from "@/types/request-password-reset-dto";
 import type { SessionLifetimeDto } from "@/types/session-lifetime-dto";
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
 
@@ -49,6 +50,16 @@ export const authApi = {
 
   async logout(): Promise<ApiResponse<boolean>> {
     const response = await api.authApi.post("/api/Auth/Logout");
+    return response.data;
+  },
+
+  async forgotPassword(
+    passwordResetRequest: RequestPasswordResetDto
+  ): Promise<ApiResponse<boolean>> {
+    const response = await api.authApi.post(
+      "/api/Auth/ForgotPassword",
+      passwordResetRequest
+    );
     return response.data;
   },
 

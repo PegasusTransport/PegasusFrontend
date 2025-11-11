@@ -134,8 +134,15 @@ const login = async (isProd: boolean) => {
           </div>
 
           <p class="mt-10 text-center text-sm/6 text-white">
+            <RouterLink
+              :to="{ name: 'ForgotPassword' }"
+              class="font-semibold text-pg-secondary hover:text-pg-accent"
+              >Forgot your password?</RouterLink
+            >
+          </p>
+
+          <p class="mt-10 text-center text-sm/6 text-white">
             Don't have an account?
-            {{ " " }}
             <RouterLink
               :to="{ name: 'Register' }"
               class="font-semibold text-pg-secondary hover:text-pg-accent"
