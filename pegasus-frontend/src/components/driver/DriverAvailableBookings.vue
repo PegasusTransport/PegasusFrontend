@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed, watch } from "vue";
-import { type BookingSearchRequestDto, BookingStatus, SortOrder } from "@/types/booking";
+import {
+  type BookingSearchRequestDto,
+  BookingStatus,
+  SortOrder,
+} from "@/types/booking";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
 import { debounce } from "lodash-es";
 import Button from "../reusables/Button.vue";
@@ -12,6 +16,7 @@ import { FunnelIcon } from "@heroicons/vue/24/outline";
 import { useToast } from "vue-toastification";
 import BookingFilter from "../reusables/BookingFilter.vue";
 import CustomerBookingFilter from "../reusables/CustomerBookingFilter.vue";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 
 const bookings = ref<BookingResponseDto[]>([]);
 const sortBy = ref("pickUpDateTime");
@@ -44,7 +49,9 @@ const selectedBooking = computed(() => {
 const fetchBookings = async () => {
   try {
     isLoading.value = true;
-    const response = await driverApi.getAvailableDriverBookings(searchQuery.value);
+    const response = await driverApi.getAvailableDriverBookings(
+      searchQuery.value
+    );
 
     if (response) {
       bookings.value = response.data.items;
@@ -100,8 +107,6 @@ const activeFiltersCount = computed(() => {
   if (sortBy.value !== "pickUpDateTime") count++;
   return count;
 });
-
-
 
 const goToPage = (page: number) => {
   searchQuery.value.page = page;
@@ -192,7 +197,7 @@ onMounted(() => {
       </div>
     </div>
     <!-- Table -->
-    <div v-if="isLoading">Loading...</div>
+    <div v-if="isLoading"><TaxiSpinner size="large" /></div>
     <div v-else>
       <div
         class="px-3 py-8 text-center text-sm text-gray-500"
@@ -292,11 +297,9 @@ onMounted(() => {
                       <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
                         <span class="sr-only"></span>
                       </th>
-                     <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
+                      <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
                         <span class="sr-only"></span>
                       </th>
-                      
-                      
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200 bg-white">
