@@ -20,6 +20,7 @@ import { formatHours } from "@/utils/timeFormatter";
 import TextInput from "../reusables/Forms/TextInput.vue";
 import { validateFlightNumber } from "@/utils/flightValidator";
 import { validateBookingDateTime } from "@/utils/auth/time48HoursValidator";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 
 const bookingDetails = ref<BookingResponseDto | null>(null);
 const loading = ref(false);
@@ -311,8 +312,9 @@ const formatDateTimeForInput = (date: Date | string) =>
                     <!-- Loading -->
                     <div
                       v-if="loading"
-                      class="flex items-center justify-center h-32"
+                      
                     >
+                    <TaxiSpinner size="large"/>
                       <div
                         class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"
                       ></div>

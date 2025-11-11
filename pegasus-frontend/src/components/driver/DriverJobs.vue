@@ -37,6 +37,7 @@ import {
 import type { DriverResponseDto, ReceiptRequestDto } from "@/types/driver-info";
 import TextInput from "../reusables/Forms/TextInput.vue";
 import NumberInput from "../reusables/Forms/NumberInput.vue";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 
 const bookings = ref<BookingResponseDto[]>([]);
 const driverInfo = ref<DriverResponseDto>();
@@ -359,7 +360,7 @@ onMounted(() => {
       </div>
     </div>
     <!-- Table -->
-    <div v-if="isLoading">Loading...</div>
+    <div v-if="isLoading"><TaxiSpinner size="large" /></div>
     <div v-else>
       <div
         class="px-3 py-8 text-center text-sm text-gray-500"
