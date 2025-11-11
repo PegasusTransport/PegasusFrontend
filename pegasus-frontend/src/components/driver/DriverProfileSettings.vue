@@ -13,11 +13,13 @@ import { userApi } from "@/endpoints/user";
 import { driverApi } from "@/endpoints/driver"; 
 import type { UserResponseDto } from "@/types/user-response-dto";
 import type { DriverResponseDto } from "@/types/driver-info";
+import type { ChangePasswordDto } from "@/types/change-password";
 
 const toast = useToast();
 const isLoading = ref(false);
 const userDetails = ref<UserResponseDto | null>(null);
 const driverDetails = ref<DriverResponseDto>();
+const passwordDetails = ref<ChangePasswordDto>();
 
 const {
   createDefaultField,
@@ -45,6 +47,11 @@ const populateFormFields = (user: UserResponseDto) => {
   phoneNumber.value = createDefaultField();
   phoneNumber.value.value = user.phoneNumber || "";
 };
+
+const currentPassword = ref<DefaultField>(createDefaultField());
+const newPassword = ref<DefaultField>(createDefaultField());
+const confirmPassword = ref<DefaultField>(createDefaultField());
+
 
 const populateDriverFields = (driver: DriverResponseDto) => {
   profilePictureUrl.value = createDefaultField();
@@ -90,6 +97,14 @@ const updateUserRequest = (): UpdateUserRequestDto => {
   };
 };
 
+const updatePasswordRequest = (): ChangePasswordDto => {
+  return{
+    currentPassword: currentPassword.value.value,
+    newPassword: newPassword.value.value,
+    confirmNewPassword: confirmPassword.value.value
+  };
+}
+
 const updateDriverRequest = (): UpdateRequestDriverDto | null => {
   if (!profilePictureUrl.value.value || !driverDetails.value?.carId)
     return null;
@@ -99,6 +114,14 @@ const updateDriverRequest = (): UpdateRequestDriverDto | null => {
     carId: driverDetails.value.carId,
   };
 };
+
+// const changePassword = async = () =>{
+//   try {
+    
+//   } catch (error) {
+    
+//   }
+// }
 
 const updateProfile = async () => {
   if (isLoading.value) return;
