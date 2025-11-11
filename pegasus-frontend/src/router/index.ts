@@ -25,8 +25,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/login",
-      name: "Login",
+      path: "/",
+      name: "Home",
       component: Login,
       meta: { guestOnly: true },
     },
