@@ -22,7 +22,7 @@ import { UserRoles } from "@/types/user-roles";
 import Taxi404 from "@/pages/Taxi404.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: "/register",
