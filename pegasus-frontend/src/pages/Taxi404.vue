@@ -1,0 +1,530 @@
+<template>
+  <div class="crash-container">
+    <!-- Background scene -->
+    <div class="scene">
+      <!-- Road -->
+      <div class="road">
+        <div class="road-lines"></div>
+      </div>
+      
+      <!-- Wall -->
+      <div class="wall">
+        <div class="wall-cracks" :class="{ 'show-cracks': crashed }"></div>
+      </div>
+      
+      <!-- Taxi -->
+      <div class="taxi" :class="{ 'crashed': crashed }">
+        <div class="taxi-body">
+          <div class="taxi-roof"></div>
+          <div class="taxi-sign">TAXI</div>
+          <div class="taxi-windows">
+            <div class="window front"></div>
+            <div class="window side"></div>
+          </div>
+          <div class="taxi-lights">
+            <div class="headlight"></div>
+            <div class="taillight"></div>
+          </div>
+        </div>
+        <div class="wheels">
+          <div class="wheel front-wheel"></div>
+          <div class="wheel back-wheel"></div>
+        </div>
+      </div>
+      
+      <!-- Crash effects -->
+      <div class="crash-effects" v-if="crashed">
+        <div class="debris debris-1"></div>
+        <div class="debris debris-2"></div>
+        <div class="debris debris-3"></div>
+        <div class="smoke"></div>
+      </div>
+      
+      <!-- 404 Text -->
+      <div class="error-text" :class="{ 'shake': crashed }">
+        <h1>404</h1>
+        <h2>Oops! Looks like our taxi took a wrong turn!</h2>
+        <p>The page you're looking for seems to have crashed into a wall.</p>
+      </div>
+      
+      <!-- Hidden button that appears under taxi -->
+      <div class="hidden-button" :class="{ 'revealed': buttonRevealed }">
+        <button @click="goHome" class="home-button">
+          🏠 Take me home
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const crashed = ref(false)
+const buttonRevealed = ref(false)
+
+onMounted(() => {
+  // Start the crash animation after a short delay
+  setTimeout(() => {
+    crashed.value = true
+  }, 500)
+  
+  // Reveal the button when taxi is halfway across the screen
+  setTimeout(() => {
+    buttonRevealed.value = true
+  }, 1500)
+})
+
+const goHome = () => {
+  router.push('/')
+}
+</script>
+
+<style scoped>
+.crash-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #032240 0%, #1ea896 50%, #f9f0df 100%);
+  position: relative;
+  font-family: 'Arial', sans-serif;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Road */
+.road {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: #032240;
+  border-top: 5px solid #1ea896;
+}
+
+.road-lines {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: repeating-linear-gradient(
+    to right,
+    transparent 0px,
+    transparent 20px,
+    #f9f0df 20px,
+    #f9f0df 40px
+  );
+  transform: translateY(-50%);
+}
+
+/* Wall */
+.wall {
+  position: absolute;
+  right: 0;
+  bottom: 200px;
+  width: 80px;
+  height: 300px;
+  background: linear-gradient(45deg, #e5723a 25%, #032240 25%, #032240 50%, #e5723a 50%, #e5723a 75%, #032240 75%);
+  background-size: 20px 20px;
+  border-left: 3px solid #1ea896;
+}
+
+.wall-cracks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  background-image: 
+    linear-gradient(45deg, transparent 40%, #333 41%, #333 43%, transparent 44%),
+    linear-gradient(-45deg, transparent 60%, #333 61%, #333 63%, transparent 64%),
+    linear-gradient(30deg, transparent 70%, #333 71%, #333 72%, transparent 73%);
+  transition: opacity 0.3s ease;
+}
+
+.wall-cracks.show-cracks {
+  opacity: 1;
+}
+
+/* Taxi */
+.taxi {
+  position: absolute;
+  bottom: 200px;
+  left: -200px;
+  width: 120px;
+  height: 60px;
+  transition: transform 0.1s ease;
+  z-index: 10;
+}
+
+.taxi.crashed {
+  animation: driveToWallAndCrash 2.5s ease-out forwards;
+}
+
+.taxi-body {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  background: #FFD700;
+  border-radius: 8px 8px 4px 4px;
+  border: 2px solid #FFA500;
+}
+
+.taxi-roof {
+  position: absolute;
+  top: -15px;
+  left: 20px;
+  width: 60px;
+  height: 15px;
+  background: #FFD700;
+  border: 2px solid #FFA500;
+  border-radius: 8px 8px 0 0;
+}
+
+.taxi-sign {
+  position: absolute;
+  top: -32px;
+  left: 30px;
+  background: #032240;
+  color: #f9f0df;
+  padding: 2px 8px;
+  font-size: 8px;
+  font-weight: bold;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  border: 1px solid #1ea896;
+}
+
+.taxi-windows {
+  position: absolute;
+  top: 5px;
+  left: 25px;
+}
+
+.window {
+  background: #f9f0df;
+  border: 1px solid #1ea896;
+  border-radius: 2px;
+}
+
+.window.front {
+  width: 15px;
+  height: 12px;
+  position: absolute;
+  left: 25px;
+}
+
+.window.side {
+  width: 20px;
+  height: 12px;
+  position: absolute;
+  left: 0;
+}
+
+.taxi-lights {
+  position: relative;
+}
+
+.headlight {
+  position: absolute;
+  right: -2px;
+  top: 15px;
+  width: 6px;
+  height: 6px;
+  background: #FFFACD;
+  border-radius: 50%;
+  border: 1px solid #FFD700;
+}
+
+.taillight {
+  position: absolute;
+  left: -2px;
+  top: 15px;
+  width: 4px;
+  height: 4px;
+  background: #e5723a;
+  border-radius: 50%;
+}
+
+/* Wheels */
+.wheels {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+}
+
+.wheel {
+  width: 20px;
+  height: 20px;
+  background: #032240;
+  border-radius: 50%;
+  position: absolute;
+  border: 3px solid #1ea896;
+}
+
+.wheel::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: #e5723a;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.front-wheel {
+  right: 15px;
+  animation: wheelSpin 0.3s linear infinite;
+}
+
+.back-wheel {
+  left: 15px;
+  animation: wheelSpin 0.3s linear infinite;
+}
+
+.taxi.crashed .wheel {
+  animation: none;
+}
+
+/* Crash effects */
+.crash-effects {
+  position: absolute;
+  right: 60px;
+  bottom: 240px;
+}
+
+.debris {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #FFD700;
+  border-radius: 2px;
+  animation: debrisFly 1s ease-out forwards;
+}
+
+.debris-1 {
+  animation-delay: 2.1s;
+  transform: rotate(45deg);
+  background: #FFD700;
+}
+
+.debris-2 {
+  animation-delay: 2.2s;
+  left: -10px;
+  top: 10px;
+  background: #032240;
+}
+
+.debris-3 {
+  animation-delay: 2.3s;
+  left: 5px;
+  top: -5px;
+  background: #f9f0df;
+}
+
+.smoke {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle, rgba(150,150,150,0.8) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: smokeRise 2s ease-out infinite;
+  animation-delay: 2.5s;
+}
+
+/* Error text */
+.error-text {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #032240;
+  z-index: 10;
+}
+
+.error-text h1 {
+  font-size: 6rem;
+  margin: 0;
+  font-weight: bold;
+  color: #e5723a;
+  text-shadow: 3px 3px 0 #1ea896;
+}
+
+.error-text h2 {
+  font-size: 1.8rem;
+  margin: 1rem 0;
+  color: #032240;
+}
+
+.error-text p {
+  font-size: 1.2rem;
+  margin: 1rem 0 2rem 0;
+  color: #032240;
+  opacity: 0.8;
+}
+
+/* Hidden button that appears under taxi */
+.hidden-button {
+  position: absolute;
+  bottom: 220px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.hidden-button.revealed {
+  opacity: 1;
+  animation: buttonBounceIn 0.6s ease-out;
+}
+
+.home-button {
+  background: #1ea896;
+  border: 3px solid #032240;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #f9f0df;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(3, 34, 64, 0.3);
+}
+
+.home-button:hover {
+  background: #e5723a;
+  border-color: #1ea896;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(3, 34, 64, 0.4);
+}
+
+.shake {
+  animation: textShake 0.5s ease-out;
+  animation-delay: 2.1s;
+}
+
+/* Animations */
+@keyframes driveToWallAndCrash {
+  0% {
+    left: -200px;
+    transform: translateX(0) rotate(0deg) scaleY(1);
+  }
+  80% {
+    left: calc(100vw - 200px);
+    transform: translateX(0) rotate(0deg) scaleY(1);
+  }
+  85% {
+    left: calc(100vw - 200px);
+    transform: translateX(10px) rotate(3deg) scaleY(0.9);
+  }
+  90% {
+    left: calc(100vw - 200px);
+    transform: translateX(15px) rotate(5deg) scaleY(0.8);
+  }
+  100% {
+    left: calc(100vw - 200px);
+    transform: translateX(10px) rotate(-2deg) scaleY(0.9);
+  }
+}
+
+@keyframes buttonBounceIn {
+  0% {
+    transform: translateX(-50%) scale(0);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes wheelSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes debrisFly {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px) translateX(-30px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes smokeRise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-80px) scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes textShake {
+  0%, 100% {
+    transform: translate(-50%, -50%);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translate(-52%, -50%);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translate(-48%, -50%);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .error-text h1 {
+    font-size: 4rem;
+  }
+  
+  .error-text h2 {
+    font-size: 1.4rem;
+  }
+  
+  .error-text p {
+    font-size: 1rem;
+  }
+  
+  .taxi {
+    width: 80px;
+    height: 40px;
+  }
+  
+  .taxi-body {
+    height: 25px;
+  }
+  
+  .wheel {
+    width: 15px;
+    height: 15px;
+  }
+  
+  .hidden-button {
+    bottom: 280px;
+  }
+}
+</style>  

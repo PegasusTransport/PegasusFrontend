@@ -35,7 +35,9 @@ export const userApi = {
         ? new Date(query.toDate).toLocaleDateString()
         : undefined,
     };
-    const response = await api.defaultApi.get("api/Booking/getMyBookings", { params });
+    const response = await api.defaultApi.get("api/Booking/getMyBookings", {
+      params,
+    });
     return response.data;
   },
   async getBookingById(id: number): Promise<ApiResponse<BookingResponseDto>> {
@@ -44,12 +46,20 @@ export const userApi = {
     );
     return response.data;
   },
-  async updateBooking(
-    data: UpdateBookingDto
-  ): Promise<ApiResponse<BookingResponseDto>> {
-    const response = await api.defaultApi.put("/api/Booking/updateBooking", data);
+  async cancelBooking(id: number): Promise<ApiResponse<boolean>> {
+    const response = await api.defaultApi.put<ApiResponse<boolean>>(
+      `api/Booking/CancelBooking/${id}`
+    );
     return response.data;
   },
 
-
+  async updateBooking(
+    data: UpdateBookingDto
+  ): Promise<ApiResponse<BookingResponseDto>> {
+    const response = await api.defaultApi.put(
+      "/api/Booking/updateBooking",
+      data
+    );
+    return response.data;
+  },
 };

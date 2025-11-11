@@ -31,6 +31,11 @@ const router = createRouter({
       meta: { guestOnly: true },
     },
     {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: Taxi404,
+    },
+    {
       path: "/login",
       name: "Login",
       component: Login,

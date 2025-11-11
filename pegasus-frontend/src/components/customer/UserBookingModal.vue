@@ -4,7 +4,7 @@ import type { BookingResponseDto } from "@/types/booking-response-dto";
 import { useToast } from "vue-toastification";
 import { userApi } from "@/endpoints/user";
 import type { UpdateBookingDto } from "@/types/update-booking-dto";
-import { BookingStatus } from "@/types/booking";
+import { BookingStatus, getBookingStatusString } from "@/types/booking";
 import {
   Dialog,
   DialogPanel,
@@ -50,9 +50,7 @@ const isDateTimeValid = computed(() => {
 });
 
 const isFlightNumberValid = computed(() => {
-  return (
-    !editForm.flightnumber || validateFlightNumber(editForm.flightnumber)
-  );
+  return !editForm.flightnumber || validateFlightNumber(editForm.flightnumber);
 });
 
 const hasRequiredFields = computed(() => {
@@ -64,7 +62,11 @@ const hasRequiredFields = computed(() => {
 });
 
 const canSubmit = computed(() => {
-  return hasRequiredFields.value && isDateTimeValid.value && isFlightNumberValid.value;
+  return (
+    hasRequiredFields.value &&
+    isDateTimeValid.value &&
+    isFlightNumberValid.value
+  );
 });
 
 const canEditBooking = computed(() => {
@@ -74,6 +76,21 @@ const canEditBooking = computed(() => {
     status !== BookingStatus.Completed && status !== BookingStatus.Cancelled
   );
 });
+const getStatusColor = (status: BookingStatus) => {
+  const colors = {
+    [BookingStatus.Completed]:
+      "text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs",
+    [BookingStatus.Cancelled]:
+      "text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs",
+    [BookingStatus.Confirmed]:
+      "text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs",
+    [BookingStatus.PendingEmailConfirmation]:
+      "text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full text-xs",
+  };
+  return (
+    colors[status] || "text-gray-600 bg-gray-100 px-2 py-1 rounded-full text-xs"
+  );
+};
 
 const editForm = reactive<
   Partial<UpdateBookingDto> & {
@@ -148,6 +165,22 @@ const getBookingById = async (id: number) => {
   } catch (err) {
     error.value = "Error fetching booking details";
     toast.error("Error fetching bookings details");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const cancelBoking = async (id: number) => {
+  try {
+    loading.value = true;
+    error.value = null;
+     await userApi.cancelBooking(id);
+     toast.success("Your booking was cancelled!")
+  } catch (error) {
+    toast.error(
+      "Failed to update booking. A booking can be cancelled 24 hours before. Contact the support."
+    );
+    console.error(error);
   } finally {
     loading.value = false;
   }
@@ -431,13 +464,25 @@ const formatDateTimeForInput = (date: Date | string) =>
                               class="mt-1 block w-full rounded-md bg-white p-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             ></textarea>
                           </div>
+                             <div>
+                            <span class="text-gray-500">Status:</span>
+                            <span
+                              :class="getStatusColor(bookingDetails.status)"
+                              >{{
+                                getBookingStatusString(bookingDetails.status)
+                              }}</span
+                            >
+                          </div>
 
                           <!-- Form Actions -->
                           <div class="flex justify-end space-x-3 pt-4">
                             <CancelButton @click="cancelEditing"
                               >Cancel</CancelButton
                             >
-                            <Button type="submit" :disabled="updateLoading || !canSubmit">
+                            <Button
+                              type="submit"
+                              :disabled="updateLoading || !canSubmit"
+                            >
                               {{
                                 updateLoading ? "Updating..." : "Update Booking"
                               }}
@@ -493,6 +538,15 @@ const formatDateTimeForInput = (date: Date | string) =>
                               {{ bookingDetails.comment }}
                             </p>
                           </div>
+                             <div>
+                            <span class="text-gray-500">Status: </span>
+                            <span
+                              :class="getStatusColor(bookingDetails.status)"
+                              >{{
+                                getBookingStatusString(bookingDetails.status)
+                              }}</span
+                            >
+                          </div>
                         </div>
                       </div>
 
@@ -537,6 +591,13 @@ const formatDateTimeForInput = (date: Date | string) =>
                           </div>
                         </div>
                       </div>
+                    </div>
+                    <div class="mt-2 flex items-end justify-end">
+                      <CancelButton
+                        @click="cancelBoking(bookingDetails?.bookingId!)"
+                        class="mt-2 flex items-end justify-end"
+                        >Cancel booking</CancelButton
+                      >
                     </div>
                   </div>
                 </div>
