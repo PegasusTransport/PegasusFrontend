@@ -1,5 +1,11 @@
 import axios, { AxiosError } from "axios";
 import { useAuthStore } from "@/stores/authStore";
+console.log('=== ENVIRONMENT DEBUG ===');
+console.log('VITE_BACKEND_URL:', import.meta.env.VITE_BACKEND_URL);
+console.log('Type:', typeof import.meta.env.VITE_BACKEND_URL);
+console.log('Length:', import.meta.env.VITE_BACKEND_URL?.length);
+console.log('All env vars:', import.meta.env);
+console.log('========================');
 
 const authApi = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
