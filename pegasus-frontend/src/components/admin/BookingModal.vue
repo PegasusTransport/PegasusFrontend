@@ -72,21 +72,6 @@ const canEditBooking = computed(() => {
   );
 });
 
-const getStatusColor = (status: BookingStatus) => {
-  const colors = {
-    [BookingStatus.Completed]:
-      "text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs",
-    [BookingStatus.Cancelled]:
-      "text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs",
-    [BookingStatus.Confirmed]:
-      "text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs",
-    [BookingStatus.PendingEmailConfirmation]:
-      "text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full text-xs",
-  };
-  return (
-    colors[status] || "text-gray-600 bg-gray-100 px-2 py-1 rounded-full text-xs"
-  );
-};
 
 watch(
   () => props.bookingId,
@@ -412,15 +397,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                               #{{ bookingDetails.bookingId }}
                             </p>
                           </div>
-                          <div>
-                            <span class="text-gray-500">Status:</span>
-                            <span
-                              :class="getStatusColor(bookingDetails.status)"
-                              >{{
-                                getBookingStatusString(bookingDetails.status)
-                              }}</span
-                            >
-                          </div>
+                         
                           <div>
                             <span class="text-gray-500">Price:</span>
                             <p class="font-medium">

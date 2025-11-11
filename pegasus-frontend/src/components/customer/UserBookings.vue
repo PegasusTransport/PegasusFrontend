@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from "vue";
-import { type BookingSearchRequestDto, SortOrder } from "@/types/booking";
+import { type BookingSearchRequestDto, BookingStatus, getBookingStatusString, SortOrder } from "@/types/booking";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
 import { userApi } from "@/endpoints/user";
 import { debounce } from "lodash-es";
@@ -138,6 +138,22 @@ const splitAddress = (address: string): string => {
 
   return address;
 };
+const getStatusColor = (status: BookingStatus) => {
+  const colors = {
+    [BookingStatus.Completed]:
+      "text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs",
+    [BookingStatus.Cancelled]:
+      "text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs",
+    [BookingStatus.Confirmed]:
+      "text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs",
+    [BookingStatus.PendingEmailConfirmation]:
+      "text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full text-xs",
+  };
+  return (
+    colors[status] || "text-gray-600 bg-gray-100 px-2 py-1 rounded-full text-xs"
+  );
+};
+
 onMounted(() => {
   fetchBookings();
 });
@@ -266,9 +282,16 @@ onMounted(() => {
                       >
                         Price
                       </th>
+                    <th
+                        scope="col"
+                        class="px-3 py-3.5 text-left text-sm font-bold text-gray-900"
+                      >
+                        Status
+                      </th>
                       <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
                         <span class="sr-only">Edit</span>
                       </th>
+                       
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200 bg-white">
@@ -325,6 +348,17 @@ onMounted(() => {
                                   currency: "SEK",
                                 }).format(booking.price)
                               }}
+                      </td>
+                      <td>
+                         <div>
+
+                            <span
+                              :class="getStatusColor(booking.status)"
+                              >{{
+                                getBookingStatusString(booking.status)
+                              }}</span
+                            >
+                          </div>
                       </td>
                       <td
                         class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6"
