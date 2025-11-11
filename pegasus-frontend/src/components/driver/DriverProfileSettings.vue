@@ -138,7 +138,6 @@ const updateProfile = async () => {
 
     toast.success("Profile updated successfully!");
   } catch (error: any) {
-    console.error("Update error:", error);
     toast.error("Failed to update profile. Please try again.");
   } finally {
     isLoading.value = false;
@@ -149,7 +148,6 @@ const getUser = async () => {
   try {
     const response = await userApi.getUserProfile();
     userDetails.value = response.data;
-    console.log(userDetails.value);
   } catch (err) {
     toast.error("Error fetching user details");
   }
@@ -159,7 +157,6 @@ const getDriverInfo = async () => {
   try {
     const response = await driverApi.getDriverInfo();
     driverDetails.value = response.data;
-    console.log(driverDetails.value);
   } catch (err) {
     toast.error("Error fetching driver details");
   }
