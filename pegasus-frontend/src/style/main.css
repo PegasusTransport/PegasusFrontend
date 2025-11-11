@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Oswald:wght@200..700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  /* color theme */
+  --color-pg-primary: #032240;
+  --color-pg-secondary: #f9f0df;
+  --color-pg-accent: #e5723a;
+  --color-pg-persian: #1ea896;
+  /* fonts */
+  --font-oswald: "Oswald", sans-serif;
+  --font-open: "Open Sans", sans-serif;
+}
+
+@layer base {
+  html {
+    height: 100%;
+    background-color: var(--color-pg-primary);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: "Oswald", sans-serif;
+  }
+
+  body,
+  label,
+  input {
+    font-family: "Open Sans", sans-serif;
+  }
+
+  body {
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+  }
+}
