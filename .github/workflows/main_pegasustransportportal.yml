@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: ./pegasus-frontend/dist
 
   deploy:
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          path: ./pegasus-frontend/dist
+          path: .
       
       - name: Login to Azure
         uses: azure/login@v2
