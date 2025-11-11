@@ -27,8 +27,8 @@ jobs:
       - name: npm install, build, and test
         working-directory: ./pegasus-frontend
         env:
-          VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}  
-          VITE_GOOGLEMAPS: ${{ vars.VITE_GOOGLEMAPS }}
+          VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}  
+          VITE_GOOGLEMAPS: ${{ secrets.VITE_GOOGLEMAPS }}
         run: |
           npm install
           npm run build --if-present
@@ -73,4 +73,5 @@ jobs:
           app-name: 'PegasusTransportPortal'
           slot-name: 'Production'
           package: .
+
           
