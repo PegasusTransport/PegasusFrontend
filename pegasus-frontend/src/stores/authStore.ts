@@ -11,6 +11,7 @@ import type { ApiResponse } from "@/types/api-response-dto";
 import type { LoginResponseDto } from "@/types/login-response-dto";
 import axios from "axios";
 import type { RequestPasswordResetDto } from "@/types/request-password-reset-dto";
+import type { ConfirmPasswordResetDto } from "@/types/confirm-password-reset-dto";
 
 // Helpers
 const ERROR_MESSAGES = {
@@ -183,6 +184,31 @@ export const useAuthStore = defineStore("auth", {
         }
 
         return NON_AXIOS_ERROR;
+      }
+    },
+
+    async resetPassword(
+      confirmPasswordReset: ConfirmPasswordResetDto
+    ): Promise<{
+      success: boolean;
+      message: string;
+    }> {
+      try {
+        const { message } = await authApi.resetPassword(confirmPasswordReset);
+        return { success: true, message };
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+
+          if (status === 500) {
+            return { success: false, message: ERROR_MESSAGES.GENERIC };
+          }
+        }
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : ERROR_MESSAGES.GENERIC,
+        };
       }
     },
 

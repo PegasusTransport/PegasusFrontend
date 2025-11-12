@@ -40,7 +40,9 @@ const sendPasswordResetRequest = async () => {
   if (result.success) {
     toast.clear();
     toast.success(result.message);
-    router.push({ name: "Login" });
+    router.push({
+      name: "Login",
+    });
   } else {
     toast.error(result.message);
   }

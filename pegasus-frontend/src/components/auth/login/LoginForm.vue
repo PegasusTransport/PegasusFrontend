@@ -16,7 +16,7 @@ const authStore = useAuthStore();
 const userStore = useUserStore();
 const router = useRouter();
 
-const { createDefaultField, validateEmail, validatePassword } =
+const { createDefaultField, validateEmail, validatePassword, isValidForm } =
   useFormValidation();
 
 const isLoading = ref<boolean>(false);
@@ -36,22 +36,26 @@ const createLoginRequest = (): LoginRequestDto => {
 };
 
 const login = async (isProd: boolean) => {
-  if (isProd) {
-    isLoading.value = true;
-    const result = await authStore.login(createLoginRequest());
-    isLoading.value = false;
+  validateEmailField();
+  validatePasswordField();
 
-    if (result.success) {
-      toast.clear();
-      hasLoggedIn.value = true;
+  if (isValidForm([email, password]))
+    if (isProd) {
+      isLoading.value = true;
+      const result = await authStore.login(createLoginRequest());
+      isLoading.value = false;
+
+      if (result.success) {
+        toast.clear();
+        hasLoggedIn.value = true;
+      } else {
+        toast.error(result.message);
+      }
     } else {
-      toast.error(result.message);
+      await authStore.devLogin(createLoginRequest());
+      const defaultRoute = userStore.loadRouteBasedOnRole();
+      router.push(defaultRoute);
     }
-  } else {
-    await authStore.devLogin(createLoginRequest());
-    const defaultRoute = userStore.loadRouteBasedOnRole();
-    router.push(defaultRoute);
-  }
 };
 </script>
 

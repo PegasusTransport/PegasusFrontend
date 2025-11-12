@@ -21,6 +21,7 @@ import { useUserStore } from "@/stores/userStore";
 import { UserRoles } from "@/types/user-roles";
 import ForgotPassword from "@/pages/Auth/ForgotPassword.vue";
 import Taxi404 from "@/pages/Taxi404.vue";
+import ResetPassword from "@/pages/Auth/ResetPassword.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +52,13 @@ const router = createRouter({
       path: "/forgot-password",
       name: "ForgotPassword",
       component: ForgotPassword,
+      meta: { guestOnly: true },
+    },
+    {
+      path: "/reset-password",
+      name: "ResetPassword",
+      props: (route) => ({ email: route.query.email }),
+      component: ResetPassword,
       meta: { guestOnly: true },
     },
     {

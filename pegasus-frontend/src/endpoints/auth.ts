@@ -1,6 +1,7 @@
 import api from "@/plugins/axios";
 import type { ApiResponse } from "@/types/api-response-dto";
 import type { AuthResponseDto } from "@/types/auth-response-dto";
+import type { ConfirmPasswordResetDto } from "@/types/confirm-password-reset-dto";
 import type { LoginRequestDto } from "@/types/login-request-dto";
 import type { LoginResponseDto } from "@/types/login-response-dto";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
@@ -59,6 +60,16 @@ export const authApi = {
     const response = await api.authApi.post(
       "/api/Auth/ForgotPassword",
       passwordResetRequest
+    );
+    return response.data;
+  },
+
+  async resetPassword(
+    confirmPasswordReset: ConfirmPasswordResetDto
+  ): Promise<ApiResponse<boolean>> {
+    const response = await api.authApi.post(
+      "/api/Auth/ResetPassword",
+      confirmPasswordReset
     );
     return response.data;
   },
