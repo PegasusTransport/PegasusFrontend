@@ -2,6 +2,7 @@ import api from "@/plugins/axios";
 import type { ApiResponse } from "@/types/api-response-dto";
 import type { BookingSearchRequestDto, PaginatedResult } from "@/types/booking";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
+import type { ChangePasswordDto } from "@/types/change-password";
 import type { UpdateBookingDto } from "@/types/update-booking-dto";
 import type { UpdateUserRequestDto } from "@/types/update-user-request-dto";
 import type { UpdateUserResponseDto } from "@/types/update-user-response-dto";
@@ -60,6 +61,10 @@ export const userApi = {
       "/api/Booking/updateBooking",
       data
     );
+    return response.data;
+  },
+  async changePassword(data: ChangePasswordDto): Promise<ApiResponse<boolean>> {
+    const response = await api.defaultApi.put("api/Auth/ChangePassword", data);
     return response.data;
   },
 };
