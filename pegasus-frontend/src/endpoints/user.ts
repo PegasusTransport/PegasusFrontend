@@ -67,4 +67,16 @@ export const userApi = {
     const response = await api.defaultApi.put("api/Auth/ChangePassword", data);
     return response.data;
   },
+
+  async resendVerificationEmail(dto: {
+    email: string;
+  }): Promise<ApiResponse<boolean>> {
+    console.log(dto);
+
+    const response = await api.defaultApi.post(
+      "/api/User/ResendVerificationEmail",
+      dto
+    );
+    return response.data;
+  },
 };
