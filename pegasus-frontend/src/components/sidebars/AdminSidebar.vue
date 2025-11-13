@@ -17,6 +17,7 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
+import { useAuthStore } from "@/stores/authStore";
 
 const navigation = ref([
   {
@@ -45,6 +46,7 @@ const toggleSidebar = () => {
 const closeSidebar = () => {
   isSidebarOpen.value = false;
 };
+const authStore = useAuthStore();
 </script>
 <template>
   <!-- Mobile menu button -->
@@ -149,21 +151,29 @@ const closeSidebar = () => {
                       </li>
                     </ul>
                   </li>
-
-                  <li class="-mx-6 mt-auto">
-                    <a
-                      href="https://www.flypgs.com/en"
-                      target="_blank"
-                      class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5"
-                      @click="closeSidebar"
-                    >
-                      <span aria-hidden="true"
-                        >Ta mig tillbaka till hemsidan</span
-                      >
-                    </a>
-                  </li>
                 </ul>
               </nav>
+              <div class="flex flex-col items-bottom">
+                <li class="-mx-6 mt-auto">
+                  <a
+                    @click="authStore.logout"
+                    class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+                  >
+                    <span aria-hidden="true">Logga ut</span>
+                  </a>
+                </li>
+                <li class="-mx-6 mt-auto flex">
+                  <a
+                    href="https://www.flypgs.com/en"
+                    target="_blank"
+                    class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+                  >
+                    <span aria-hidden="true"
+                      >Ta mig tillbaka till hemsidan</span
+                    >
+                  </a>
+                </li>
+              </div>
             </div>
           </DialogPanel>
         </TransitionChild>
@@ -213,17 +223,26 @@ const closeSidebar = () => {
               </li>
             </ul>
           </li>
-
+        </ul>
+        <div class="flex flex-col items-bottom">
           <li class="-mx-6 mt-auto">
+            <a
+              @click="authStore.logout"
+              class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+            >
+              <span aria-hidden="true">Logga ut</span>
+            </a>
+          </li>
+          <li class="-mx-6 mt-auto flex">
             <a
               href="https://www.flypgs.com/en"
               target="_blank"
-              class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5"
+              class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
             >
               <span aria-hidden="true">Ta mig tillbaka till hemsidan</span>
             </a>
           </li>
-        </ul>
+        </div>
       </nav>
     </div>
   </div>
