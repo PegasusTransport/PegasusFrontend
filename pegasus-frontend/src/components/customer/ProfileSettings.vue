@@ -10,6 +10,7 @@ import { onMounted, ref, watch } from "vue";
 import type { UpdateUserRequestDto } from "@/types/update-user-request-dto";
 import { userApi } from "@/endpoints/user";
 import type { UserResponseDto } from "@/types/user-response-dto";
+import ChangePassword from "../reusables/ChangePassword.vue";
 
 const toast = useToast();
 const isLoading = ref(false);
@@ -107,9 +108,9 @@ onMounted(() => getUser());
     <main>
       <h1 class="sr-only">Account Settings</h1>
 
-      <div class="divide-y divide-gray-300">
+      <div class="divide-y divide-gray-300 p-4">
         <div
-          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
+          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8 bg-white rounded-2xl mb-3"
         >
           <div>
             <h2 class="text-base/7 font-semibold text-gray-900">
@@ -208,63 +209,11 @@ onMounted(() => getUser());
           </form>
         </div>
 
-        <div
-          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
-        >
-          <div>
-            <h2 class="text-base/7 font-semibold text-gray-900">
-              Change password
-            </h2>
-            <p class="mt-1 text-sm/6 text-gray-500">
-              Update your password associated with your account.
-            </p>
-          </div>
-
-          <form class="md:col-span-2">
-            <div
-              class="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6"
-            >
-              <div class="col-span-full">
-                <TextInput
-                  name="password"
-                  :type="'password'"
-                  :is-valid="true"
-                  :editing-field="true"
-                  >Current password
-                </TextInput>
-              </div>
-
-              <div class="col-span-full">
-                <TextInput
-                  name="new-password"
-                  :type="'password'"
-                  :is-valid="true"
-                  :editing-field="true"
-                  >New password
-                </TextInput>
-              </div>
-
-              <div class="col-span-full">
-                <TextInput
-                  name="confirm-password"
-                  :type="'password'"
-                  :is-valid="true"
-                  :editing-field="true"
-                  >Confirm password
-                </TextInput>
-              </div>
-            </div>
-
-            <div class="mt-8 flex">
-              <Button type="submit" :disabled="isLoading">
-                {{ isLoading ? "Saving..." : "Save" }}
-              </Button>
-            </div>
-          </form>
-        </div>
+        <ChangePassword
+        class="bg-white rounded-2xl p-2 mb-3 "/>
 
         <div
-          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
+          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8 bg-white rounded-2xl"
         >
           <div>
             <h2 class="text-base/7 font-semibold text-gray-900">
