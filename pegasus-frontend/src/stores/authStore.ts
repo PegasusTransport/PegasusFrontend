@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import router from "@/router"; // Import the router instance directly
 import { useUserStore } from "./userStore";
-import { useToast } from "vue-toastification";
 import api from "@/plugins/axios";
 import { authApi } from "@/endpoints/auth";
 import authCookies from "@/utils/auth/cookies";
@@ -10,19 +9,38 @@ import type { LoginRequestDto } from "@/types/login-request-dto";
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
 import type { ApiResponse } from "@/types/api-response-dto";
 import type { LoginResponseDto } from "@/types/login-response-dto";
+import axios from "axios";
+import type { RequestPasswordResetDto } from "@/types/request-password-reset-dto";
+import type { ConfirmPasswordResetDto } from "@/types/confirm-password-reset-dto";
+
+// Helpers
+const ERROR_MESSAGES = {
+  GENERIC: "Something went wrong. Try again later",
+  NETWORK: "Network error or unexpected issue occurred",
+  INVALID_CREDENTIALS: "Invalid email or password",
+  ACCOUNT_LOCKED: "Your account has been locked. Please contact support",
+  INVALID_2FA: "Invalid verification code",
+  RATE_LIMITED: "Too many attempts. Please try again later",
+} as const;
+
+const NON_AXIOS_ERROR = {
+  success: false,
+  message: ERROR_MESSAGES.NETWORK,
+} as const;
 
 const getUserProfile = async () => {
-  const store = useUserStore();
-  await store.getUserProfile();
+  await useUserStore().getUserProfile();
 };
 
-const toast = useToast();
+const clearUser = () => {
+  useUserStore().clearUser();
+};
 
+// Store
 export const useAuthStore = defineStore("auth", {
   state: () => {
     return {
       isAuthenticated: false,
-      refreshTokenExpiration: 7, // Might be handled inside action.
     };
   },
   actions: {
@@ -33,28 +51,32 @@ export const useAuthStore = defineStore("auth", {
         const { message } = await authApi.register(registrationRequest);
         return { success: true, message };
       } catch (error) {
-        console.log(error);
+        console.error(error);
         return {
           success: false,
-          message: "Something went wrong. Try again later",
+          message: ERROR_MESSAGES.GENERIC,
         };
       }
+    },
+
+    async getSessionLifetime(): Promise<number> {
+      const { data } = await authApi.getSessionLifetime();
+      return data.refreshTokenLifetime;
     },
 
     async initializeAuth() {
       if (authCookies.isUserAuthenticated()) {
         try {
           await authApi.refreshToken();
+          const sessionLifetime = await this.getSessionLifetime();
           await getUserProfile();
+
           this.isAuthenticated = true;
-          authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
+          authCookies.setIsAuthenticatedCookie(sessionLifetime);
         } catch (error) {
-          console.log(
-            error instanceof Error ? error.message : "Something went wrong"
-          );
+          console.error(error);
+          this.logout();
         }
-      } else {
-        console.error("Unauthorized");
       }
     },
 
@@ -63,13 +85,36 @@ export const useAuthStore = defineStore("auth", {
     ): Promise<{ success: boolean; message: string }> {
       try {
         const { message } = await authApi.login(credentials);
-        toast.clear();
-        return { success: true, message: message };
+
+        return { success: true, message };
       } catch (error) {
-        return {
-          success: false,
-          message: "Invalid email or password",
-        };
+        console.error(error);
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+
+          if (status === 401) {
+            return {
+              success: false,
+              message: ERROR_MESSAGES.INVALID_CREDENTIALS,
+            };
+          } else if (status === 403) {
+            return {
+              success: false,
+              message: ERROR_MESSAGES.ACCOUNT_LOCKED,
+            };
+          } else if (status === 429) {
+            return {
+              success: false,
+              message: ERROR_MESSAGES.RATE_LIMITED,
+            };
+          }
+
+          return {
+            success: false,
+            message: ERROR_MESSAGES.GENERIC,
+          };
+        }
+        return NON_AXIOS_ERROR;
       }
     },
 
@@ -77,20 +122,35 @@ export const useAuthStore = defineStore("auth", {
       twoFARequest: TwoFARequestDto
     ): Promise<{ success: boolean; message: string }> {
       try {
-        const { data, message } = await authApi.verifyTwoFA(twoFARequest);
-        // getCookiesExpirationTimes ---> gets the expiration time of cookies
-
-        this.isAuthenticated = true;
-        authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
+        const { message } = await authApi.verifyTwoFA(twoFARequest);
+        const sessionLifetime = await this.getSessionLifetime();
         await getUserProfile();
 
-        return { success: true, message: message };
+        this.isAuthenticated = true;
+        authCookies.setIsAuthenticatedCookie(sessionLifetime);
+
+        return { success: true, message };
       } catch (error) {
-        return {
-          success: false,
-          message:
-            "Something went wrong. Make sure you're using the correct code",
-        };
+        console.error(error);
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+
+          if (status === 400) {
+            return { success: false, message: ERROR_MESSAGES.INVALID_2FA };
+          } else if (status === 429) {
+            return {
+              success: false,
+              message: ERROR_MESSAGES.RATE_LIMITED,
+            };
+          }
+
+          return {
+            success: false,
+            message: ERROR_MESSAGES.GENERIC,
+          };
+        }
+
+        return NON_AXIOS_ERROR;
       }
     },
 
@@ -98,38 +158,75 @@ export const useAuthStore = defineStore("auth", {
       try {
         await authApi.logout();
       } catch (error) {
-        console.log(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong while trying to log out"
-        );
+        console.error(error);
       } finally {
+        clearUser();
         this.isAuthenticated = false;
+        localStorage.clear();
         authCookies.removeIsAuthenticatedCookie();
         router.push("/login");
       }
     },
 
+    async forgotPassword(
+      passwordResetRequest: RequestPasswordResetDto
+    ): Promise<{ success: Boolean; message: string }> {
+      try {
+        const { message } = await authApi.forgotPassword(passwordResetRequest);
+        return { success: true, message };
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+
+          if (status === 500) {
+            return { success: false, message: ERROR_MESSAGES.GENERIC };
+          }
+        }
+
+        return NON_AXIOS_ERROR;
+      }
+    },
+
+    async resetPassword(
+      confirmPasswordReset: ConfirmPasswordResetDto
+    ): Promise<{
+      success: boolean;
+      message: string;
+    }> {
+      try {
+        const { message } = await authApi.resetPassword(confirmPasswordReset);
+        return { success: true, message };
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+
+          if (status === 500) {
+            return { success: false, message: ERROR_MESSAGES.GENERIC };
+          }
+        }
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : ERROR_MESSAGES.GENERIC,
+        };
+      }
+    },
+
+    // Remove in prod
     async devLogin(LoginRequest: LoginRequestDto) {
       try {
-        const response = await api.authApi.post<ApiResponse<LoginResponseDto>>(
+        await api.authApi.post<ApiResponse<LoginResponseDto>>(
           "/api/Auth/DevLogin",
           LoginRequest
         );
-        const result = response.data;
 
-        // console.log(result.data);
-        // console.log(result.message);
+        const sessionLifetime = await this.getSessionLifetime();
 
         this.isAuthenticated = true;
-        authCookies.setIsAuthenticatedCookie(this.refreshTokenExpiration);
+        authCookies.setIsAuthenticatedCookie(sessionLifetime);
         await getUserProfile();
       } catch (error) {
-        console.log(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong on dev log in"
-        );
+        console.error(error);
       }
     },
   },

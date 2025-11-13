@@ -18,6 +18,16 @@ export default function useFormValidation() {
     field.errorMessage = field.isValid ? "" : `${fieldName} is required`;
   };
 
+  const validateUsername = (username: DefaultField) => {
+    if (username.value.length < 3) {
+      username.isValid = false;
+      username.errorMessage = "Username has to be at least 3 characters";
+    } else {
+      username.isValid = true;
+      username.errorMessage = "";
+    }
+  };
+
   const validateEmail = (email: DefaultField) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -90,6 +100,7 @@ export default function useFormValidation() {
   return {
     createDefaultField,
     validateField,
+    validateUsername,
     validateEmail,
     validatePhoneNumber,
     validatePassword,

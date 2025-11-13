@@ -19,7 +19,9 @@ import Register from "@/pages/Auth/Register.vue";
 import Login from "@/pages/Auth/Login.vue";
 import { useUserStore } from "@/stores/userStore";
 import { UserRoles } from "@/types/user-roles";
+import ForgotPassword from "@/pages/Auth/ForgotPassword.vue";
 import Taxi404 from "@/pages/Taxi404.vue";
+import ResetPassword from "@/pages/Auth/ResetPassword.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -45,6 +47,19 @@ const router = createRouter({
       path: "/login",
       name: "Login",
       component: Login,
+      meta: { guestOnly: true },
+    },
+    {
+      path: "/forgot-password",
+      name: "ForgotPassword",
+      component: ForgotPassword,
+      meta: { guestOnly: true },
+    },
+    {
+      path: "/reset-password",
+      name: "ResetPassword",
+      props: (route) => ({ email: route.query.email }),
+      component: ResetPassword,
       meta: { guestOnly: true },
     },
     {
@@ -140,25 +155,33 @@ const router = createRouter({
 router.beforeEach(async (to, _, next) => {
   const authStore = useAuthStore();
   const userStore = useUserStore();
+
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const guestOnly = to.matched.some((record) => record.meta.guestOnly);
   const requiredRole = to.meta.requiredRole;
-  const roles = userStore.user?.roles || [];
 
   if (!authStore.isAuthenticated) {
     await authStore.initializeAuth();
   }
 
-  const route = userStore.loadRouteBasedOnRole();
+  const roles = userStore.user?.roles || [];
+  const defaultRoute = userStore.loadRouteBasedOnRole();
 
   if (requiresAuth && !authStore.isAuthenticated) {
     next("/login");
   } else if (guestOnly && authStore.isAuthenticated) {
-    next(route);
+    next(defaultRoute);
   } else if (requiredRole !== undefined && !roles.includes(requiredRole)) {
-    next(route);
+    const lastRoute = localStorage.getItem("lastRoute");
+    next(lastRoute ? lastRoute : defaultRoute);
   } else {
     next();
+  }
+});
+
+router.afterEach((to) => {
+  if (to.meta.requiresAuth) {
+    localStorage.setItem("lastRoute", to.fullPath);
   }
 });
 

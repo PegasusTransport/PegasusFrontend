@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/authStore";
+import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
@@ -11,7 +12,8 @@ const props = defineProps<{
   email: string;
 }>();
 
-const store = useAuthStore();
+const authStore = useAuthStore();
+const userStore = useUserStore();
 const router = useRouter();
 const toast = useToast();
 
@@ -25,12 +27,14 @@ const verifyTwoFA = async () => {
   };
 
   isLoading.value = true;
-  const result = await store.verifyTwoFA(twoFaRequest);
+  const result = await authStore.verifyTwoFA(twoFaRequest);
   isLoading.value = false;
 
   if (result.success) {
-    router.push("/admin"); // Placeholder. Will push depending on role
-    toast.success("log in successful");
+    const defaultRoute = userStore.loadRouteBasedOnRole();
+    router.push(defaultRoute);
+    toast.clear();
+    toast.success(`Welcome back ${userStore.firstName}`);
   } else {
     toast.error(result.message);
   }
