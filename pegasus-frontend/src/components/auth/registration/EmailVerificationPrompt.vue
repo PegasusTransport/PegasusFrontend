@@ -1,11 +1,66 @@
 <script setup lang="ts">
+import { ref, computed, onUnmounted } from "vue";
 import Button from "@/components/reusables/Button.vue";
+import { userApi } from "@/endpoints/user";
+import { useToast } from "vue-toastification";
 
-defineProps<{
+const toast = useToast();
+
+const props = defineProps<{
   firstName: string;
   email: string;
 }>();
+
+// Counter
+const COUNT = 60;
+const currentCount = ref<number>(0);
+const isLoading = ref<boolean>(false);
+const counting = computed(() => {
+  return currentCount.value > 0;
+});
+
+let countdownInterval: ReturnType<typeof setInterval> | null = null;
+
+const startCountdown = () => {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+
+  countdownInterval = setInterval(() => {
+    currentCount.value--;
+
+    if (currentCount.value <= 0) {
+      clearInterval(countdownInterval!);
+      countdownInterval = null;
+    }
+  }, 1000);
+};
+
+const resendVerificationEmail = async () => {
+  isLoading.value = true;
+
+  const result = await userApi.resendVerificationEmail({ email: props.email });
+
+  isLoading.value = false;
+
+  if (result.data) {
+    toast.clear();
+    toast.success(result.message || "Verification email sent successfully!");
+
+    currentCount.value = COUNT;
+    startCountdown();
+  } else {
+    toast.error(result.message || "Failed to send verification email");
+  }
+};
+
+onUnmounted(() => {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+});
 </script>
+
 <template>
   <transition
     appear
@@ -30,7 +85,6 @@ defineProps<{
               Check your email
             </h2>
           </div>
-
           <div class="text-center space-y-4 mt-6">
             <!-- Icon -->
             <div
@@ -72,26 +126,44 @@ defineProps<{
               >
                 Go to login
               </Button>
-              <p class="text-sm text-gray-600">
-                Didn't receive the email?
-                <button
-                  type="button"
-                  class="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+              <div class="min-h-[20px]">
+                <p class="text-sm text-gray-600">
+                  Didn't receive the email?
+                  <button
+                    @click="resendVerificationEmail"
+                    :disabled="isLoading || counting"
+                    type="button"
+                    class="font-semibold text-indigo-600 hover:text-indigo-500 transition-all duration-200"
+                    :class="{
+                      'opacity-50 cursor-not-allowed pointer-events-none':
+                        isLoading || counting,
+                    }"
+                  >
+                    Resend
+                  </button>
+                </p>
+                <Transition
+                  enter-active-class="transition-all duration-500 ease-out"
+                  enter-from-class="opacity-0 -translate-y-2"
+                  enter-to-class="opacity-100 translate-y-0"
+                  leave-active-class="transition-all duration-300 ease-in absolute inset-0"
+                  leave-from-class="opacity-100 translate-y-0"
+                  leave-to-class="opacity-0 translate-y-2"
                 >
-                  Resend
-                </button>
-              </p>
+                  <p v-if="counting" class="text-xs text-gray-600 mt-1">
+                    You can resend in:
+                    <span class="font-semibold">{{ currentCount }}s</span>
+                  </p>
+                </Transition>
+              </div>
             </div>
           </div>
         </div>
-
         <p class="mt-10 text-center text-sm/6 text-white">
           Need help?
-          {{ " " }}
-          <a
-            href="#"
-            class="font-semibold text-pg-secondary hover:text-pg-accent"
-            >Contact Support</a
+          <a>
+            href="#" class="font-semibold text-pg-secondary
+            hover:text-pg-accent" >Contact Support</a
           >
         </p>
       </div>

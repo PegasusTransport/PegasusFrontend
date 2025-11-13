@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { type DefaultField } from "@/hooks/useFormValidation";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore";
@@ -16,9 +16,65 @@ const router = useRouter();
 const { createDefaultField, validateEmail, isValidForm } = useFormValidation();
 
 const isLoading = ref<boolean>(false);
-const email = ref<DefaultField>(createDefaultField());
 
+const email = ref<DefaultField>(createDefaultField());
 const validateEmailField = () => validateEmail(email.value);
+
+const hasSent = ref<boolean>(false);
+const sendButtonText = computed(() => {
+  return hasSent.value ? "Resend reset link" : "Send reset link";
+});
+
+// Counter
+const COUNT = 10;
+const STORAGE_KEY = "password_reset_countdown";
+const currentCount = ref<number>(0);
+const counting = computed(() => {
+  return currentCount.value > 0;
+});
+
+let countdownInterval: ReturnType<typeof setInterval> | null = null;
+
+const saveCountdown = () => {
+  if (currentCount.value > 0) {
+    const expiryTime = Date.now() + currentCount.value * 1000;
+    localStorage.setItem(STORAGE_KEY, expiryTime.toString());
+  } else {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+};
+
+const loadCountdown = () => {
+  const savedExpiry = localStorage.getItem(STORAGE_KEY);
+  if (savedExpiry) {
+    const expiryTime = parseInt(savedExpiry, 10);
+    const remainingTime = Math.floor((expiryTime - Date.now()) / 1000);
+
+    if (remainingTime > 0) {
+      currentCount.value = remainingTime;
+      startCountdown();
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
+};
+
+const startCountdown = () => {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+
+  countdownInterval = setInterval(() => {
+    currentCount.value--;
+    saveCountdown(); // Save on each tick
+
+    if (currentCount.value <= 0) {
+      clearInterval(countdownInterval!);
+      countdownInterval = null;
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, 1000);
+};
 
 const createPasswordResetRequest = (): RequestPasswordResetDto => {
   return {
@@ -33,6 +89,11 @@ const sendPasswordResetRequest = async () => {
     return;
   }
 
+  hasSent.value = true;
+  currentCount.value = COUNT;
+  saveCountdown();
+  startCountdown();
+
   isLoading.value = true;
   const result = await authStore.forgotPassword(createPasswordResetRequest());
   isLoading.value = false;
@@ -40,13 +101,21 @@ const sendPasswordResetRequest = async () => {
   if (result.success) {
     toast.clear();
     toast.success(result.message);
-    router.push({
-      name: "Login",
-    });
   } else {
     toast.error(result.message);
   }
 };
+
+onMounted(() => {
+  loadCountdown();
+});
+
+// Clean up on unmount
+onUnmounted(() => {
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+});
 </script>
 
 <template>
@@ -87,12 +156,32 @@ const sendPasswordResetRequest = async () => {
 
           <div>
             <Button
-              :disabled="isLoading"
+              :disabled="isLoading || counting"
               type="submit"
-              class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
+              class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5 transition-opacity duration-300"
+              :class="{
+                'opacity-50 cursor-not-allowed pointer-events-none':
+                  isLoading || counting,
+              }"
             >
-              Send Reset Link
+              {{ sendButtonText }}
             </Button>
+
+            <div class="min-h-[24px]">
+              <Transition
+                enter-active-class="transition-all duration-500 ease-out"
+                enter-from-class="opacity-0 -translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition-all duration-300 ease-in absolute inset-0"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 translate-y-2"
+              >
+                <p v-if="counting" class="text-center text-sm text-gray-700">
+                  You can resend the reset link in:
+                  <span class="font-semibold">{{ currentCount }}s</span>
+                </p>
+              </Transition>
+            </div>
           </div>
         </form>
       </div>
