@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { useAuthStore } from "@/stores/authStore";
 
+
 const authApi = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
   withCredentials: true,
