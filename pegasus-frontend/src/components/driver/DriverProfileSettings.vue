@@ -13,6 +13,8 @@ import { userApi } from "@/endpoints/user";
 import { driverApi } from "@/endpoints/driver"; 
 import type { UserResponseDto } from "@/types/user-response-dto";
 import type { DriverResponseDto } from "@/types/driver-info";
+import type { ChangePasswordDto } from "@/types/change-password";
+import ChangePassword from "../reusables/ChangePassword.vue";
 
 const toast = useToast();
 const isLoading = ref(false);
@@ -90,6 +92,8 @@ const updateUserRequest = (): UpdateUserRequestDto => {
   };
 };
 
+
+
 const updateDriverRequest = (): UpdateRequestDriverDto | null => {
   if (!profilePictureUrl.value.value || !driverDetails.value?.carId)
     return null;
@@ -99,6 +103,8 @@ const updateDriverRequest = (): UpdateRequestDriverDto | null => {
     carId: driverDetails.value.carId,
   };
 };
+
+
 
 const updateProfile = async () => {
   if (isLoading.value) return;
@@ -138,7 +144,6 @@ const updateProfile = async () => {
 
     toast.success("Profile updated successfully!");
   } catch (error: any) {
-    console.error("Update error:", error);
     toast.error("Failed to update profile. Please try again.");
   } finally {
     isLoading.value = false;
@@ -149,7 +154,6 @@ const getUser = async () => {
   try {
     const response = await userApi.getUserProfile();
     userDetails.value = response.data;
-    console.log(userDetails.value);
   } catch (err) {
     toast.error("Error fetching user details");
   }
@@ -159,7 +163,6 @@ const getDriverInfo = async () => {
   try {
     const response = await driverApi.getDriverInfo();
     driverDetails.value = response.data;
-    console.log(driverDetails.value);
   } catch (err) {
     toast.error("Error fetching driver details");
   }
@@ -175,9 +178,9 @@ onMounted(async () => {
     <main>
       <h1 class="sr-only">Account Settings</h1>
 
-      <div class="divide-y divide-gray-300">
+      <div class="divide-y divide-gray-300 p-3">
         <div
-          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
+          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8 bg-white rounded-2xl mb-3"
         >
           <div>
             <h2 class="text-base/7 font-semibold text-gray-900">
@@ -309,79 +312,9 @@ onMounted(async () => {
           </form>
         </div>
 
-        <div
-          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
-        >
-          <div>
-            <h2 class="text-base/7 font-semibold text-gray-900">
-              Change password
-            </h2>
-            <p class="mt-1 text-sm/6 text-gray-500">
-              Update your password associated with your account.
-            </p>
-          </div>
+        <ChangePassword class="bg-white mb-3 rounded-2xl"/>
 
-          <form class="md:col-span-2">
-            <div
-              class="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6"
-            >
-              <div class="col-span-full">
-                <TextInput
-                  name="password"
-                  :type="'password'"
-                  :is-valid="true"
-                  :editing-field="true"
-                  >Current password
-                </TextInput>
-              </div>
-
-              <div class="col-span-full">
-                <TextInput
-                  name="new-password"
-                  :type="'password'"
-                  :is-valid="true"
-                  :editing-field="true"
-                  >New password
-                </TextInput>
-              </div>
-
-              <div class="col-span-full">
-                <TextInput
-                  name="confirm-password"
-                  :type="'password'"
-                  :is-valid="true"
-                  :editing-field="true"
-                  >Confirm password
-                </TextInput>
-              </div>
-            </div>
-
-            <div class="mt-8 flex">
-              <Button type="submit" :disabled="isLoading">
-                {{ isLoading ? "Saving..." : "Save" }}
-              </Button>
-            </div>
-          </form>
-        </div>
-
-        <div
-          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
-        >
-          <div>
-            <h2 class="text-base/7 font-semibold text-gray-900">
-              Delete account
-            </h2>
-            <p class="mt-1 text-sm/6 text-gray-500">
-              No longer want to use our service? You can delete your account
-              here. This action is not reversible. All information related to
-              this account will be deleted permanently.
-            </p>
-          </div>
-
-          <form class="flex items-start md:col-span-2">
-            <CancelButton type="submit"> Yes, delete my account </CancelButton>
-          </form>
-        </div>
+       
       </div>
     </main>
   </div>
