@@ -24,12 +24,13 @@ import Taxi404 from "@/pages/Taxi404.vue";
 import ResetPassword from "@/pages/Auth/ResetPassword.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: "/",
       name: "Home",
-      redirect: "/login",
+      component: Login,
+      meta: { guestOnly: true },
     },
     {
       path: "/register",
