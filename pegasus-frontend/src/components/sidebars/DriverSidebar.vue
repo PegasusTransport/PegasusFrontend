@@ -168,7 +168,7 @@ const authStore = useAuthStore();
         </li>
         <li class="-mx-6 mt-auto flex">
           <a
-            href="https://www.flypgs.com/en"
+            href="https://pegasustransport.se/"
             target="_blank"
             class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
           >

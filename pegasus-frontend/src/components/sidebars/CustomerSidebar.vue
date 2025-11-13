@@ -17,6 +17,7 @@ import {
   TransitionRoot,
 } from "@headlessui/vue";
 import { useAuthStore } from "@/stores/authStore";
+import AiChat from "../aiChat/AiChat.vue";
 
 const navigation = ref([
   {
@@ -37,9 +38,15 @@ const navigation = ref([
 ]);
 
 const isSidebarOpen = ref(false);
+const isOpenChat = ref(false);
+
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+const openChat = () => {
+  isOpenChat.value = true;
 };
 
 const closeSidebar = () => {
@@ -156,6 +163,14 @@ const authStore = useAuthStore();
                 </ul>
               </nav>
               <div class="flex flex-col items-bottom">
+                 <li class="-mx-6 mt-auto">
+                  <a
+                    @click="openChat"
+                    class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+                  >
+                    <span aria-hidden="true">Chat with Pegasus</span>
+                  </a>
+                </li>
         <li class="-mx-6 mt-auto">
           <a
             @click="authStore.logout"
@@ -226,6 +241,14 @@ const authStore = useAuthStore();
         </ul>
       </nav>
       <div class="flex flex-col items-bottom">
+         <li class="-mx-6 mt-auto">
+                  <a
+                    @click="openChat"
+                    class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+                  >
+                    <span aria-hidden="true">Chat with Pegasus</span>
+                  </a>
+                </li>
         <li class="-mx-6 mt-auto">
           <a
             @click="authStore.logout"
@@ -236,7 +259,7 @@ const authStore = useAuthStore();
         </li>
         <li class="-mx-6 mt-auto flex">
           <a
-            href="https://www.flypgs.com/en"
+            href="https://pegasustransport.se/"
             target="_blank"
             class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
           >
@@ -246,6 +269,8 @@ const authStore = useAuthStore();
       </div>
     </div>
   </div>
+    <AiChat :open="isOpenChat" @close="isOpenChat = false" />
+
 </template>
 
 <style scoped>
