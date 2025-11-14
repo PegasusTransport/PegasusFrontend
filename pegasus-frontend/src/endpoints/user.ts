@@ -71,12 +71,18 @@ export const userApi = {
   async resendVerificationEmail(dto: {
     email: string;
   }): Promise<ApiResponse<boolean>> {
-    console.log(dto);
-
     const response = await api.defaultApi.post(
       "/api/User/ResendVerificationEmail",
       dto
     );
+    return response.data;
+  },
+
+  async verifyEmail(dto: {
+    email: string;
+    token: string;
+  }): Promise<ApiResponse<string>> {
+    const response = await api.defaultApi.post("/api/User/ConfirmEmail", dto);
     return response.data;
   },
 };
