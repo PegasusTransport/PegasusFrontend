@@ -21,17 +21,17 @@ import AiChat from "../aiChat/AiChat.vue";
 
 const navigation = ref([
   {
-    name: "Översikt",
+    name: "Overview",
     to: { name: "customerOverview" },
     icon: HomeIcon,
   },
   {
-    name: "Profil",
+    name: "Profile",
     to: { name: "customerProfile" },
     icon: UserGroupIcon,
   },
   {
-    name: "Bokningar",
+    name: "Bookings",
     to: { name: "customerBooking" },
     icon: CalendarIcon,
   },
@@ -39,7 +39,6 @@ const navigation = ref([
 
 const isSidebarOpen = ref(false);
 const isOpenChat = ref(false);
-
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
@@ -134,7 +133,7 @@ const authStore = useAuthStore();
                   />
                 </div>
                 <div class="flex items-center ml-2 mt-2">
-                  <h1 class="text-white font-bold">Pegasus Transport </h1>
+                  <h1 class="text-white font-bold">Pegasus Transport</h1>
                 </div>
               </RouterLink>
 
@@ -158,12 +157,10 @@ const authStore = useAuthStore();
                       </li>
                     </ul>
                   </li>
-
-                 
                 </ul>
               </nav>
               <div class="flex flex-col items-bottom">
-                 <li class="-mx-6 mt-auto">
+                <li class="-mx-6 mt-auto">
                   <a
                     @click="openChat"
                     class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
@@ -171,24 +168,24 @@ const authStore = useAuthStore();
                     <span aria-hidden="true">Chat with Pegasus</span>
                   </a>
                 </li>
-        <li class="-mx-6 mt-auto">
-          <a
-            @click="authStore.logout"
-            class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
-          >
-            <span aria-hidden="true">Logga ut</span>
-          </a>
-        </li>
-        <li class="-mx-6 mt-auto flex">
-          <a
-            href="https://www.flypgs.com/en"
-            target="_blank"
-            class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
-          >
-            <span aria-hidden="true">Ta mig tillbaka till hemsidan</span>
-          </a>
-        </li>
-      </div>
+                <li class="-mx-6 mt-auto">
+                  <a
+                    @click="authStore.logout"
+                    class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+                  >
+                    <span aria-hidden="true">Log out</span>
+                  </a>
+                </li>
+                <li class="-mx-6 mt-auto flex">
+                  <a
+                    href="https://www.flypgs.com/en"
+                    target="_blank"
+                    class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+                  >
+                    <span aria-hidden="true">Home page</span>
+                  </a>
+                </li>
+              </div>
             </div>
           </DialogPanel>
         </TransitionChild>
@@ -241,20 +238,20 @@ const authStore = useAuthStore();
         </ul>
       </nav>
       <div class="flex flex-col items-bottom">
-         <li class="-mx-6 mt-auto">
-                  <a
-                    @click="openChat"
-                    class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
-                  >
-                    <span aria-hidden="true">Chat with Pegasus</span>
-                  </a>
-                </li>
+        <li class="-mx-6 mt-auto">
+          <a
+            @click="openChat"
+            class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+          >
+            <span aria-hidden="true">Chat with Pegasus</span>
+          </a>
+        </li>
         <li class="-mx-6 mt-auto">
           <a
             @click="authStore.logout"
             class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
           >
-            <span aria-hidden="true">Logga ut</span>
+            <span aria-hidden="true">Log out</span>
           </a>
         </li>
         <li class="-mx-6 mt-auto flex">
@@ -263,14 +260,13 @@ const authStore = useAuthStore();
             target="_blank"
             class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
           >
-            <span aria-hidden="true">Ta mig tillbaka till hemsidan</span>
+            <span aria-hidden="true">Home page</span>
           </a>
         </li>
       </div>
     </div>
   </div>
-    <AiChat :open="isOpenChat" @close="isOpenChat = false" />
-
+  <AiChat :open="isOpenChat" @close="isOpenChat = false" />
 </template>
 
 <style scoped>
