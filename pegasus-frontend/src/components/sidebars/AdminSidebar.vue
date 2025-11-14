@@ -21,18 +21,18 @@ import { useAuthStore } from "@/stores/authStore";
 
 const navigation = ref([
   {
-    name: "Översikt",
+    name: "Overview",
     to: { name: "overview" },
     icon: HomeIcon,
   },
   { name: "Resor", to: { name: "trips" }, icon: MapIcon },
   {
-    name: "Förare",
+    name: "Drivers",
     to: { name: "drivers" },
     icon: UserGroupIcon,
   },
   {
-    name: "Bokningar",
+    name: "Bookings",
     to: { name: "bookings" },
     icon: CalendarIcon,
   },
@@ -159,7 +159,7 @@ const authStore = useAuthStore();
                     @click="authStore.logout"
                     class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
                   >
-                    <span aria-hidden="true">Logga ut</span>
+                    <span aria-hidden="true">Log out</span>
                   </a>
                 </li>
                 <li class="-mx-6 mt-auto flex">
@@ -168,9 +168,7 @@ const authStore = useAuthStore();
                     target="_blank"
                     class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
                   >
-                    <span aria-hidden="true"
-                      >Ta mig tillbaka till hemsidan</span
-                    >
+                    <span aria-hidden="true">Home page</span>
                   </a>
                 </li>
               </div>
@@ -230,7 +228,7 @@ const authStore = useAuthStore();
               @click="authStore.logout"
               class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
             >
-              <span aria-hidden="true">Logga ut</span>
+              <span aria-hidden="true">Log out</span>
             </a>
           </li>
           <li class="-mx-6 mt-auto flex">
@@ -239,7 +237,7 @@ const authStore = useAuthStore();
               target="_blank"
               class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
             >
-              <span aria-hidden="true">Ta mig tillbaka till hemsidan</span>
+              <span aria-hidden="true">Home page</span>
             </a>
           </li>
         </div>
