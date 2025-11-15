@@ -29,7 +29,8 @@ const router = createRouter({
     {
       path: "/",
       name: "Home",
-      redirect: "/login",
+      component: Login,
+      meta: { guestOnly: true },
     },
     {
       path: "/register",
@@ -137,7 +138,7 @@ const router = createRouter({
           component: CustomerOverview,
         },
         {
-          path: "bookings",
+          path: "book",
           name: "customerBooking",
           component: CustomerBookings,
         },

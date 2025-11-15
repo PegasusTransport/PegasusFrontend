@@ -159,6 +159,13 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
+        <p class="mt-10 text-center text-sm/6 text-white">
+          Need help?
+          <a>
+            href="#" class="font-semibold text-pg-secondary
+            hover:text-pg-accent" >Contact Support</a
+          >
+        </p>
       </div>
     </div>
   </transition>
