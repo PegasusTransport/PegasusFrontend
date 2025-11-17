@@ -6,7 +6,9 @@ import { useToast } from "vue-toastification";
 import Button from "../reusables/Button.vue";
 import BookingModal from "./BookingModal.vue";
 import {
+  BookingStatus,
   defaultBookingFilter,
+  getBookingStatusString,
   SortOrder,
   type BookingFilterRequestForAdminDto,
 } from "@/types/booking";
@@ -85,6 +87,22 @@ const fetchBookings = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const getStatusColor = (status: BookingStatus) => {
+  const colors = {
+    [BookingStatus.Completed]:
+      "text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs",
+    [BookingStatus.Cancelled]:
+      "text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs",
+    [BookingStatus.Confirmed]:
+      "text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs",
+    [BookingStatus.PendingEmailConfirmation]:
+      "text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full text-xs",
+  };
+  return (
+    colors[status] || "text-gray-600 bg-gray-100 px-2 py-1 rounded-full text-xs"
+  );
 };
 const debouncedSearch = debounce(() => {
   filterQuery.value.page = 1;
@@ -224,17 +242,23 @@ onMounted(async () => {
             </div>
             <div class="space-y-1 text-sm text-gray-600 mb-3">
               <div>
-                <span class="font-medium">From:</span>
+                <span class="font-bold">From:</span>
                 {{ booking.pickUpAddress }}
               </div>
               <div>
-                <span class="font-medium">To:</span>
+                <span class="font-bold">To:</span>
                 {{ booking.dropOffAddress }}
               </div>
             </div>
-            <Button size="sm" class="w-full">See Details</Button>
+            <Button
+              size="sm"
+              class="w-full"
+              @click="openBookingDetails(booking.bookingId)"
+              >See Details</Button
+            >
           </div>
         </div>
+        <!-- DESKTOP -->
         <div class="hidden sm:block mt-2">
           <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div
@@ -276,8 +300,14 @@ onMounted(async () => {
                       >
                         Price
                       </th>
+                       <th
+                        scope="col"
+                        class="px-3 py-3.5 text-left text-sm font-bold text-gray-900"
+                      >
+                        Status
+                      </th>
                       <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
-                        <span class="sr-only">Edit</span>
+                        <span class="sr-only"></span>
                       </th>
                     </tr>
                   </thead>
@@ -342,6 +372,11 @@ onMounted(async () => {
                             currency: "SEK",
                           }).format(booking.price)
                         }}
+                      </td>
+                      <td>
+                        <span :class="getStatusColor(booking.status)">{{
+                          getBookingStatusString(booking.status)
+                        }}</span>
                       </td>
                       <td
                         class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-6"
