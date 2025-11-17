@@ -26,7 +26,7 @@ const sendButtonText = computed(() => {
 });
 
 // Counter
-const COUNT = 10;
+const COUNT = 120;
 const STORAGE_KEY = "password_reset_countdown";
 const currentCount = ref<number>(0);
 const counting = computed(() => {

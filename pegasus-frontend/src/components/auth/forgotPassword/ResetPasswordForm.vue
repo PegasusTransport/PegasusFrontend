@@ -14,8 +14,6 @@ const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 
-console.log(route.query.email);
-
 const {
   createDefaultField,
   validatePassword,
@@ -36,7 +34,7 @@ const validateConfirmedPasswordField = () =>
 
 const createConfirmPasswordReset = (): ConfirmPasswordResetDto => {
   return {
-    email: "Corte.Mauricio98@gmail.com",
+    email: route.query.email?.toString() || "",
     token: resetToken.value,
     newPassword: newPassword.value.value,
   };
