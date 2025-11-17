@@ -26,3 +26,12 @@ export interface ReceiptRequestDto {
   durationMinutes: string;
   totalPrice: number;
 }
+
+export interface AvailableDriverResponsDto {
+  driverId: string;
+  profilePicture: string;
+  fullName: string;
+  phoneNumber: string;
+  carModel: string;
+  registrationNumber: string;
+}
