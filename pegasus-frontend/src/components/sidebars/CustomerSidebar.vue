@@ -133,7 +133,7 @@ const authStore = useAuthStore();
                   />
                 </div>
                 <div class="flex items-center ml-2 mt-2">
-                  <h1 class="text-white font-bold">Pegasus Transport</h1>
+                  <h1 class="text-white font-bold">Pegasus Transport </h1>
                 </div>
               </RouterLink>
 
