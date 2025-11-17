@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import DriversList from '@/components/admin/DriversList.vue';
+
+</script>
+
 <template>
-    <h1>Förare</h1>
+   <DriversList/>
 </template>

@@ -1,7 +1,9 @@
 import api from "@/plugins/axios";
+import type { AllDriversRequestDto } from "@/types/all-drivers-dto";
 import type { ApiResponse } from "@/types/api-response-dto";
 import type { BookingSearchRequestDto, PaginatedResult } from "@/types/booking";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
+import type { CreateRequestDriverDto } from "@/types/create-request-driver-dto";
 import type { TaxiSettings } from "@/types/models";
 import type { NewTaxiSettingsDTO } from "@/types/new-taxi-settings-dto";
 import type { UpdateBookingDto } from "@/types/update-booking-dto";
@@ -51,6 +53,23 @@ export const adminApi = {
     data: UpdateBookingDto
   ): Promise<ApiResponse<BookingResponseDto>> {
     const response = await api.defaultApi.put("/api/Admin/UpdateBooking", data);
+    return response.data;
+  },
+
+  async getDrivers(): Promise<ApiResponse<AllDriversRequestDto[]>> {
+    const response = await api.defaultApi.get("/api/Admin/GetAllDrivers");
+    return response.data;
+  },
+
+  async deleteDriver(id: string): Promise<ApiResponse<boolean>> {
+    const response = await api.defaultApi.delete(
+      `/api/Admin/DeleteDriver/${id}​`
+    );
+    return response.data;
+  },
+
+  async addDriver(data: CreateRequestDriverDto): Promise<ApiResponse<boolean>> {
+    const response = await api.defaultApi.post("/api/Admin/CreateDriver", data);
     return response.data;
   },
 };
