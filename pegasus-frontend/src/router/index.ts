@@ -22,6 +22,7 @@ import { UserRoles } from "@/types/user-roles";
 import ForgotPassword from "@/pages/Auth/ForgotPassword.vue";
 import Taxi404 from "@/pages/Taxi404.vue";
 import ResetPassword from "@/pages/Auth/ResetPassword.vue";
+import VerifyEmail from "@/components/auth/VerifyEmail.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -29,8 +30,7 @@ const router = createRouter({
     {
       path: "/",
       name: "Home",
-      component: Login,
-      meta: { guestOnly: true },
+      redirect: "/login",
     },
     {
       path: "/register",
@@ -60,6 +60,12 @@ const router = createRouter({
       name: "ResetPassword",
       props: (route) => ({ email: route.query.email }),
       component: ResetPassword,
+      meta: { guestOnly: true },
+    },
+    {
+      path: "/verify-email",
+      name: "VerifyEmail",
+      component: VerifyEmail,
       meta: { guestOnly: true },
     },
     {
@@ -138,7 +144,7 @@ const router = createRouter({
           component: CustomerOverview,
         },
         {
-          path: "book",
+          path: "bookings",
           name: "customerBooking",
           component: CustomerBookings,
         },
