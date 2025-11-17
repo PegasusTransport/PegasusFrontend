@@ -200,6 +200,7 @@ const register = async () => {
                 :isValid="password.isValid"
                 v-model="password.value"
                 @blur="validatePasswordField"
+                :show-password-toggle="true"
               >
                 Password
               </TextInput>
@@ -215,6 +216,7 @@ const register = async () => {
                 :isValid="confirmedPassword.isValid"
                 v-model="confirmedPassword.value"
                 @blur="validateConfirmedPasswordField"
+                :show-password-toggle="true"
               >
                 Confirm password
               </TextInput>

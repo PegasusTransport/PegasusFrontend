@@ -10,6 +10,7 @@ import useFormValidation from "@/hooks/useFormValidation";
 import TwofaForm from "./TwofaForm.vue";
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/outline";
 
 const toast = useToast();
 const authStore = useAuthStore();
@@ -28,6 +29,11 @@ const password = ref<DefaultField>(createDefaultField());
 const validateEmailField = () => validateEmail(email.value);
 const validatePasswordField = () => validatePassword(password.value, false);
 
+const showPassword = ref(false);
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+};
 const createLoginRequest = (): LoginRequestDto => {
   return {
     email: email.value.value,
@@ -104,13 +110,15 @@ const login = async (isProd: boolean) => {
             <div>
               <TextInput
                 name="password"
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
                 :isValid="password.isValid"
                 v-model="password.value"
                 @blur="validatePasswordField"
+                :showPasswordToggle="true"
               >
                 Password
               </TextInput>
+
               <p v-if="!password.isValid" class="mt-2 text-sm text-red-600">
                 {{ password.errorMessage }}
               </p>
@@ -141,6 +149,14 @@ const login = async (isProd: boolean) => {
             :to="{ name: 'Register' }"
             class="font-semibold text-pg-secondary hover:text-pg-accent"
             >Register here</RouterLink
+          >
+        </p>
+        <p class="mt-5 text-center text-sm/6 text-white">
+          Return to home page?
+          <a
+            href="https://pegasusmvc.onrender.com/"
+            class="font-semibold text-pg-secondary hover:text-pg-accent"
+            >Pegasus Transport</a
           >
         </p>
       </div>
