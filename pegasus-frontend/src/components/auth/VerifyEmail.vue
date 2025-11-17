@@ -5,6 +5,7 @@ import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore";
 import { useRouter, useRoute } from "vue-router";
 import Button from "@/components/reusables/Button.vue";
+import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 import { userApi } from "@/endpoints/user";
 import type { ApiResponse } from "@/types/api-response-dto";
 
@@ -83,9 +84,7 @@ onMounted(() => {
               Please wait while we verify your email address...
             </p>
             <div class="mt-6 flex justify-center">
-              <div
-                class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"
-              ></div>
+              <TaxiSpinner size="large" />
             </div>
           </div>
 
