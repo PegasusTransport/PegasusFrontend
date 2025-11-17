@@ -159,19 +159,7 @@ const resetFilters = () => {
 
                   <div class="relative mt-6 flex-1 px-4 sm:px-6">
                     <div class="space-y-4">
-                      <!-- Search -->
-                      <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                          Search
-                        </label>
-                        <input
-                          type="text"
-                          v-model="localFilter.search"
-                          @input="updateFilter"
-                          placeholder="Search bookings..."
-                          class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
-                        />
-                      </div>
+                      
 
                       <!-- Status Filter -->
                       <div>
@@ -340,8 +328,8 @@ const resetFilters = () => {
                             @change="updateFilter"
                             class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 sm:text-sm/6"
                           >
-                            <option :value="SortOrder.Desc">Newest First</option>
-                            <option :value="SortOrder.Asc">Oldest First</option>
+                            <option :value="SortOrder.Desc">Descending</option>
+                            <option :value="SortOrder.Asc">Ascending</option>
                           </select>
                           <ChevronDownIcon
                             class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"

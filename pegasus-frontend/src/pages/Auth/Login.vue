@@ -4,6 +4,7 @@ import LoginForm from "@/components/auth/login/LoginForm.vue";
 
 <template>
   <div class="bg-pg-primary md:p-0 px-4">
+    
     <LoginForm />
   </div>
 </template>

@@ -51,7 +51,7 @@ defineEmits<(e: "close") => void>();
 						leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 					>
 						<DialogPanel
-							class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all dark:bg-neutral-800 dark:text-white sm:my-8 sm:w-full sm:p-6"
+							class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:p-6"
 							:class="{
 								'sm:max-w-sm': sm,
 								'sm:max-w-md': md,
@@ -65,7 +65,7 @@ defineEmits<(e: "close") => void>();
 								<button
 									@click="$emit('close')"
 									type="button"
-									class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-neutral-800 hover:cursor-pointer"
+									class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 hover:cursor-pointer"
 								>
 									<span class="sr-only">Close</span>
 									<XMarkIcon class="h-6 w-6" aria-hidden="true" />

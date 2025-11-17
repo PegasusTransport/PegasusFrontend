@@ -134,31 +134,27 @@ const login = async (isProd: boolean) => {
             </div>
           </form>
         </div>
+        <div class="flex flex-col items-center">
+          <p class="mt-10 text-center text-sm/6 text-white">
+            <RouterLink
+              :to="{ name: 'ForgotPassword' }"
+              class="font-semibold text-pg-secondary hover:text-pg-accent"
+              >Forgot your password?</RouterLink
+            >
+          </p>
 
-        <p class="mt-10 text-center text-sm/6 text-white">
-          <RouterLink
-            :to="{ name: 'ForgotPassword' }"
-            class="font-semibold text-pg-secondary hover:text-pg-accent"
-            >Forgot your password?</RouterLink
-          >
-        </p>
-
-        <p class="mt-10 text-center text-sm/6 text-white">
-          Don't have an account?
-          <RouterLink
-            :to="{ name: 'Register' }"
-            class="font-semibold text-pg-secondary hover:text-pg-accent"
-            >Register here</RouterLink
-          >
-        </p>
-        <p class="mt-5 text-center text-sm/6 text-white">
-          Return to home page?
-          <a
-            href="https://pegasusmvc.onrender.com/"
-            class="font-semibold text-pg-secondary hover:text-pg-accent"
-            >Pegasus Transport</a
-          >
-        </p>
+          <p class="mt-10 text-center text-sm/6 text-white">
+            Don't have an account?
+            <RouterLink
+              :to="{ name: 'Register' }"
+              class="font-semibold text-pg-secondary hover:text-pg-accent"
+              >Register here</RouterLink
+            >
+          </p>
+          <Button class="max-w-28 mt-10">
+            <a href="https://pegasustransport.se/">Home Page</a>
+          </Button>
+        </div>
       </div>
     </div>
   </div>
