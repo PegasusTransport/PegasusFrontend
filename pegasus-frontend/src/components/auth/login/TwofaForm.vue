@@ -34,7 +34,7 @@ const verifyTwoFA = async () => {
     const defaultRoute = userStore.loadRouteBasedOnRole();
     router.push(defaultRoute);
     toast.clear();
-    toast.success(`Welcome back ${userStore.firstName}`);
+    toast.success(`Welcome back ${userStore.firstName}!`);
   } else {
     toast.error(result.message);
   }
