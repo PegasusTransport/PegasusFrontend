@@ -21,8 +21,8 @@ import AiChat from "../aiChat/AiChat.vue";
 
 const navigation = ref([
   {
-    name: "Overview",
-    to: { name: "customerOverview" },
+    name: "Bookings",
+    to: { name: "customerBooking" },
     icon: HomeIcon,
   },
   {
@@ -30,11 +30,11 @@ const navigation = ref([
     to: { name: "customerProfile" },
     icon: UserGroupIcon,
   },
-  {
-    name: "Bookings",
-    to: { name: "customerBooking" },
-    icon: CalendarIcon,
-  },
+  // {
+  //   name: "Bookings",
+  //   to: { name: "customerBooking" },
+  //   icon: CalendarIcon,
+  // },
 ]);
 
 const isSidebarOpen = ref(false);
@@ -119,7 +119,7 @@ const authStore = useAuthStore();
               class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-pg-primary px-6 py-0.5 h-full border-r-2 border-r-white"
             >
               <RouterLink
-                :to="{ name: 'overview' }"
+                :to="{ name: 'customerBooking' }"
                 class="relative flex h-16 shrink-0 items-center"
                 active-class=""
                 exact-active-class=""
@@ -128,7 +128,7 @@ const authStore = useAuthStore();
                 <div class="mt-2">
                   <img
                     class="h-16 w-auto"
-                    src="/src/assets/img/Pegasus.png"
+                    src="/src/assets/img/Pegasus.webp"
                     alt="Pegasus Transport"
                   />
                 </div>
@@ -199,7 +199,7 @@ const authStore = useAuthStore();
       class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-pg-primary px-6 py-0.5 h-full border-r-2 border-r-white"
     >
       <RouterLink
-        :to="{ name: 'customerOverview' }"
+        :to="{ name: 'customerBooking' }"
         class="relative flex h-16 shrink-0 items-center"
         active-class=""
         exact-active-class=""
@@ -207,7 +207,7 @@ const authStore = useAuthStore();
         <div class="mt-2">
           <img
             class="h-16 w-auto"
-            src="/src/assets/img/Pegasus.png"
+            src="/src/assets/img/Pegasus.webp"
             alt="Pegasus Transport"
           />
         </div>

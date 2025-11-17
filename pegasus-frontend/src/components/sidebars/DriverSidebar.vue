@@ -5,10 +5,10 @@ import {
   UserGroupIcon,
   Bars3Icon,
   XMarkIcon,
+  BellAlertIcon,
 } from "@heroicons/vue/24/outline";
 import { RouterLink } from "vue-router";
 import { markRaw, ref } from "vue";
-import TaxiIcon from "../reusables/icons/TaxiIcon.vue";
 import {
   Dialog,
   DialogPanel,
@@ -21,7 +21,7 @@ const navigation = ref([
   {
     name: "Available Bookings",
     to: { name: "driverOverview" },
-    icon: HomeIcon,
+    icon: BellAlertIcon,
   },
   {
     name: "Profile",
@@ -124,7 +124,7 @@ const authStore = useAuthStore();
                 <div class="mt-2">
                   <img
                     class="h-16 w-auto"
-                    src="/src/assets/img/Pegasus.png"
+                    src="/src/assets/img/Pegasus.webp"
                     alt="Pegasus Transport"
                   />
                 </div>
@@ -195,7 +195,7 @@ const authStore = useAuthStore();
         <div class="mt-2">
           <img
             class="h-16 w-auto"
-            src="/src/assets/img/Pegasus.png"
+            src="/src/assets/img/Pegasus.webp"
             alt="Pegasus Transport"
           />
         </div>

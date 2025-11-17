@@ -417,6 +417,10 @@ const formatDateTimeForInput = (date: Date | string) =>
                               {{ bookingDetails.isConfirmed ? "Yes" : "No" }}
                             </p>
                           </div>
+                          <div>
+                            <span class="text-gray-500">Driver assigned:</span>
+                            <p></p>
+                          </div>
                         </div>
                       </div>
 

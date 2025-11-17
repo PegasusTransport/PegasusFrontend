@@ -36,7 +36,7 @@ const searchQuery = ref<BookingSearchRequestDto>({
   page: 1,
   pageSize: 4,
   sortBy: "pickUpDateTime",
-  sortOrder: SortOrder.Desc,
+  sortOrder: SortOrder.Asc,
   upcomingOnly: false,
 });
 

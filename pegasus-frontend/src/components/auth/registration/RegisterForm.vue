@@ -113,7 +113,7 @@ const register = async () => {
             <div class="sm:mx-auto sm:w-full sm:max-w-md">
               <img
                 class="mx-auto h-20 w-auto"
-                src="/src/assets/img/Pegasus.png"
+                src="/src/assets/img/Pegasus.webp"
                 alt="Pegasus Transport logo"
               />
               <h2

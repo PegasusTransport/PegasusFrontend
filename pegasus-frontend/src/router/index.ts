@@ -137,7 +137,7 @@ const router = createRouter({
         {
           path: "",
           name: "customerOverview",
-          component: CustomerOverview,
+          component: CustomerBookings,
         },
         {
           path: "bookings",

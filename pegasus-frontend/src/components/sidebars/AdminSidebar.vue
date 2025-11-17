@@ -119,7 +119,7 @@ const authStore = useAuthStore();
                 <div class="mt-2">
                   <img
                     class="h-16 w-auto"
-                    src="/src/assets/img/Pegasus.png"
+                    src="/src/assets/img/Pegasus.webp"
                     alt="Pegasus Transport"
                   />
                 </div>
@@ -190,7 +190,7 @@ const authStore = useAuthStore();
         <div class="mt-2">
           <img
             class="h-16 w-auto"
-            src="/src/assets/img/Pegasus.png"
+            src="/src/assets/img/Pegasus.webp"
             alt="Pegasus Transport"
           />
         </div>
