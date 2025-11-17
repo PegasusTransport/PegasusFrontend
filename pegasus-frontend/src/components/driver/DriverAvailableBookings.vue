@@ -169,7 +169,7 @@ onMounted(() => {
               A list of all available bookings to take.
             </p>
           </div>
-          <div class="mt-4 flex gap-4 items-center">
+          <div class="mt-4 flex flex-col gap-4 items-center md:flex-row">
             <input
               class="flex-1 max-w-md rounded-md shadow-sm p-2 focus:border-pg-persian"
               v-model="searchQuery.search"
@@ -207,7 +207,7 @@ onMounted(() => {
       </div>
       <div v-else class="px-4 sm:px-6 lg:px-8">
         <!-- Mobile Cards (hidden on larger screens) -->
-        <div class="block sm:hidden space-y-4">
+        <div class="block md:hidden space-y-4">
           <div
             v-for="booking in bookings"
             :key="booking.bookingId"
@@ -226,7 +226,7 @@ onMounted(() => {
                   })
                 }}
               </div>
-              <div class="text-sm text-gray-500">
+              <div class="text-sm font-bold text-gray-500">
                 {{
                   new Intl.NumberFormat("sv-SE", {
                     style: "currency",
@@ -237,11 +237,11 @@ onMounted(() => {
             </div>
             <div class="space-y-1 text-sm text-gray-600 mb-3">
               <div>
-                <span class="font-medium">From:</span>
+                <span class="font-bold">From:</span>
                 {{ booking.pickUpAddress }}
               </div>
               <div>
-                <span class="font-medium">To:</span>
+                <span class="font-bold">To:</span>
                 {{ booking.dropOffAddress }}
               </div>
             </div>
@@ -259,7 +259,7 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="hidden sm:block mt-2">
+        <div class="hidden md:block mt-2">
           <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div
               class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-1"

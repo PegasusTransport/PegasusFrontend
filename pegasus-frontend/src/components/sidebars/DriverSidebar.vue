@@ -19,7 +19,7 @@ import { useAuthStore } from "@/stores/authStore";
 
 const navigation = ref([
   {
-    name: "Summary",
+    name: "Available Bookings",
     to: { name: "driverOverview" },
     icon: HomeIcon,
   },
@@ -33,11 +33,11 @@ const navigation = ref([
     to: { name: "driverBookings" },
     icon: CalendarIcon,
   },
-  {
-    name: "Car",
-    to: { name: "driverCar" },
-    icon: markRaw(TaxiIcon),
-  },
+  // {
+  //   name: "Car",
+  //   to: { name: "driverCar" },
+  //   icon: markRaw(TaxiIcon),
+  // },
 ]);
 const isSidebarOpen = ref(false);
 
@@ -115,7 +115,7 @@ const authStore = useAuthStore();
               class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-pg-primary px-6 py-0.5 h-full border-r-2 border-r-white"
             >
               <RouterLink
-                :to="{ name: 'overview' }"
+                :to="{ name: 'driverOverview' }"
                 class="relative flex h-16 shrink-0 items-center"
                 active-class=""
                 exact-active-class=""
@@ -187,7 +187,7 @@ const authStore = useAuthStore();
       class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-pg-primary px-6 py-0.5 h-full border-r-2 border-r-white"
     >
       <RouterLink
-        :to="{ name: 'customerOverview' }"
+        :to="{ name: 'driverOverview' }"
         class="relative flex h-16 shrink-0 items-center"
         active-class=""
         exact-active-class=""
