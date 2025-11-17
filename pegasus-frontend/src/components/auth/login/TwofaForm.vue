@@ -34,7 +34,7 @@ const verifyTwoFA = async () => {
     const defaultRoute = userStore.loadRouteBasedOnRole();
     router.push(defaultRoute);
     toast.clear();
-    toast.success(`Welcome back ${userStore.firstName}`);
+    toast.success(`Welcome back ${userStore.firstName}!`);
   } else {
     toast.error(result.message);
   }
@@ -56,7 +56,7 @@ const verifyTwoFA = async () => {
           <div class="sm:mx-auto sm:w-full sm:max-w-md">
             <img
               class="mx-auto h-20 w-auto"
-              src="/src/assets/img/Pegasus.png"
+              src="/src/assets/img/Pegasus.webp"
               alt="Pegasus Transport logo"
             />
             <h2
@@ -100,6 +100,7 @@ const verifyTwoFA = async () => {
               <TextInput
                 v-model="verificationCode"
                 name="two-fa-code"
+                autocomplete="off"
               ></TextInput>
               <p class="mt-2 text-sm text-red-600"></p>
             </div>

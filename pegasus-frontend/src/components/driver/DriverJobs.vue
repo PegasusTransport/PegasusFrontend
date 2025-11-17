@@ -26,14 +26,7 @@ import {
 import { useToast } from "vue-toastification";
 import CustomerBookingFilter from "../reusables/CustomerBookingFilter.vue";
 import CancelButton from "../reusables/CancelButton.vue";
-import {
-  DialogPanel,
-  DialogTitle,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-} from "@headlessui/vue";
+import { DialogPanel, DialogTitle } from "@headlessui/vue";
 import type { DriverResponseDto, ReceiptRequestDto } from "@/types/driver-info";
 import TextInput from "../reusables/Forms/TextInput.vue";
 import NumberInput from "../reusables/Forms/NumberInput.vue";
@@ -55,6 +48,14 @@ const openCustomerModal = ref(false);
 const openDeleteModal = ref(false);
 const openReceiptModal = ref(false);
 
+// New dropdown state management
+const activeDropdown = ref<number | null>(null);
+const dropdownPosition = ref({
+  top: 0,
+  left: 0,
+  direction: "down" as "up" | "down",
+});
+
 const selectedBookingId = ref<number | null>(null);
 const toast = useToast();
 
@@ -71,6 +72,7 @@ const selectedBooking = computed(() => {
     bookings.value.find((b) => b.bookingId === selectedBookingId.value) || null
   );
 });
+
 const receiptForm = ref<ReceiptRequestDto>({
   bookingId: 0,
   customerFirstname: "",
@@ -85,6 +87,46 @@ const receiptForm = ref<ReceiptRequestDto>({
   durationMinutes: "",
   totalPrice: 0,
 });
+
+// Dropdown functions
+const openDropdown = (event: MouseEvent, bookingId: number) => {
+  const button = event.currentTarget as HTMLElement;
+  const rect = button.getBoundingClientRect();
+
+  // Calculate available space
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceAbove = rect.top;
+  const menuHeight = 280; // Approximate menu height
+
+  // Decide direction
+  const direction =
+    spaceBelow >= menuHeight || spaceBelow > spaceAbove ? "down" : "up";
+
+  // Calculate position
+  const left = rect.right - 224; // Menu width is 224px (w-56)
+  const top =
+    direction === "down" ? rect.bottom + 8 : rect.top - menuHeight - 8;
+
+  dropdownPosition.value = { top, left, direction };
+  activeDropdown.value = bookingId;
+};
+
+const closeDropdown = () => {
+  activeDropdown.value = null;
+};
+
+// Close dropdown when clicking outside
+const handleClickOutside = (event: Event) => {
+  if (activeDropdown.value !== null) {
+    const target = event.target as HTMLElement;
+    if (
+      !target.closest(".dropdown-menu") &&
+      !target.closest(".dropdown-button")
+    ) {
+      closeDropdown();
+    }
+  }
+};
 
 const fetchBookings = async () => {
   try {
@@ -104,6 +146,7 @@ const fetchBookings = async () => {
     isLoading.value = false;
   }
 };
+
 const deleteBooking = async (bookingId: number) => {
   try {
     isLoading.value = true;
@@ -115,6 +158,7 @@ const deleteBooking = async (bookingId: number) => {
   } finally {
     isLoading.value = false;
     fetchBookings();
+    closeDropdown();
   }
 };
 
@@ -129,6 +173,7 @@ const completeBooking = async (bookingId: number) => {
   } finally {
     isLoading.value = false;
     fetchBookings();
+    closeDropdown();
   }
 };
 
@@ -152,6 +197,7 @@ const updateDateFilter = () => {
   searchQuery.value.page = 1;
   fetchBookings();
 };
+
 const openReceiptForm = async (bookingId: number) => {
   selectedBookingId.value = bookingId;
   const booking = bookings.value.find((b) => b.bookingId === bookingId);
@@ -182,7 +228,6 @@ const openReceiptForm = async (bookingId: number) => {
     driverImageUrl: driverInfo.value?.profilePicture,
     pickupTime: formattedDateTime,
     distanceKm: booking.distanceKm ?? 0,
-    // Convert to whole number STRING from the start
     durationMinutes: Math.round(
       Number(booking.durationMinutes) || 0
     ).toString(),
@@ -190,17 +235,17 @@ const openReceiptForm = async (bookingId: number) => {
   };
 
   openReceiptModal.value = true;
+  closeDropdown();
 };
+
 const submitReceipt = async () => {
   try {
     const submitData = {
       ...receiptForm.value,
       pickupTime: new Date(receiptForm.value.pickupTime).toISOString(),
-      // Ensure durationMinutes is a whole number STRING
       durationMinutes: Math.round(
         parseFloat(receiptForm.value.durationMinutes) || 0
       ).toString(),
-      // Ensure numeric fields are properly typed
       distanceKm: Number(receiptForm.value.distanceKm) || 0,
       totalPrice: Number(receiptForm.value.totalPrice) || 0,
       bookingId: Number(receiptForm.value.bookingId),
@@ -222,6 +267,7 @@ const openFilterModal = () => {
 const closeFilterModal = () => {
   showFilterModal.value = false;
 };
+
 const activeFiltersCount = computed(() => {
   let count = 0;
   if (fromDate.value) count++;
@@ -250,6 +296,7 @@ const previousPage = () => {
   searchQuery.value.page = prev;
   fetchBookings();
 };
+
 watch(sortBy, (newSortBy) => {
   searchQuery.value.sortBy = newSortBy;
   searchQuery.value.page = 1;
@@ -262,7 +309,6 @@ const splitAddress = (address: string): string => {
     return parts.join("\n");
   }
 
-  // If no comma/semicolon, try to split at a reasonable length
   if (address.length > 30) {
     const words = address.split(" ");
     const mid = Math.ceil(words.length / 2);
@@ -273,6 +319,7 @@ const splitAddress = (address: string): string => {
 
   return address;
 };
+
 const getStatusColor = (status: BookingStatus) => {
   const colors = {
     [BookingStatus.Completed]:
@@ -289,31 +336,10 @@ const getStatusColor = (status: BookingStatus) => {
   );
 };
 
-// Track per-booking menu direction
-const menuDirections = ref<Record<number, "up" | "down">>({});
-
-// Decide direction when opening
-function decideMenuDirection(btnEl: HTMLElement, bookingId: number) {
-  const rect = btnEl.getBoundingClientRect();
-  const spaceBelow = window.innerHeight - rect.bottom;
-  const spaceAbove = rect.top;
-  // Approx menu height ~ 260px
-  const needed = 260;
-  const direction =
-    spaceBelow < needed && spaceAbove > spaceBelow ? "up" : "down";
-  menuDirections.value[bookingId] = direction;
-}
-
-function onMenuButtonClick(e: MouseEvent, bookingId: number) {
-  const target = e.currentTarget as HTMLElement | null;
-  if (!target) return;
-  // Wait for nextTick so MenuItems mount after open
-  nextTick(() => decideMenuDirection(target, bookingId));
-}
-
 onMounted(() => {
   fetchBookings();
   getDriverInfo();
+  document.addEventListener("click", handleClickOutside);
 });
 </script>
 
@@ -359,6 +385,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
     <!-- Table -->
     <div v-if="isLoading"><TaxiSpinner size="large" /></div>
     <div v-else>
@@ -370,7 +397,7 @@ onMounted(() => {
       </div>
       <div v-else class="px-4 sm:px-6 lg:px-8">
         <!-- Mobile Cards (hidden on larger screens) -->
-        <div class="block sm:hidden space-y-4">
+        <div class="block md:hidden space-y-4">
           <div
             v-for="booking in bookings"
             :key="booking.bookingId"
@@ -430,15 +457,15 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="hidden sm:block mt-2">
-          <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+
+        <!-- Desktop Table -->
+        <div class="hidden md:block mt-2">
+          <div class="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
             <div
               class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-1"
             >
-              <div
-                class="overflow-visible shadow-sm outline-1 outline-black/5 sm:rounded-lg"
-              >
-                <table class="relative min-w-full divide-y divide-gray-300">
+              <div class="shadow-sm outline-1 outline-black/5 sm:rounded-lg">
+                <table class="min-w-full divide-y divide-gray-300">
                   <thead class="bg-gray-50">
                     <tr>
                       <th
@@ -451,13 +478,13 @@ onMounted(() => {
                         scope="col"
                         class="px-3 py-3.5 text-left text-sm font-bold text-gray-900"
                       >
-                        Pick Up Adress
+                        Pick Up Address
                       </th>
                       <th
                         scope="col"
                         class="px-3 py-3.5 text-left text-sm font-bold text-gray-900"
                       >
-                        Drop off Adress
+                        Drop off Address
                       </th>
                       <th
                         scope="col"
@@ -466,20 +493,17 @@ onMounted(() => {
                         Price
                       </th>
                       <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
-                        <span class="sr-only"></span>
+                        <span class="sr-only">Actions</span>
                       </th>
                       <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
-                        <span class="sr-only"></span>
-                      </th>
-                      <th scope="col" class="py-3.5 pr-4 pl-3 sm:pr-6">
-                        <span class="sr-only"></span>
+                        <span class="sr-only">Status</span>
                       </th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200 bg-white">
                     <tr v-if="bookings.length === 0">
                       <td
-                        colspan="5"
+                        colspan="6"
                         class="px-3 py-8 text-center text-sm text-gray-500"
                       >
                         You don't have any bookings
@@ -531,174 +555,26 @@ onMounted(() => {
                           }).format(booking.price)
                         }}
                       </td>
-                      <td>
-                        <Menu as="div" class="relative inline-block">
-                          <MenuButton
-                            class="cursor-pointer inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring-1 inset-ring-gray-300 hover:bg-gray-50"
-                            @click="(e:any) => onMenuButtonClick(e, booking.bookingId)"
-                          >
-                            Options
-                            <ChevronDownIcon
-                              class="-mr-1 size-5 text-gray-400"
-                              aria-hidden="true"
-                            />
-                          </MenuButton>
-                          <transition
-                            enter-active-class="transition ease-out duration-100"
-                            enter-from-class="transform opacity-0 scale-95"
-                            enter-to-class="transform scale-100"
-                            leave-active-class="transition ease-in duration-75"
-                            leave-from-class="transform scale-100"
-                            leave-to-class="transform opacity-0 scale-95"
-                          >
-                            <MenuItems
-                              class="absolute right-0 z-50 w-56 divide-y divide-gray-100 rounded-md bg-white shadow-lg outline-1 outline-black/5"
-                              v-if="menuDirections[booking.bookingId]"
-                              :class="
-                                menuDirections[booking.bookingId] === 'down'
-                                  ? 'top-full mt-2 origin-top-right'
-                                  : 'bottom-full mb-2 origin-bottom-right'
-                              "
-                            >
-                              <div class="py-1">
-                                <MenuItem v-slot="{ active }">
-                                  <button
-                                    type="button"
-                                    @click="
-                                      () => {
-                                        selectedBookingId = booking.bookingId;
-                                        openMapModal = true;
-                                      }
-                                    "
-                                    :class="[
-                                      'w-full text-left flex items-center px-4 py-2 text-sm rounded',
-                                      active
-                                        ? 'bg-gray-100 text-gray-900'
-                                        : 'text-gray-700',
-                                    ]"
-                                  >
-                                    <MapIcon
-                                      :class="[
-                                        active
-                                          ? 'text-gray-500'
-                                          : 'text-gray-400',
-                                        'mr-3 size-5',
-                                      ]"
-                                    />
-                                    Trajectory
-                                  </button>
-                                </MenuItem>
-                                <MenuItem v-slot="{ active }">
-                                  <button
-                                    type="button"
-                                    @click="
-                                      () => {
-                                        selectedBookingId = booking.bookingId;
-                                        openCustomerModal = true;
-                                      }
-                                    "
-                                    :class="[
-                                      'w-full text-left flex items-center px-4 py-2 text-sm rounded',
-                                      active
-                                        ? 'bg-gray-100 text-gray-900'
-                                        : 'text-gray-700',
-                                    ]"
-                                  >
-                                    <UserIcon
-                                      :class="[
-                                        active
-                                          ? 'text-gray-500'
-                                          : 'text-gray-400',
-                                        'mr-3 size-5',
-                                      ]"
-                                    />
-                                    Customer
-                                  </button>
-                                </MenuItem>
-                                <MenuItem v-slot="{ active }">
-                                  <button
-                                    type="button"
-                                    @click="
-                                      () => {
-                                        selectedBookingId = booking.bookingId;
-                                        openDeleteModal = true;
-                                      }
-                                    "
-                                    :class="[
-                                      'w-full text-left flex items-center px-4 py-2 text-sm rounded',
-                                      active
-                                        ? 'bg-gray-100 text-gray-900'
-                                        : 'text-gray-700',
-                                    ]"
-                                  >
-                                    <XMarkIcon
-                                      :class="[
-                                        active
-                                          ? 'text-gray-500'
-                                          : 'text-gray-400',
-                                        'mr-3 size-5',
-                                      ]"
-                                    />
-                                    Cancel
-                                  </button>
-                                </MenuItem>
-                                <MenuItem v-slot="{ active }">
-                                  <button
-                                    type="button"
-                                    @click="
-                                      () => openReceiptForm(booking.bookingId)
-                                    "
-                                    :class="[
-                                      'w-full text-left flex items-center px-4 py-2 text-sm rounded',
-                                      active
-                                        ? 'bg-gray-100 text-gray-900'
-                                        : 'text-gray-700',
-                                    ]"
-                                  >
-                                    <ReceiptPercentIcon
-                                      :class="[
-                                        active
-                                          ? 'text-gray-500'
-                                          : 'text-gray-400',
-                                        'mr-3 size-5',
-                                      ]"
-                                    />
-                                    Send receipt
-                                  </button>
-                                </MenuItem>
-                                <MenuItem v-slot="{ active }">
-                                  <button
-                                    type="button"
-                                    @click="
-                                      () => completeBooking(booking.bookingId)
-                                    "
-                                    :class="[
-                                      'w-full text-left flex items-center px-4 py-2 text-sm rounded',
-                                      active
-                                        ? 'bg-gray-100 text-gray-900'
-                                        : 'text-gray-700',
-                                    ]"
-                                  >
-                                    <CheckCircleIcon
-                                      :class="[
-                                        active
-                                          ? 'text-gray-500'
-                                          : 'text-gray-400',
-                                        'mr-3 size-5',
-                                      ]"
-                                    />
-                                    Mark as completed
-                                  </button>
-                                </MenuItem>
-                              </div>
-                            </MenuItems>
-                          </transition>
-                        </Menu>
+                      <td
+                        class="py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-6"
+                      >
+                        <button
+                          @click="(e) => openDropdown(e, booking.bookingId)"
+                          class="dropdown-button inline-flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        >
+                          Options
+                          <ChevronDownIcon
+                            class="-mr-1 h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </button>
                       </td>
-                      <td>
-                        <span :class="getStatusColor(booking.status)">{{
-                          getBookingStatusString(booking.status)
-                        }}</span>
+                      <td
+                        class="py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-6"
+                      >
+                        <span :class="getStatusColor(booking.status)">
+                          {{ getBookingStatusString(booking.status) }}
+                        </span>
                       </td>
                     </tr>
                   </tbody>
@@ -709,6 +585,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
     <BasePagination
       :current-page="currentPage"
       :total-pages="totalPages"
@@ -720,6 +597,84 @@ onMounted(() => {
     />
   </div>
 
+  <!-- Teleport dropdown menu to body -->
+  <Teleport to="body">
+    <div
+      v-if="activeDropdown !== null"
+      class="dropdown-menu fixed z-[9999] w-56 divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+      :style="{
+        top: dropdownPosition.top + 'px',
+        left: dropdownPosition.left + 'px',
+      }"
+    >
+      <div class="py-1">
+        <button
+          type="button"
+          @click="
+            () => {
+              selectedBookingId = activeDropdown;
+              openMapModal = true;
+              closeDropdown();
+            }
+          "
+          class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+        >
+          <MapIcon class="mr-3 h-5 w-5 text-gray-400" />
+          Trajectory
+        </button>
+
+        <button
+          type="button"
+          @click="
+            () => {
+              selectedBookingId = activeDropdown;
+              openCustomerModal = true;
+              closeDropdown();
+            }
+          "
+          class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+        >
+          <UserIcon class="mr-3 h-5 w-5 text-gray-400" />
+          Customer
+        </button>
+
+        <button
+          type="button"
+          @click="
+            () => {
+              selectedBookingId = activeDropdown;
+              openDeleteModal = true;
+              closeDropdown();
+            }
+          "
+          class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+        >
+          <XMarkIcon class="mr-3 h-5 w-5 text-gray-400" />
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          @click="() => openReceiptForm(activeDropdown!)"
+          class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+        >
+          <ReceiptPercentIcon class="mr-3 h-5 w-5 text-gray-400" />
+          Send receipt
+        </button>
+
+        <button
+          type="button"
+          @click="() => completeBooking(activeDropdown!)"
+          class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+        >
+          <CheckCircleIcon class="mr-3 h-5 w-5 text-gray-400" />
+          Mark as completed
+        </button>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- Modals -->
   <Modal :open="openCustomerModal" @close="openCustomerModal = false">
     <h3 class="mb-5 font-bold text-2xl">Customer Information</h3>
     <ul class="divide-y divide-gray-200">
@@ -784,14 +739,13 @@ onMounted(() => {
         >
           Yes
         </CancelButton>
-        <Button> No </Button>
+        <Button @click="openDeleteModal = false"> No </Button>
       </div>
     </DialogPanel>
   </Modal>
 
   <Modal :open="openReceiptModal" @close="openReceiptModal = false">
     <h3 class="mb-5 font-bold text-2xl">Send Receipt</h3>
-
     <div class="space-y-4">
       <TextInput
         :editing-field="true"
@@ -811,14 +765,12 @@ onMounted(() => {
         class="outline-gray-300! focus:outline-pg-persian!"
         >Distance (km)</NumberInput
       >
-
       <TextInput
         name="duration-minutes"
         type="text"
         v-model="receiptForm.durationMinutes"
         >Duration (minutes)</TextInput
       >
-
       <NumberInput
         name="total-price"
         type="number"
@@ -831,7 +783,6 @@ onMounted(() => {
         >Total Price (SEK)</NumberInput
       >
     </div>
-
     <div class="mt-5 flex justify-end gap-3">
       <Button @click="submitReceipt">Send</Button>
       <Button @click="openReceiptModal = false" variant="secondary"

@@ -4,6 +4,7 @@ import type { ApiResponse } from "@/types/api-response-dto";
 import type { BookingSearchRequestDto, PaginatedResult } from "@/types/booking";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
 import type { CreateRequestDriverDto } from "@/types/create-request-driver-dto";
+import type { AvailableDriverResponsDto } from "@/types/driver-info";
 import type { TaxiSettings } from "@/types/models";
 import type { NewTaxiSettingsDTO } from "@/types/new-taxi-settings-dto";
 import type { UpdateBookingDto } from "@/types/update-booking-dto";
@@ -71,5 +72,25 @@ export const adminApi = {
   async addDriver(data: CreateRequestDriverDto): Promise<ApiResponse<boolean>> {
     const response = await api.defaultApi.post("/api/Admin/CreateDriver", data);
     return response.data;
+  },
+
+  async findAvailableDriverForBooking(
+    bookingId: number
+  ): Promise<ApiResponse<AvailableDriverResponsDto[]>> {
+    const response = await api.defaultApi.get(
+      `/api/Admin/GetAvailableDrivers/${bookingId}`
+    );
+    return response.data;
+  },
+  async assignDriverToBooking(
+    bookingId: number,
+    driverId: string
+  ): Promise<ApiResponse<boolean>> {
+    const cleanDriverId = driverId.trim().replace(/[\u200B-\u200D\uFEFF]/g, '');
+  
+  const response = await api.defaultApi.put(
+    `/api/Admin/AssignDriver/${bookingId}/${cleanDriverId}`
+  );
+  return response.data;
   },
 };

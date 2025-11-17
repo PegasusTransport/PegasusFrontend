@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useToast } from 'vue-toastification';
-import TextInput from '@/components/reusables/Forms/TextInput.vue';
-import Button from '@/components/reusables/Button.vue';
-import type { ChangePasswordDto } from '@/types/change-password';
-import type { DefaultField } from '@/hooks/useFormValidation';
-import useFormValidation from '@/hooks/useFormValidation';
-import { userApi } from '@/endpoints/user';
+import { ref } from "vue";
+import { useToast } from "vue-toastification";
+import TextInput from "@/components/reusables/Forms/TextInput.vue";
+import Button from "@/components/reusables/Button.vue";
+import type { ChangePasswordDto } from "@/types/change-password";
+import type { DefaultField } from "@/hooks/useFormValidation";
+import useFormValidation from "@/hooks/useFormValidation";
+import { userApi } from "@/endpoints/user";
 
 const toast = useToast();
 
@@ -24,8 +24,10 @@ const currentPassword = ref<DefaultField>(createDefaultField());
 const newPassword = ref<DefaultField>(createDefaultField());
 const confirmPassword = ref<DefaultField>(createDefaultField());
 
-const validateCurrentPasswordField = () => validateField(currentPassword.value, "Current password");
-const validateNewPasswordField = () => validatePassword(newPassword.value, true);
+const validateCurrentPasswordField = () =>
+  validateField(currentPassword.value, "Current password");
+const validateNewPasswordField = () =>
+  validatePassword(newPassword.value, true);
 const validateConfirmPasswordField = () =>
   validateConfirmedPassword(confirmPassword.value, newPassword.value);
 
@@ -33,7 +35,7 @@ const updatePasswordRequest = (): ChangePasswordDto => {
   return {
     currentPassword: currentPassword.value.value,
     newPassword: newPassword.value.value,
-    confirmNewPassword: confirmPassword.value.value
+    confirmNewPassword: confirmPassword.value.value,
   };
 };
 
@@ -48,13 +50,13 @@ const changePassword = async () => {
   }
 
   isLoading.value = true;
-  
+
   try {
     const result = await userApi.changePassword(updatePasswordRequest());
-    
+
     if (result.data) {
-      toast.success("Password changed successfully!",);
-      
+      toast.success("Password changed successfully!");
+
       currentPassword.value = createDefaultField();
       newPassword.value = createDefaultField();
       confirmPassword.value = createDefaultField();
@@ -62,7 +64,7 @@ const changePassword = async () => {
       toast.error("Failed to change password");
     }
   } catch (error) {
-    console.error('Error changing password:', error);
+    console.error("Error changing password:", error);
     toast.error("An unexpected error occurred. Please try again.");
   } finally {
     isLoading.value = false;
@@ -71,11 +73,11 @@ const changePassword = async () => {
 </script>
 
 <template>
-  <div class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
+  <div
+    class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
+  >
     <div>
-      <h2 class="text-base/7 font-semibold text-gray-900">
-        Change password
-      </h2>
+      <h2 class="text-base/7 font-semibold text-gray-900">Change password</h2>
       <p class="mt-1 text-sm/6 text-gray-500">
         Update your password associated with your account.
       </p>
@@ -91,6 +93,7 @@ const changePassword = async () => {
             :editing-field="true"
             v-model="currentPassword.value"
             @blur="validateCurrentPasswordField"
+            :show-password-toggle="true"
           >
             Current password
           </TextInput>
@@ -107,6 +110,7 @@ const changePassword = async () => {
             :editing-field="true"
             v-model="newPassword.value"
             @blur="validateNewPasswordField"
+            :show-password-toggle="true"
           >
             New password
           </TextInput>
@@ -140,4 +144,3 @@ const changePassword = async () => {
     </form>
   </div>
 </template>
-

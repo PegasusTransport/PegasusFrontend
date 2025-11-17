@@ -33,7 +33,7 @@ const verifyEmail = async () => {
       email: email.value,
       token: token.value,
     });
-    toast.success(result.message);
+
     isVerified.value = true;
   } catch (error) {
     console.error(error);
@@ -46,7 +46,6 @@ const verifyEmail = async () => {
       }
     }
 
-    toast.error(errorMessage);
     verificationFailed.value = true;
   } finally {
     isLoading.value = false;
@@ -71,7 +70,7 @@ onMounted(() => {
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
           <img
             class="mx-auto h-20 w-auto"
-            src="/src/assets/img/Pegasus.png"
+            src="/src/assets/img/Pegasus.webp"
             alt="Pegasus Transport logo"
           />
 

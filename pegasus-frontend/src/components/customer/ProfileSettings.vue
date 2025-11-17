@@ -95,7 +95,6 @@ const getUser = async () => {
   try {
     const response = await userApi.getUserProfile();
     userDetails.value = response.data;
-    console.log(userDetails.value);
   } catch (err) {
     toast.error("Error fetching user details");
   }

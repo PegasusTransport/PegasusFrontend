@@ -113,7 +113,7 @@ const register = async () => {
             <div class="sm:mx-auto sm:w-full sm:max-w-md">
               <img
                 class="mx-auto h-20 w-auto"
-                src="/src/assets/img/Pegasus.png"
+                src="/src/assets/img/Pegasus.webp"
                 alt="Pegasus Transport logo"
               />
               <h2
@@ -200,6 +200,7 @@ const register = async () => {
                 :isValid="password.isValid"
                 v-model="password.value"
                 @blur="validatePasswordField"
+                :show-password-toggle="true"
               >
                 Password
               </TextInput>
@@ -215,6 +216,7 @@ const register = async () => {
                 :isValid="confirmedPassword.isValid"
                 v-model="confirmedPassword.value"
                 @blur="validateConfirmedPasswordField"
+                :show-password-toggle="true"
               >
                 Confirm password
               </TextInput>

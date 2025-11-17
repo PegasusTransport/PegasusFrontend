@@ -107,19 +107,15 @@ const router = createRouter({
       children: [
         {
           path: "",
-          name: "overview",
-          component: AdminOverview,
+          name: "bookings",
+          component: AdminBookings,
         },
         {
           path: "drivers",
           name: "drivers",
           component: AdminDrivers,
         },
-        {
-          path: "bookings",
-          name: "bookings",
-          component: AdminBookings,
-        },
+        
         {
           path: "prices",
           name: "prices",
@@ -141,7 +137,7 @@ const router = createRouter({
         {
           path: "",
           name: "customerOverview",
-          component: CustomerOverview,
+          component: CustomerBookings,
         },
         {
           path: "bookings",

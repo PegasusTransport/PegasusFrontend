@@ -21,6 +21,7 @@ import TextInput from "../reusables/Forms/TextInput.vue";
 import { validateFlightNumber } from "@/utils/flightValidator";
 import { validateBookingDateTime } from "@/utils/auth/time48HoursValidator";
 import TaxiSpinner from "../reusables/TaxiSpinner.vue";
+import SelectDriver from "./SelectDriver.vue";
 
 const bookingDetails = ref<BookingResponseDto | null>(null);
 const loading = ref(false);
@@ -28,7 +29,7 @@ const updateLoading = ref(false);
 const error = ref<string | null>(null);
 const isEditing = ref(false);
 const toast = useToast();
-
+const showDriverModal = ref(false);
 
 const props = defineProps<{
   open: boolean;
@@ -49,9 +50,7 @@ const isDateTimeValid = computed(() => {
 });
 
 const isFlightNumberValid = computed(() => {
-  return (
-    !editForm.flightnumber || validateFlightNumber(editForm.flightnumber)
-  );
+  return !editForm.flightnumber || validateFlightNumber(editForm.flightnumber);
 });
 const hasRequiredFields = computed(() => {
   return !!(
@@ -62,7 +61,11 @@ const hasRequiredFields = computed(() => {
 });
 
 const canSubmit = computed(() => {
-  return hasRequiredFields.value && isDateTimeValid.value && isFlightNumberValid.value;
+  return (
+    hasRequiredFields.value &&
+    isDateTimeValid.value &&
+    isFlightNumberValid.value
+  );
 });
 
 const canEditBooking = computed(() => {
@@ -72,7 +75,6 @@ const canEditBooking = computed(() => {
     status !== BookingStatus.Completed && status !== BookingStatus.Cancelled
   );
 });
-
 
 watch(
   () => props.bookingId,
@@ -187,7 +189,6 @@ const handleUpdateBooking = async () => {
   try {
     updateLoading.value = true;
     error.value = null;
-    
 
     const updateData: UpdateBookingDto = {
       bookingId: editForm.bookingId,
@@ -242,6 +243,22 @@ const handleClose = () => emit("close");
 const formatDateTime = (date: Date | string) => new Date(date).toLocaleString();
 const formatDateTimeForInput = (date: Date | string) =>
   new Date(date).toISOString().slice(0, 16);
+
+const handleDriverAssigned = async (driverId: string) => {
+  try {
+    showDriverModal.value = false;
+    if (bookingDetails.value) {
+      bookingDetails.value.driverId = driverId;
+    }
+
+    if (bookingDetails.value?.bookingId) {
+      await getBookingById(bookingDetails.value.bookingId);
+    }
+  } catch (error) {
+    console.error("Error in handleDriverAssigned:", error);
+    toast.error("Failed to refresh booking data");
+  }
+};
 </script>
 
 <template>
@@ -310,11 +327,8 @@ const formatDateTimeForInput = (date: Date | string) =>
                   <!-- Content -->
                   <div class="relative mt-6 flex-1 px-4 sm:px-6">
                     <!-- Loading -->
-                    <div
-                      v-if="loading"
-                      
-                    >
-                    <TaxiSpinner size="large"/>
+                    <div v-if="loading">
+                      <TaxiSpinner size="large" />
                       <div
                         class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"
                       ></div>
@@ -399,7 +413,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                               #{{ bookingDetails.bookingId }}
                             </p>
                           </div>
-                         
+
                           <div>
                             <span class="text-gray-500">Price:</span>
                             <p class="font-medium">
@@ -416,6 +430,27 @@ const formatDateTimeForInput = (date: Date | string) =>
                             <p class="font-medium">
                               {{ bookingDetails.isConfirmed ? "Yes" : "No" }}
                             </p>
+                          </div>
+                          <div>
+                            <span class="text-gray-500">Driver assigned:</span>
+                            <div v-if="!bookingDetails.driverId">
+                              <button
+                                @click="showDriverModal = true"
+                                class="rounded-md cursor-pointer bg-pg-persian px-2 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-pg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors duration-300"
+                              >
+                                Assign Driver
+                              </button>
+
+                              <SelectDriver
+                                :booking-id="bookingDetails.bookingId"
+                                :is-open="showDriverModal"
+                                @close="showDriverModal = false"
+                                @driver-assigned="handleDriverAssigned"
+                              />
+                            </div>
+                            <div v-else>
+                              <p>A driver is assigned</p>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -434,7 +469,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                         >
                           <!-- Pick Up Date Time -->
 
-                         <div>
+                          <div>
                             <TextInput
                               v-model="editForm.pickUpDateTime"
                               name="pickup-time"
@@ -517,7 +552,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                           </div>
 
                           <!-- Flight Number -->
-                           <div>
+                          <div>
                             <TextInput
                               name="flight-number"
                               v-model="editForm.flightnumber"
@@ -570,19 +605,18 @@ const formatDateTimeForInput = (date: Date | string) =>
                               >Pick Up Date & Time:</span
                             >
                             <p class="font-medium">
-                               {{
-                          new Date(bookingDetails.pickUpDateTime).toLocaleString(
-                            "sv-SE",
-                            {
-                              year: "numeric",
-                              month: "2-digit",
-                              day: "2-digit",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            }
-                          )
-                        }}
+                              {{
+                                new Date(
+                                  bookingDetails.pickUpDateTime
+                                ).toLocaleString("sv-SE", {
+                                  year: "numeric",
+                                  month: "2-digit",
+                                  day: "2-digit",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: false,
+                                })
+                              }}
                             </p>
                           </div>
                           <div>
