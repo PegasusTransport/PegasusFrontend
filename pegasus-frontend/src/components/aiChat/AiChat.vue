@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import api from "@/plugins/axios";
-import {DeepChat} from 'deep-chat'
+import "deep-chat";
 import {
   Dialog,
   DialogPanel,

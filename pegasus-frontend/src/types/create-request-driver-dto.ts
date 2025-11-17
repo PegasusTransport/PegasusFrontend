@@ -4,6 +4,7 @@
  */
 
 export interface CreateRequestDriverDto {
+    email : string;
     profilePicture: string;
-    carId: number;
+    licensePlate: string;
 }
