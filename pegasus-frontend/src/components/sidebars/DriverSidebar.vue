@@ -153,29 +153,27 @@ const authStore = useAuthStore();
                       </li>
                     </ul>
                   </li>
-
-                 
                 </ul>
               </nav>
               <div class="flex flex-col items-bottom">
-        <li class="-mx-6 mt-auto">
-          <a
-            @click="authStore.logout"
-            class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
-          >
-            <span aria-hidden="true">Logga ut</span>
-          </a>
-        </li>
-        <li class="-mx-6 mt-auto flex">
-          <a
-            href="https://pegasustransport.se/"
-            target="_blank"
-            class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
-          >
-            <span aria-hidden="true">Ta mig tillbaka till hemsidan</span>
-          </a>
-        </li>
-      </div>
+                <li class="-mx-6 mt-auto">
+                  <a
+                    @click="authStore.logout"
+                    class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+                  >
+                    <span aria-hidden="true">Log out</span>
+                  </a>
+                </li>
+                <li class="-mx-6 mt-auto flex">
+                  <a
+                    href="https://pegasustransport.se/"
+                    target="_blank"
+                    class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+                  >
+                    <span aria-hidden="true">Home page</span>
+                  </a>
+                </li>
+              </div>
             </div>
           </DialogPanel>
         </TransitionChild>
@@ -233,7 +231,7 @@ const authStore = useAuthStore();
             @click="authStore.logout"
             class="flex cursor-pointer items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
           >
-            <span aria-hidden="true">Logga ut</span>
+            <span aria-hidden="true">Log out</span>
           </a>
         </li>
         <li class="-mx-6 mt-auto flex">
@@ -242,7 +240,7 @@ const authStore = useAuthStore();
             target="_blank"
             class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
           >
-            <span aria-hidden="true">Ta mig tillbaka till hemsidan</span>
+            <span aria-hidden="true">Home page</span>
           </a>
         </li>
       </div>
