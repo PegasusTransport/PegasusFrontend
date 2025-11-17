@@ -7,6 +7,7 @@ import {
   UserGroupIcon,
   Bars3Icon,
   XMarkIcon,
+  BanknotesIcon,
 } from "@heroicons/vue/24/outline";
 import { RouterLink } from "vue-router";
 
@@ -21,21 +22,17 @@ import { useAuthStore } from "@/stores/authStore";
 
 const navigation = ref([
   {
-    name: "Overview",
-    to: { name: "overview" },
-    icon: HomeIcon,
+    name: "Bookings",
+    to: { name: "bookings" },
+    icon: CalendarIcon,
   },
-  { name: "Resor", to: { name: "trips" }, icon: MapIcon },
+  { name: "Prices", to: { name: "prices" }, icon: BanknotesIcon },
   {
     name: "Drivers",
     to: { name: "drivers" },
     icon: UserGroupIcon,
   },
-  {
-    name: "Bookings",
-    to: { name: "bookings" },
-    icon: CalendarIcon,
-  },
+  
 ]);
 const isSidebarOpen = ref(false);
 
@@ -113,7 +110,7 @@ const authStore = useAuthStore();
               class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-pg-primary px-6 py-0.5 h-full border-r-2 border-r-white"
             >
               <RouterLink
-                :to="{ name: 'overview' }"
+                :to="{ name: 'bookings' }"
                 class="relative flex h-16 shrink-0 items-center"
                 active-class=""
                 exact-active-class=""
@@ -185,7 +182,7 @@ const authStore = useAuthStore();
       class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-pg-primary px-6 py-0.5 h-full border-r-2 border-r-white"
     >
       <RouterLink
-        :to="{ name: 'customerOverview' }"
+        :to="{ name: 'bookings' }"
         class="relative flex h-16 shrink-0 items-center"
         active-class=""
         exact-active-class=""

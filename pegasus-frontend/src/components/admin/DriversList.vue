@@ -111,7 +111,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-white p-4 m-4 rounded-2xl flex flex-col gap-4">
+  <div class="bg-white p-4 m-3 rounded-2xl flex flex-col gap-4">
     <!-- Header section -->
     <div class="flex justify-between items-start">
       <div class="flex-1">

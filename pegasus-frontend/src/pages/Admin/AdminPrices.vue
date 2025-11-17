@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import TaxiPrices from '@/components/admin/TaxiPrices.vue';
+
+</script>
+
 <template>
-    <h1>Priser</h1>
+    <div class="p-3">
+    <TaxiPrices/>
+
+    </div>
 </template>

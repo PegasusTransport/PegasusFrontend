@@ -72,13 +72,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="p-4 border-2 rounded-xl bg-white">
-    <div class="px-4 sm:px-6 lg:px-8">
-      <div class="sm:flex sm:items-center">
+  <div class="p-4 rounded-2xl bg-white">
+    <div class="px-0 sm:px-6">
+      <div class="sm:flex sm:items-center mt-4">
         <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold text-gray-900">
-            Taximeter Prices
-          </h1>
+          <h1 class="text-3xl font-semibold text-gray-900">Taximeter Prices</h1>
           <p class="mt-2 text-sm text-gray-700">
             Here can you see the actual taximeter prices and edit them
           </p>

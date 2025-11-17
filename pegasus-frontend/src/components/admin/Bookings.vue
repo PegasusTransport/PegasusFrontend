@@ -162,7 +162,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-white p-4 m-4 rounded-2xl flex flex-col gap-4">
+  <div class="bg-white p-2  rounded-2xl flex flex-col gap-4">
     <!-- Search filters -->
     <div class="flex justify-between items-start">
       <div class="flex-1">
@@ -173,7 +173,7 @@ onMounted(async () => {
               A list of all your previous and current bookings.
             </p>
           </div>
-          <div class="mt-4 flex gap-4 items-center">
+          <div class="mt-4 flex gap-4 items-center flex-col md:flex-row">
             <input
               class="flex-1 max-w-md rounded-md shadow-sm focus:border-pg-persian p-2"
               v-model="filterQuery.search"
@@ -211,7 +211,7 @@ onMounted(async () => {
       </div>
       <div v-else class="px-4 sm:px-6 lg:px-8">
         <!-- Mobile Cards -->
-        <div class="block sm:hidden space-y-4">
+        <div class="block md:hidden space-y-4">
           <div
             v-for="booking in bookings"
             :key="booking.bookingId"
