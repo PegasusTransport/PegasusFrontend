@@ -100,6 +100,7 @@ const verifyTwoFA = async () => {
               <TextInput
                 v-model="verificationCode"
                 name="two-fa-code"
+                autocomplete="off"
               ></TextInput>
               <p class="mt-2 text-sm text-red-600"></p>
             </div>
