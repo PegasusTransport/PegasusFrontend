@@ -52,7 +52,7 @@ const authStore = useAuthStore();
 </script>
 <template>
   <!-- Mobile menu button -->
-  <div class="lg:hidden fixed top-4 left-4 z-50">
+  <div class="lg:hidden fixed top-4 right-4 z-50 m-3">
     <button
       @click="toggleSidebar"
       class="rounded-md bg-pg-primary p-2 text-white shadow-lg hover:bg-pg-primary/90 transition-colors"

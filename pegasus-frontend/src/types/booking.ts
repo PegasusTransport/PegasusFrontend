@@ -1,39 +1,41 @@
 export enum SortOrder {
   Asc = 0,
-  Desc = 1
+  Desc = 1,
 }
 
 export enum BookingStatusForCustomers {
   Confirmed = 0,
   Cancelled = 1,
-  Completed = 2
+  Completed = 2,
 }
 export enum BookingStatus {
   PendingEmailConfirmation = 0,
   Confirmed = 1,
   Cancelled = 2,
-  Completed = 3
+  Completed = 3,
 }
 
 // Helper function to convert enum to display string
 export const getBookingStatusString = (status: BookingStatus): string => {
   switch (status) {
     case BookingStatus.PendingEmailConfirmation:
-      return 'Pending Email Confirmation';
+      return "Pending Email Confirmation";
     case BookingStatus.Confirmed:
-      return 'Confirmed';
+      return "Confirmed";
     case BookingStatus.Cancelled:
-      return 'Cancelled';
+      return "Cancelled";
     case BookingStatus.Completed:
-      return 'Completed';
+      return "Completed";
     default:
-      return 'Unknown';
+      return "Unknown";
   }
 };
 
 // Helper function to check if booking can be edited
 export const canEditBookingStatus = (status: BookingStatus): boolean => {
-  return status !== BookingStatus.Completed && status !== BookingStatus.Cancelled;
+  return (
+    status !== BookingStatus.Completed && status !== BookingStatus.Cancelled
+  );
 };
 
 // Interfaces
@@ -56,8 +58,8 @@ export interface BookingSearchRequestDto {
   sortOrder?: SortOrder;
   minPrice?: number;
   maxPrice?: number;
-  fromDate?: string; 
-  toDate?: string;   
+  fromDate?: string;
+  toDate?: string;
   status?: BookingStatusForCustomers;
   upcomingOnly?: boolean;
 }
@@ -76,11 +78,11 @@ export interface BookingFilterRequestForAdminDto {
   pageSize?: number;
   status?: BookingStatusForCustomers;
   driverAssigned?: boolean;
-  date?: string; 
+  date?: string;
   month?: number;
   year?: number;
-  fromDate?: string; 
-  toDate?: string; 
+  fromDate?: string;
+  toDate?: string;
   period?: BookingPeriodHelper;
   sortBy?: string;
   sortOrder?: SortOrder;
@@ -94,9 +96,14 @@ export interface BookingFilterRequestForAdminDto {
 
 export type BookingFilterParams = Partial<BookingFilterRequestForAdminDto>;
 
+const getTodayDateString = () => {
+  return new Date().toISOString().split("T")[0];
+};
+
 export const defaultBookingFilter: BookingFilterRequestForAdminDto = {
   page: 1,
   pageSize: 5,
   sortBy: "pickUpDateTime",
   sortOrder: SortOrder.Asc,
+  period: BookingPeriodHelper.Current,
 };
