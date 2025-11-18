@@ -65,7 +65,8 @@ const statusOptions = [
 ];
 
 const periodOptions = [
-  { value: undefined, label: "Choose Range" },
+   { value: BookingPeriodHelper.Current, label: "Current & Future" },
+  { value: undefined, label: "All" },
   { value: BookingPeriodHelper.Past, label: "Past" },
   { value: BookingPeriodHelper.Current, label: "Current" },
   { value: BookingPeriodHelper.Future, label: "Future" },
@@ -94,6 +95,15 @@ const resetFilters = () => {
   localFilter.value = { ...defaultBookingFilter };
   emit("update:filterQuery", { ...localFilter.value });
   emit("applyFilters");
+};
+
+const handlePeriodChange = () => {
+  if (localFilter.value.period === undefined) {
+    localFilter.value.sortOrder = SortOrder.Desc;
+  } else {
+    localFilter.value.sortOrder = SortOrder.Asc;
+  }
+  updateFilter();
 };
 
 
@@ -195,7 +205,7 @@ const resetFilters = () => {
                         <div class="mt-2 grid grid-cols-1">
                           <select
                             v-model="localFilter.period"
-                            @change="updateFilter"
+                            @change="handlePeriodChange"
                             class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 sm:text-sm/6"
                           >
                             <option

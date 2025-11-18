@@ -56,9 +56,8 @@ const activeFiltersCount = computed(() => {
   if (filterQuery.value.search) count++;
   if (filterQuery.value.status !== undefined) count++;
   if (filterQuery.value.driverAssigned !== undefined) count++;
-  if (filterQuery.value.fromDate) count++;
   if (filterQuery.value.toDate) count++;
-  if (filterQuery.value.period !== undefined) count++;
+  if (filterQuery.value.period !== undefined && filterQuery.value.period !== defaultBookingFilter.period) count++; // Changed this line
   if (filterQuery.value.pickupAddress) count++;
   if (filterQuery.value.dropoffAddress) count++;
   if (filterQuery.value.customerName) count++;
