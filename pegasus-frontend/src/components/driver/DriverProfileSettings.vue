@@ -176,14 +176,13 @@ onMounted(async () => {
 <template>
   <div>
     <main>
-      <h1 class="sr-only">Account Settings</h1>
 
       <div class="divide-y divide-gray-300 p-3">
         <div
           class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8 bg-white rounded-2xl mb-3"
         >
           <div>
-            <h2 class="text-base/7 font-semibold text-gray-900">
+            <h2 class="text-3xl font-semibold text-gray-900">
               Personal Information
             </h2>
             <p class="mt-1 text-sm/6 text-gray-500">
