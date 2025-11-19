@@ -10,7 +10,7 @@ import CustomerSidebar from '@/components/sidebars/CustomerSidebar.vue';
       <CustomerSidebar />
     </div>
 
-    <div class="flex-1 overflow-auto bg-pg-secondary">
+    <div class="flex-1 overflow-auto bg-pg-secondary mb-16 lg:mb-0">
       <router-view />
     </div>
   </div>

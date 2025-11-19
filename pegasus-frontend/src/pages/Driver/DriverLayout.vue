@@ -9,7 +9,7 @@ import DriverSidebar from "@/components/sidebars/DriverSidebar.vue";
       <DriverSidebar />
     </div>
 
-    <div class="flex-1 overflow-auto bg-pg-secondary">
+    <div class="flex-1 overflow-auto bg-pg-secondary mb-16">
       <router-view />
     </div>
   </div>

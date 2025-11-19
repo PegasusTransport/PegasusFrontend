@@ -7,10 +7,8 @@ import AdminBookings from "@/pages/Admin/AdminBookings.vue";
 import AdminPrices from "@/pages/Admin/AdminPrices.vue";
 import AdminTravels from "@/pages/Admin/AdminTravels.vue";
 import CustomerLayout from "@/pages/Customer/CustomerLayout.vue";
-import AdminOverview from "@/pages/Admin/AdminOverview.vue";
 import CustomerBookings from "@/pages/Customer/CustomerBookings.vue";
 import CustomerProfile from "@/pages/Customer/CustomerProfile.vue";
-import CustomerOverview from "@/pages/Customer/CustomerOverview.vue";
 import DriverProfile from "@/pages/Driver/DriverProfile.vue";
 import DriverBookings from "@/pages/Driver/DriverBookings.vue";
 import DriverCar from "@/pages/Driver/DriverCar.vue";
@@ -115,7 +113,7 @@ const router = createRouter({
           name: "drivers",
           component: AdminDrivers,
         },
-        
+
         {
           path: "settings",
           name: "settings",
