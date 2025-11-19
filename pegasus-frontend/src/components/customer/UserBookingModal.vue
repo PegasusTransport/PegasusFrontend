@@ -20,6 +20,7 @@ import TextInput from "../reusables/Forms/TextInput.vue";
 import { validateFlightNumber } from "@/utils/flightValidator";
 import { validateBookingDateTime } from "@/utils/auth/time48HoursValidator";
 import TaxiSpinner from "../reusables/TaxiSpinner.vue";
+import DriverInfoCard from "../reusables/DriverInfoCard.vue";
 
 const bookingDetails = ref<BookingResponseDto | null>(null);
 const loading = ref(false);
@@ -156,6 +157,40 @@ const handleDropOffAddressSelected = (place: SelectedPlace) => {
   editForm.dropOffLatitude = place.lat;
   editForm.dropOffLongitude = place.lng;
 };
+
+const showDriverModal = ref(false);
+
+const driverInfo = computed(() => {
+  if (!bookingDetails.value?.driverId) return null;
+
+  return {
+    id: bookingDetails.value.driverId,
+    name: bookingDetails.value.driverName || "Unknown Driver",
+    phoneNumber: bookingDetails.value.driverPhoneNumber || "",
+    profilePicture: bookingDetails.value.driverProfilePicture,
+    carMake: bookingDetails.value.driverCarMake,
+    carModel: bookingDetails.value.driverCarModel,
+    licensePlate: bookingDetails.value.driverCarLicensePlate,
+  };
+});
+
+const showDriverInfo = () => {
+  showDriverModal.value = true;
+};
+
+const handleDriverModalClose = () => {
+  showDriverModal.value = false;
+};
+
+const driverCarInfo = computed(() => {
+  if (!bookingDetails.value) return "";
+  const make = bookingDetails.value.driverCarMake || "";
+  const model = bookingDetails.value.driverCarModel || "";
+  const plate = bookingDetails.value.driverCarLicensePlate || "";
+
+  const car = [make, model].filter(Boolean).join(" ");
+  return plate ? `${car} (${plate})` : car;
+});
 
 const getBookingById = async (id: number) => {
   try {
@@ -546,6 +581,39 @@ const formatDateTimeForInput = (date: Date | string) =>
                                 getBookingStatusString(bookingDetails.status)
                               }}</span
                             >
+                          </div>
+                          <div v-if="!bookingDetails.driverId">
+                            <span class="text-gray-500">Driver:</span>
+                            <p class="font-medium text-yellow-600">
+                              A driver is not assigned yet, we are working on it
+                            </p>
+                          </div>
+                          <div v-else class="space-y-2">
+                            <span class="text-gray-500">Driver:</span>
+                            <div class="flex items-center justify-between">
+                              <div>
+                                <p class="font-medium">
+                                  {{ bookingDetails.driverName }}
+                                </p>
+                                <p
+                                  v-if="driverCarInfo"
+                                  class="text-sm text-gray-600"
+                                >
+                                  <DriverInfoCard
+                                    :open="showDriverModal"
+                                    :driver="driverInfo"
+                                    @close="handleDriverModalClose"
+                                  />
+                                </p>
+                              </div>
+                              <Button
+                                @click="showDriverInfo"
+                                class="text-sm px-3 py-1"
+                                variant="outline"
+                              >
+                                Contact Driver
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>

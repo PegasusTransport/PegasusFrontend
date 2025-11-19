@@ -22,6 +22,7 @@ import { validateFlightNumber } from "@/utils/flightValidator";
 import { validateBookingDateTime } from "@/utils/auth/time48HoursValidator";
 import TaxiSpinner from "../reusables/TaxiSpinner.vue";
 import SelectDriver from "./SelectDriver.vue";
+import DriverInfoCard from "../reusables/DriverInfoCard.vue";
 
 const bookingDetails = ref<BookingResponseDto | null>(null);
 const loading = ref(false);
@@ -259,6 +260,40 @@ const handleDriverAssigned = async (driverId: string) => {
     toast.error("Failed to refresh booking data");
   }
 };
+const showDriverContactModal = ref(false);
+
+// Add this computed property for driver data based on your DTO
+const driverInfo = computed(() => {
+  if (!bookingDetails.value?.driverId) return null;
+
+  return {
+    id: bookingDetails.value.driverId,
+    name: bookingDetails.value.driverName || "Unknown Driver",
+    phoneNumber: bookingDetails.value.driverPhoneNumber || "",
+    profilePicture: bookingDetails.value.driverProfilePicture,
+    carMake: bookingDetails.value.driverCarMake,
+    carModel: bookingDetails.value.driverCarModel,
+    licensePlate: bookingDetails.value.driverCarLicensePlate,
+  };
+});
+
+const showDriverInfo = () => {
+  showDriverContactModal.value = true;
+};
+
+const handleDriverModalClose = () => {
+  showDriverContactModal.value = false;
+};
+
+const driverCarInfo = computed(() => {
+  if (!bookingDetails.value) return "";
+  const make = bookingDetails.value.driverCarMake || "";
+  const model = bookingDetails.value.driverCarModel || "";
+  const plate = bookingDetails.value.driverCarLicensePlate || "";
+
+  const car = [make, model].filter(Boolean).join(" ");
+  return plate ? `${car} (${plate})` : car;
+});
 </script>
 
 <template>
@@ -432,8 +467,10 @@ const handleDriverAssigned = async (driverId: string) => {
                             </p>
                           </div>
                           <div>
-                            <span class="text-gray-500">Driver assigned:</span>
                             <div v-if="!bookingDetails.driverId">
+                              <p class="font-medium text-yellow-600 mb-2">
+                                A driver is not assigned yet
+                              </p>
                               <button
                                 @click="showDriverModal = true"
                                 class="rounded-md cursor-pointer bg-pg-persian px-2 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-pg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors duration-300"
@@ -448,8 +485,32 @@ const handleDriverAssigned = async (driverId: string) => {
                                 @driver-assigned="handleDriverAssigned"
                               />
                             </div>
-                            <div v-else>
-                              <p>A driver is assigned</p>
+                            <div v-else class="space-y-2">
+                              <span class="text-gray-500">Driver:</span>
+                              <div class="flex items-center justify-between">
+                                <div>
+                                  <p class="font-medium">
+                                    {{ bookingDetails.driverName }}
+                                  </p>
+                                  <p
+                                    v-if="driverCarInfo"
+                                    class="text-sm text-gray-600"
+                                  >
+                                    <DriverInfoCard
+                                      :open="showDriverContactModal"
+                                      :driver="driverInfo"
+                                      @close="handleDriverModalClose"
+                                    />
+                                  </p>
+                                </div>
+                                <Button
+                                  @click="showDriverInfo"
+                                  class="text-sm px-3 py-1"
+                                  variant="outline"
+                                >
+                                  Contact Driver
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
