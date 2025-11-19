@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import {
   CalendarIcon,
-  HomeIcon,
-  UserIcon,
-  MapIcon,
+ 
   UserGroupIcon,
   Bars3Icon,
   XMarkIcon,
   BanknotesIcon,
+  Cog6ToothIcon,
 } from "@heroicons/vue/24/outline";
 import { RouterLink } from "vue-router";
 
@@ -26,7 +25,7 @@ const navigation = ref([
     to: { name: "bookings" },
     icon: CalendarIcon,
   },
-  { name: "Prices", to: { name: "prices" }, icon: BanknotesIcon },
+  { name: "Settings", to: { name: "settings" }, icon: Cog6ToothIcon },
   {
     name: "Drivers",
     to: { name: "drivers" },
