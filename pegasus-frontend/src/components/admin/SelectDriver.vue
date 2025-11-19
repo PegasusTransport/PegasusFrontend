@@ -174,7 +174,7 @@ onMounted(() => {
           leave-from="opacity-100 scale-100" 
           leave-to="opacity-0 scale-95"
         >
-          <DialogPanel class="mx-auto p-4 max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black/5 transition-all">
+          <DialogPanel class="mt-20 mx-auto p-4 max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black/5 transition-all">
             <Combobox @update:modelValue="onSelect">
               <div class="grid grid-cols-1">
                 <ComboboxInput 
@@ -185,7 +185,7 @@ onMounted(() => {
                 <MagnifyingGlassIcon class="pointer-events-none col-start-1 row-start-1 ml-4 size-5 self-center text-gray-400" aria-hidden="true" />
               </div>
 
-              <ComboboxOptions v-if="!loading && filteredDrivers.length > 0" class="flex transform-gpu divide-x divide-gray-100" as="div" static>
+              <ComboboxOptions v-if="!loading && filteredDrivers.length > 0" class="flex flex-col sm:flex-row transform-gpu sm:divide-x divide-gray-100" as="div" static>
                 <div class="max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4">
                   <h2 class="mt-2 mb-4 font-bold text-2xl text-gray-900">Available Drivers</h2>
                   <div class="-mx-2 text-sm text-gray-700">
@@ -202,7 +202,7 @@ onMounted(() => {
                         selectedDriver?.driverId === driver.driverId && 'bg-indigo-50 border-l-2 border-indigo-500'
                       ]">
                         <img 
-                          :src="driver.profilePicture || '/default-avatar.png'" 
+                          :src="driver.profilePicture" 
                           :alt="driver.fullName" 
                           class="size-8 flex-none rounded-full bg-gray-100 ring-1 ring-gray-200" 
                         />
@@ -216,8 +216,8 @@ onMounted(() => {
                   </div>
                 </div>
 
-                <!-- Always show the displayedDriver (first result or selected) -->
-                <div v-if="displayedDriver" class="hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex">
+                <!-- Driver details - shows below on mobile, to the right on desktop -->
+                <div v-if="displayedDriver" class="w-full sm:w-1/2 flex-none flex flex-col divide-y divide-gray-100 border-t sm:border-t-0 sm:border-l border-gray-100">
                   <div class="flex-none p-6 text-center">
                     <img 
                       :src="displayedDriver.profilePicture || '/default-avatar.png'" 
@@ -243,6 +243,7 @@ onMounted(() => {
                       <dd>{{ displayedDriver.registrationNumber }}</dd>
                     </dl>
                     <Button 
+                    class="mt-4"
                       type="button" 
                       :disabled="assigning"
                       @click="assignDriver"

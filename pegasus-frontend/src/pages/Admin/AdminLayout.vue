@@ -9,7 +9,7 @@ import AdminSidebar from "@/components/sidebars/AdminSidebar.vue";
       <AdminSidebar />
     </div>
 
-    <div class="flex-1 overflow-auto bg-pg-secondary">
+    <div class="flex-1 overflow-auto bg-pg-secondary mb-16 lg:mb-0">
       <router-view />
     </div>
   </div>
