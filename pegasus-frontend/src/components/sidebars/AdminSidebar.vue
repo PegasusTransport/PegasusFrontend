@@ -7,6 +7,7 @@ import {
   XMarkIcon,
   BanknotesIcon,
   Cog6ToothIcon,
+  GlobeAltIcon,
 } from "@heroicons/vue/24/outline";
 import { RouterLink } from "vue-router";
 import { ref } from "vue";
@@ -17,6 +18,7 @@ import {
   TransitionRoot,
 } from "@headlessui/vue";
 import { useAuthStore } from "@/stores/authStore";
+import { ArrowRightOnRectangleIcon } from "@heroicons/vue/20/solid";
 
 const navigation = ref([
   {
