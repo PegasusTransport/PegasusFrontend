@@ -48,7 +48,6 @@ const openCustomerModal = ref(false);
 const openDeleteModal = ref(false);
 const openReceiptModal = ref(false);
 
-// New dropdown state management
 const activeDropdown = ref<number | null>(null);
 const dropdownPosition = ref({
   top: 0,
@@ -93,17 +92,14 @@ const openDropdown = (event: MouseEvent, bookingId: number) => {
   const button = event.currentTarget as HTMLElement;
   const rect = button.getBoundingClientRect();
 
-  // Calculate available space
   const spaceBelow = window.innerHeight - rect.bottom;
   const spaceAbove = rect.top;
-  const menuHeight = 280; // Approximate menu height
+  const menuHeight = 280;
 
-  // Decide direction
   const direction =
     spaceBelow >= menuHeight || spaceBelow > spaceAbove ? "down" : "up";
 
-  // Calculate position
-  const left = rect.right - 224; // Menu width is 224px (w-56)
+  const left = rect.right - 224;
   const top =
     direction === "down" ? rect.bottom + 8 : rect.top - menuHeight - 8;
 
@@ -115,7 +111,6 @@ const closeDropdown = () => {
   activeDropdown.value = null;
 };
 
-// Close dropdown when clicking outside
 const handleClickOutside = (event: Event) => {
   if (activeDropdown.value !== null) {
     const target = event.target as HTMLElement;
@@ -203,12 +198,10 @@ const openReceiptForm = async (bookingId: number) => {
   const booking = bookings.value.find((b) => b.bookingId === bookingId);
   if (!booking) return;
 
-  // Ensure driver info is loaded
   if (!driverInfo.value) {
     await getDriverInfo();
   }
 
-  // Convert the booking date to local datetime for the input
   const pickupDate = new Date(booking.pickUpDateTime);
   const year = pickupDate.getFullYear();
   const month = String(pickupDate.getMonth() + 1).padStart(2, "0");
@@ -435,7 +428,9 @@ onMounted(() => {
                 {{ booking.dropOffAddress }}
               </div>
             </div>
-            <div class="flex justify-between">
+            <div
+              class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-3"
+            >
               <Button
                 @click="
                   () => {
@@ -443,8 +438,11 @@ onMounted(() => {
                     openMapModal = true;
                   }
                 "
-                >Trajectory</Button
+                class="flex-1 sm:flex-none"
               >
+                Trajectory
+              </Button>
+
               <Button
                 @click="
                   () => {
@@ -452,8 +450,21 @@ onMounted(() => {
                     openCustomerModal = true;
                   }
                 "
-                >Customer</Button
+                class="flex-1 sm:flex-none"
               >
+                Customer
+              </Button>
+
+              <button
+                @click="(e) => openDropdown(e, booking.bookingId)"
+                class="dropdown-button inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex-1 sm:flex-none"
+              >
+                Options
+                <ChevronDownIcon
+                  class="-mr-1 h-5 w-5 text-gray-400"
+                  aria-hidden="true"
+                />
+              </button>
             </div>
           </div>
         </div>

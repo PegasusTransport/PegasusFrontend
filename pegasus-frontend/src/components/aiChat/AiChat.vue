@@ -25,28 +25,32 @@ const closeChat = () => {
   emit("close");
 };
 
+// Updated mobile-friendly chat container styles
 const chatStyles = computed(() => ({
-  height: "calc(100vh - 200px)",
-  minHeight: "400px",
-  maxHeight: "600px",
-  borderRadius: "8px",
+  height: "calc(100dvh - 150px)",
+  minHeight: "300px",
+  maxHeight: "85dvh",
+  borderRadius: "12px",
   border: "1px solid #e2e8f0",
   backgroundColor: "#F9F0DF",
-
 }));
+
+// Intro message
 const introMessage = {
   html: `
     <div style="
       padding: 16px;
       border-radius: 12px;
       margin-bottom: 12px;
+      background: #fff8ed;
+      border: 1px solid #f0d9b5;
       text-align: center;
     ">
-      <h3>Welcome to Pegasus Transport AI Chat</h3>
-      <p>How can I assist you? You can ask me about our prices for example.</p>
+      <h3 style="font-size: 18px; margin-bottom: 6px;">Welcome to Pegasus Transport AI Chat</h3>
+      <p style="font-size: 14px;">How can I assist you today? Ask me about prices or availability.</p>
     </div>
   `,
-  role: 'ai'
+  role: "ai",
 };
 
 const chatConfig = {
@@ -92,17 +96,15 @@ const chatConfig = {
       }
     }
   },
-  
 };
 </script>
-
 
 <template>
   <TransitionRoot as="template" :show="isOpen">
     <Dialog class="relative z-50" @close="closeChat">
       <!-- Backdrop -->
       <TransitionChild
-        as="template"
+        as="div"
         enter="ease-out duration-300"
         enter-from="opacity-0"
         enter-to="opacity-100"
@@ -114,65 +116,57 @@ const chatConfig = {
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-hidden">
-        <div class="absolute inset-0 overflow-hidden">
-          <!-- Mobile: Full width with padding, Desktop: Slide from right -->
-          <div
-            class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-4 sm:pl-10"
+        <div class="absolute inset-0 flex justify-center items-start sm:items-center p-2">
+          <TransitionChild
+            as="div"
+            enter="transform transition ease-in-out duration-300"
+            enter-from="translate-y-full sm:translate-x-full"
+            enter-to="translate-y-0 translate-x-0"
+            leave="transform transition ease-in-out duration-300"
+            leave-from="translate-y-0 translate-x-0"
+            leave-to="translate-y-full sm:translate-x-full"
           >
-            <TransitionChild
-              as="template"
-              enter="transform transition ease-in-out duration-300"
-              enter-from="translate-x-full"
-              enter-to="translate-x-0"
-              leave="transform transition ease-in-out duration-300"
-              leave-from="translate-x-0"
-              leave-to="translate-x-full"
+            <!-- CENTERED CHAT PANEL -->
+            <DialogPanel
+              class="pointer-events-auto w-full sm:max-w-md bg-white rounded-xl shadow-xl overflow-hidden pb-[env(safe-area-inset-bottom)]"
             >
-              <DialogPanel
-                class="pointer-events-auto w-screen max-w-lg sm:max-w-md"
+              <!-- HEADER -->
+              <div
+                class="bg-pg-primary px-4 py-4 sm:px-6 rounded-t-xl shadow-md flex justify-between items-center"
               >
-                <div
-                  class="relative flex h-full flex-col overflow-y-auto bg-white shadow-xl"
+                <DialogTitle class="text-lg sm:text-xl font-semibold text-white">
+                  Pegasus AI Assistant
+                </DialogTitle>
+
+                <button
+                  type="button"
+                  @click="closeChat"
+                  class="rounded-md p-2 text-white/80 hover:text-white hover:bg-white/10 transition"
                 >
-                  <div class="bg-pg-primary px-4 py-6 sm:px-6">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center space-x-3">
-                        <div>
-                          <DialogTitle
-                            class="text-xl font-semibold text-white"
-                          >
-                            Pegasus AI Assistant
-                          </DialogTitle>
-                        </div>
-                      </div>
+                  <XMarkIcon class="w-6 h-6" />
+                </button>
+              </div>
 
-                      <button
-                        type="button"
-                        class="relative rounded-md p-2 cursor-pointer text-white/80 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20 transition-colors"
-                        @click="closeChat"
-                      >
-                        <span class="sr-only">Close chat</span>
-                        <XMarkIcon class="w-5 h-5" aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Chat content -->
-                  <div class="relative flex-1 p-4 sm:p-6">
-                    <deep-chat :connect="chatConfig" :style="chatStyles" :introMessage = "introMessage" />
-                  </div>
+              <!-- CHAT AREA -->
+              <div class="relative flex-1 p-3 sm:p-6 overflow-hidden">
+                <div class="h-full flex flex-col">
+                  <deep-chat
+                    :connect="chatConfig"
+                    :style="chatStyles"
+                    :introMessage="introMessage"
+                  />
                 </div>
-              </DialogPanel>
-            </TransitionChild>
-          </div>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
         </div>
       </div>
     </Dialog>
   </TransitionRoot>
 </template>
 
-
 <style scoped>
+/* Scrollbar UI */
 :deep(.deep-chat-container) {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
@@ -181,13 +175,19 @@ const chatConfig = {
 :deep(.deep-chat-container::-webkit-scrollbar) {
   width: 4px;
 }
-
-:deep(.deep-chat-container::-webkit-scrollbar-track) {
-  background: transparent;
+:deep(.deep-chat-container::-webkit-scrollbar-thumb) {
+  background: #cbd5e1;
+  border-radius: 2px;
 }
 
-:deep(.deep-chat-container::-webkit-scrollbar-thumb) {
-  background-color: #cbd5e1;
-  border-radius: 2px;
+/*** Optional: Prettier message bubbles ***/
+:deep(.deep-chat-message-ai) {
+  background: #f7efdb !important;
+  border-radius: 12px !important;
+}
+
+:deep(.deep-chat-message-user) {
+  background: #dbe8ff !important;
+  border-radius: 12px !important;
 }
 </style>
