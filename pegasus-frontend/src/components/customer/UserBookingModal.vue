@@ -598,13 +598,7 @@ const formatDateTimeForInput = (date: Date | string) =>
                                 <p
                                   v-if="driverCarInfo"
                                   class="text-sm text-gray-600"
-                                >
-                                  <DriverInfoCard
-                                    :open="showDriverModal"
-                                    :driver="driverInfo"
-                                    @close="handleDriverModalClose"
-                                  />
-                                </p>
+                                ></p>
                               </div>
                               <Button
                                 @click="showDriverInfo"
@@ -672,6 +666,11 @@ const formatDateTimeForInput = (date: Date | string) =>
               </DialogPanel>
             </TransitionChild>
           </div>
+          <DriverInfoCard
+            :open="showDriverModal"
+            :driver="driverInfo"
+            @close="handleDriverModalClose"
+          />
         </div>
       </div>
     </Dialog>
