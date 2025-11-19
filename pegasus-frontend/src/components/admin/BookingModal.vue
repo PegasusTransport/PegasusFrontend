@@ -495,13 +495,7 @@ const driverCarInfo = computed(() => {
                                   <p
                                     v-if="driverCarInfo"
                                     class="text-sm text-gray-600"
-                                  >
-                                    <DriverInfoCard
-                                      :open="showDriverContactModal"
-                                      :driver="driverInfo"
-                                      @close="handleDriverModalClose"
-                                    />
-                                  </p>
+                                  ></p>
                                 </div>
                                 <Button
                                   @click="showDriverInfo"
@@ -755,6 +749,11 @@ const driverCarInfo = computed(() => {
               </DialogPanel>
             </TransitionChild>
           </div>
+          <DriverInfoCard
+            :open="showDriverContactModal"
+            :driver="driverInfo"
+            @close="handleDriverModalClose"
+          />
         </div>
       </div>
     </Dialog>
