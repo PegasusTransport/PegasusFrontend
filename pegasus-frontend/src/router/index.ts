@@ -117,8 +117,8 @@ const router = createRouter({
         },
         
         {
-          path: "prices",
-          name: "prices",
+          path: "settings",
+          name: "settings",
           component: AdminPrices,
         },
         {
