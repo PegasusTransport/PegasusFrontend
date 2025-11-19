@@ -77,7 +77,7 @@ const changePassword = async () => {
     class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
   >
     <div>
-      <h2 class="text-base/7 font-semibold text-gray-900">Change password</h2>
+      <h2 class="text-3xl font-semibold text-gray-900">Change password</h2>
       <p class="mt-1 text-sm/6 text-gray-500">
         Update your password associated with your account.
       </p>
