@@ -93,4 +93,11 @@ export const adminApi = {
   );
   return response.data;
   },
+
+  async createAdmin(email:string):Promise<ApiResponse<boolean>>{
+    const response = await api.defaultApi.post(
+      `/api/Admin/CreateAdmin/${email}`
+    );
+    return response.data;
+  }
 };
