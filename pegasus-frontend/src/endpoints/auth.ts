@@ -8,7 +8,10 @@ import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 import type { RegistrationResponseDto } from "@/types/registration-response-dto";
 import type { RequestPasswordResetDto } from "@/types/request-password-reset-dto";
 import type { SessionLifetimeDto } from "@/types/session-lifetime-dto";
-import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
+import type {
+  ResendTwoFARequestDto,
+  TwoFARequestDto,
+} from "@/types/two-fa-request-dto";
 
 export const authApi = {
   async verifyAuth() {
@@ -76,6 +79,12 @@ export const authApi = {
 
   async refreshToken(): Promise<ApiResponse<string>> {
     const response = await api.authApi.post("/api/Auth/RefreshToken");
+    return response.data;
+  },
+  async resend2FACode(
+    data: ResendTwoFARequestDto
+  ): Promise<ApiResponse<boolean>> {
+    const response = await api.authApi.post("api/Auth/Resend2FA", data);
     return response.data;
   },
 };

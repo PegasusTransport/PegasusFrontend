@@ -6,7 +6,10 @@ import { authApi } from "@/endpoints/auth";
 import authCookies from "@/utils/auth/cookies";
 import type { RegistrationRequestDto } from "@/types/registration-request-dto";
 import type { LoginRequestDto } from "@/types/login-request-dto";
-import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
+import type {
+  ResendTwoFARequestDto,
+  TwoFARequestDto,
+} from "@/types/two-fa-request-dto";
 import type { ApiResponse } from "@/types/api-response-dto";
 import type { LoginResponseDto } from "@/types/login-response-dto";
 import axios from "axios";
@@ -210,6 +213,13 @@ export const useAuthStore = defineStore("auth", {
             error instanceof Error ? error.message : ERROR_MESSAGES.GENERIC,
         };
       }
+    },
+
+    async resend2FA(
+      data: ResendTwoFARequestDto
+    ): Promise<ApiResponse<boolean>> {
+      const response = await authApi.resend2FACode(data);
+      return response;
     },
 
     // Remove in prod

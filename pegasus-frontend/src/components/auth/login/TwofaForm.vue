@@ -4,9 +4,14 @@ import { useAuthStore } from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
+import type {
+  ResendTwoFARequestDto,
+  TwoFARequestDto,
+} from "@/types/two-fa-request-dto";
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
+import TimeCounter from "@/components/reusables/TimeCounter.vue";
+import CodeInput from "@/components/reusables/Forms/CodeInput.vue";
 
 const props = defineProps<{
   email: string;
@@ -18,9 +23,21 @@ const router = useRouter();
 const toast = useToast();
 
 const isLoading = ref<boolean>(false);
-const verificationCode = ref<string>("");
+const verificationCode = ref("");
+
+const countdownRef = ref<InstanceType<typeof TimeCounter>>();
+
+const onCodeComplete = (code: string) => {
+    verificationCode.value = code; 
+
+  verifyTwoFA();
+};
 
 const verifyTwoFA = async () => {
+  if (verificationCode.value.length !== 6) {
+    toast.error("Please enter the complete verification code");
+    return;
+  }
   const twoFaRequest: TwoFARequestDto = {
     email: props.email,
     verificationCode: verificationCode.value,
@@ -37,6 +54,23 @@ const verifyTwoFA = async () => {
     toast.success(`Welcome back ${userStore.firstName}!`);
   } else {
     toast.error(result.message);
+  }
+};
+
+const resendTwoFA = async () => {
+  const data: ResendTwoFARequestDto = {
+    email: props.email,
+  };
+  isLoading.value = true;
+  try {
+    await authStore.resend2FA(data);
+    toast.success("New TwoFA code is on the way");
+    countdownRef.value?.start(60);
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to send");
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -97,18 +131,18 @@ const verifyTwoFA = async () => {
             </div>
 
             <div>
-              <TextInput
+              <CodeInput
                 v-model="verificationCode"
-                name="two-fa-code"
-                autocomplete="off"
-              ></TextInput>
+                :disabled="isLoading"
+                @complete="onCodeComplete"
+              />
               <p class="mt-2 text-sm text-red-600"></p>
             </div>
 
             <div class="mt-6 space-y-3">
               <Button
                 @click="verifyTwoFA"
-                :disabled="isLoading"
+                :disabled="isLoading || verificationCode.length !== 6"
                 class="flex w-full justify-center px-3 py-1.5 text-sm/6 my-5"
               >
                 Send
@@ -116,11 +150,28 @@ const verifyTwoFA = async () => {
               <p class="text-sm text-gray-600">
                 Didn't receive the email?
                 <button
+                  :disabled="countdownRef?.counting"
+                  @click="resendTwoFA"
                   type="button"
                   class="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+                  :class="{
+                    'cursor-pointer': !countdownRef?.counting,
+                    'cursor-not-allowed opacity-50': countdownRef?.counting,
+                  }"
                 >
                   Resend
                 </button>
+                <TimeCounter
+                  ref="countdownRef"
+                  storage-key="twofa_resend_countdown"
+                  :duration="60"
+                >
+                  <template #default="{ counting, currentCount }">
+                    <p v-if="counting" class="text-sm text-gray-600">
+                      Resend available in {{ currentCount }}s
+                    </p>
+                  </template>
+                </TimeCounter>
               </p>
             </div>
           </div>
