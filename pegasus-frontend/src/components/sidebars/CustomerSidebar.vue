@@ -31,7 +31,7 @@ const navigation = ref([
   {
     name: "Profile",
     to: { name: "customerProfile" },
-    icon: UserGroupIcon,
+    icon: UserIcon,
   },
 ]);
 

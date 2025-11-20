@@ -8,6 +8,7 @@ import {
   BellAlertIcon,
   ArrowRightOnRectangleIcon,
   GlobeAltIcon,
+  UserIcon,
 } from "@heroicons/vue/24/outline";
 import { RouterLink } from "vue-router";
 import { markRaw, ref } from "vue";
@@ -28,7 +29,7 @@ const navigation = ref([
   {
     name: "Profile",
     to: { name: "driverProfile" },
-    icon: UserGroupIcon,
+    icon: UserIcon,
   },
   {
     name: "Bookings",
