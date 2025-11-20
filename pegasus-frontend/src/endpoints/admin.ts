@@ -99,5 +99,12 @@ export const adminApi = {
       `/api/Admin/CreateAdmin/${email}`
     );
     return response.data;
+  },
+  
+  async cancelBooking(id:number) :Promise<ApiResponse<boolean>>{
+    const response = await api.defaultApi.put(
+    `/api/Admin/CancelBooking/${id}`);
+    return response.data;
+    
   }
 };
