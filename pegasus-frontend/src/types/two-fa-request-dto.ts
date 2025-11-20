@@ -7,3 +7,7 @@ export interface TwoFARequestDto {
   email: string;
   verificationCode: string;
 }
+
+export interface ResendTwoFARequestDto {
+  email: string;
+}

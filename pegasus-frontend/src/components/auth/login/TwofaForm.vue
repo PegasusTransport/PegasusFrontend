@@ -4,9 +4,13 @@ import { useAuthStore } from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import type { TwoFARequestDto } from "@/types/two-fa-request-dto";
+import type {
+  ResendTwoFARequestDto,
+  TwoFARequestDto,
+} from "@/types/two-fa-request-dto";
 import TextInput from "@/components/reusables/Forms/TextInput.vue";
 import Button from "@/components/reusables/Button.vue";
+import TimeCounter from "@/components/reusables/TimeCounter.vue";
 
 const props = defineProps<{
   email: string;
@@ -19,6 +23,8 @@ const toast = useToast();
 
 const isLoading = ref<boolean>(false);
 const verificationCode = ref<string>("");
+
+const countdownRef = ref<InstanceType<typeof TimeCounter>>();
 
 const verifyTwoFA = async () => {
   const twoFaRequest: TwoFARequestDto = {
@@ -37,6 +43,23 @@ const verifyTwoFA = async () => {
     toast.success(`Welcome back ${userStore.firstName}!`);
   } else {
     toast.error(result.message);
+  }
+};
+
+const resendTwoFA = async () => {
+  const data: ResendTwoFARequestDto = {
+    email: props.email,
+  };
+  isLoading.value = true;
+  try {
+    await authStore.resend2FA(data);
+    toast.success("New TwoFA code is on the way");
+    countdownRef.value?.start(60);
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to send");
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -116,11 +139,28 @@ const verifyTwoFA = async () => {
               <p class="text-sm text-gray-600">
                 Didn't receive the email?
                 <button
+                  :disabled="countdownRef?.counting"
+                  @click="resendTwoFA"
                   type="button"
                   class="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+                  :class="{
+                    'cursor-pointer': !countdownRef?.counting,
+                    'cursor-not-allowed opacity-50': countdownRef?.counting,
+                  }"
                 >
                   Resend
                 </button>
+                <TimeCounter
+                  ref="countdownRef"
+                  storage-key="twofa_resend_countdown"
+                  :duration="60"
+                >
+                  <template #default="{ counting, currentCount }">
+                    <p v-if="counting" class="text-sm text-gray-600">
+                      Resend available in {{ currentCount }}s
+                    </p>
+                  </template>
+                </TimeCounter>
               </p>
             </div>
           </div>
