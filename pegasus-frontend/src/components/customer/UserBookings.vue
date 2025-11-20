@@ -176,7 +176,7 @@ onMounted(() => {
               A list of all your previous and current bookings.
             </p>
           </div>
-          <div class="mt-4 flex flex-col md:flex-row gap-4 items-center">
+          <div class="mt-4 flex flex-row gap-4 items-center">
             <input
               class="flex-1 max-w-md rounded-md shadow-sm p-2 focus:border-pg-persian"
               v-model="searchQuery.search"
@@ -191,7 +191,7 @@ onMounted(() => {
                 class="-ml-0.5 h-5 w-5 text-gray-400"
                 aria-hidden="true"
               />
-              Filters
+              <p class="hidden md:block">Filters</p>
               <span
                 v-if="activeFiltersCount > 0"
                 class="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-pg-persian text-xs font-medium text-white flex items-center justify-center"
@@ -252,7 +252,12 @@ onMounted(() => {
                 {{ booking.dropOffAddress }}
               </div>
             </div>
-            <Button size="sm" class="w-full" @click="openBookingDetails(booking.bookingId)">See Details</Button>
+            <Button
+              size="sm"
+              class="w-full"
+              @click="openBookingDetails(booking.bookingId)"
+              >See Details</Button
+            >
           </div>
         </div>
         <!-- DESKTOP -->

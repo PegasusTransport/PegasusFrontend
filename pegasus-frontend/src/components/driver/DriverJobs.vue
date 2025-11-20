@@ -351,7 +351,7 @@ onMounted(() => {
               bookings, change it inside the filter.
             </p>
           </div>
-          <div class="mt-4 flex gap-4 items-center flex-col sm:flex-row">
+          <div class="mt-4 flex gap-4 items-center">
             <input
               class="flex-1 max-w-md rounded-md shadow-sm p-2 focus:border-pg-persian"
               v-model="searchQuery.search"
@@ -366,7 +366,7 @@ onMounted(() => {
                 class="-ml-0.5 h-5 w-5 text-gray-400"
                 aria-hidden="true"
               />
-              Filters
+              <p class="hidden md:block">Filters</p>
               <span
                 v-if="activeFiltersCount > 0"
                 class="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-pg-persian text-xs font-medium text-white flex items-center justify-center"
@@ -431,30 +431,6 @@ onMounted(() => {
             <div
               class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-3"
             >
-              <Button
-                @click="
-                  () => {
-                    selectedBookingId = booking.bookingId;
-                    openMapModal = true;
-                  }
-                "
-                class="flex-1 sm:flex-none"
-              >
-                Trajectory
-              </Button>
-
-              <Button
-                @click="
-                  () => {
-                    selectedBookingId = booking.bookingId;
-                    openCustomerModal = true;
-                  }
-                "
-                class="flex-1 sm:flex-none"
-              >
-                Customer
-              </Button>
-
               <button
                 @click="(e) => openDropdown(e, booking.bookingId)"
                 class="dropdown-button inline-flex items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex-1 sm:flex-none"
