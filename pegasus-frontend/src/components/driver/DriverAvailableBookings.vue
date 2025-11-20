@@ -169,7 +169,7 @@ onMounted(() => {
               A list of all available bookings to take.
             </p>
           </div>
-          <div class="mt-4 flex flex-col gap-4 items-center md:flex-row">
+          <div class="mt-4 flex gap-4 items-center flex-row">
             <input
               class="flex-1 max-w-md rounded-md shadow-sm p-2 focus:border-pg-persian"
               v-model="searchQuery.search"
@@ -184,7 +184,7 @@ onMounted(() => {
                 class="-ml-0.5 h-5 w-5 text-gray-400"
                 aria-hidden="true"
               />
-              Filters
+              <p class="hidden md:block">Filters</p>
               <span
                 v-if="activeFiltersCount > 0"
                 class="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-pg-persian text-xs font-medium text-white flex items-center justify-center"

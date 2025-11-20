@@ -184,6 +184,22 @@ const cancelEditing = () => {
   Object.assign(editForm, {});
 };
 
+const cancelBoking = async (id: number) => {
+  try {
+    loading.value = true;
+    error.value = null;
+    await adminApi.cancelBooking(id);
+    toast.success("The booking was cancelled!");
+  } catch (error) {
+    toast.error(
+      "Failed to update booking. A booking can be cancelled 24 hours before."
+    );
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+};
+
 const handleUpdateBooking = async () => {
   if (!editForm.bookingId && !canSubmit.value) return;
 
@@ -262,7 +278,6 @@ const handleDriverAssigned = async (driverId: string) => {
 };
 const showDriverContactModal = ref(false);
 
-// Add this computed property for driver data based on your DTO
 const driverInfo = computed(() => {
   if (!bookingDetails.value?.driverId) return null;
 
@@ -306,7 +321,7 @@ const driverCarInfo = computed(() => {
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
           <div
-            class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16"
+            class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16 mb-16 md:mb-0"
           >
             <TransitionChild
               as="template"
@@ -743,6 +758,13 @@ const driverCarInfo = computed(() => {
                           </div>
                         </div>
                       </div>
+                       <div class="mt-2 flex items-end justify-end">
+                      <CancelButton
+                        @click="cancelBoking(bookingDetails?.bookingId!)"
+                        class="mt-2 flex items-end justify-end"
+                        >Cancel booking</CancelButton
+                      >
+                    </div>
                     </div>
                   </div>
                 </div>
