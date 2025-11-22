@@ -6,16 +6,25 @@ import Button from "@/components/reusables/Button.vue";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
 import { userApi } from "@/endpoints/user";
 
+console.log("VerifyEmailBooking script setup executed");
+
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
+
+console.log("Route object:", route);
+console.log("Route query:", route.query);
+console.log("Route params:", route.params);
 
 const isLoading = ref(false);
 const isConfirmed = ref<boolean | null>(null);
 const bookingData = ref<BookingResponseDto | null>(null);
 const errorMessage = ref("");
 const token = ref<string>((route.query.token as string) || "");
+
 console.log("Token from URL:", token.value);
+console.log("Token type:", typeof token.value);
+console.log("Token length:", token.value?.length);
 
 const formattedBookingDate = computed(() => {
   if (!bookingData.value?.bookingDateTime) return "";
@@ -26,22 +35,34 @@ const formattedBookingDate = computed(() => {
 let abortController: AbortController | null = null;
 
 const confirmBooking = async () => {
-  if (isLoading.value) return;
+  console.log("confirmBooking called");
+  console.log("isLoading:", isLoading.value);
+  console.log("token.value:", token.value);
+  
+  if (isLoading.value) {
+    console.log("Already loading, returning");
+    return;
+  }
+  
   if (!token.value?.trim()) {
+    console.log("No token found");
     isConfirmed.value = false;
     errorMessage.value = "Invalid or missing confirmation token";
     toast.error(errorMessage.value);
     return;
   }
 
+  console.log("Starting API call...");
   isLoading.value = true;
   errorMessage.value = "";
 
   try {
+    console.log("Calling verifyGuestBooking with token:", token.value);
     const result = await userApi.verifyGuestBooking(
       { token: token.value }
-      
     );
+
+    console.log("API result:", result);
 
     const { data, message, succeeded, errors } = result as any;
 
@@ -56,15 +77,17 @@ const confirmBooking = async () => {
       toast.error(errorMessage.value);
     }
   } catch (e: any) {
+    console.error("Error in confirmBooking:", e);
     if (e?.name === "CanceledError" || e?.name === "AbortError") return;
     isConfirmed.value = false;
     errorMessage.value =
       e?.response?.data?.message ||
       e?.message ||
       "An unexpected error occurred";
-      console.error(e);
+    console.error("Full error object:", e);
     toast.error("Failed to confirm booking");
   } finally {
+    console.log("Setting isLoading to false");
     isLoading.value = false;
   }
 };
@@ -72,12 +95,15 @@ const confirmBooking = async () => {
 const goToHome = () => router.push({ name: "Home" });
 const goToLogin = () => router.push({ name: "Login" });
 
+console.log("Setting up onMounted hook");
+
 onMounted(() => {
-  console.log("Component mounted, calling confirmBooking...");
+  console.log("=== onMounted FIRED ===");
+  console.log("Token in onMounted:", token.value);
   confirmBooking();
 });
 
-
+console.log("Script setup complete");
 </script>
 
 <template>
