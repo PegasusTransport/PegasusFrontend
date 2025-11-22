@@ -35,13 +35,11 @@ const confirmBooking = async () => {
 
   isLoading.value = true;
   errorMessage.value = "";
-  abortController = new AbortController();
 
   try {
     const result = await userApi.verifyGuestBooking(
       { token: token.value }
-      // Optional signal support if axios instance wired for it
-      // { signal: abortController.signal }
+      
     );
 
     const { data, message, succeeded, errors } = result as any;
@@ -73,12 +71,11 @@ const goToHome = () => router.push({ name: "Home" });
 const goToLogin = () => router.push({ name: "Login" });
 
 onMounted(() => {
+  console.log("Component mounted, calling confirmBooking...");
   confirmBooking();
 });
 
-onBeforeUnmount(() => {
-  abortController?.abort();
-});
+
 </script>
 
 <template>
