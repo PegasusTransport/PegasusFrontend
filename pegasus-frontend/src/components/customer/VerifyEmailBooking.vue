@@ -1,28 +1,32 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, onBeforeUnmount } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useToast } from "vue-toastification";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import Button from "@/components/reusables/Button.vue";
 import type { BookingResponseDto } from "@/types/booking-response-dto";
 import { userApi } from "@/endpoints/user";
 
 console.log("VerifyEmailBooking script setup executed");
 
+// Define props
+interface Props {
+  token?: string;
+}
+
+const props = defineProps<Props>();
+
 const toast = useToast();
 const router = useRouter();
-const route = useRoute();
 
-console.log("Route object:", route);
-console.log("Route query:", route.query);
-console.log("Route params:", route.params);
+console.log("Props received:", props);
 
 const isLoading = ref(false);
 const isConfirmed = ref<boolean | null>(null);
 const bookingData = ref<BookingResponseDto | null>(null);
 const errorMessage = ref("");
-const token = ref<string>((route.query.token as string) || "");
+const token = ref<string>(props.token || "");
 
-console.log("Token from URL:", token.value);
+console.log("Token from props:", token.value);
 console.log("Token type:", typeof token.value);
 console.log("Token length:", token.value?.length);
 
@@ -31,8 +35,6 @@ const formattedBookingDate = computed(() => {
   const d = new Date(bookingData.value.bookingDateTime);
   return isNaN(d.getTime()) ? "" : d.toLocaleDateString();
 });
-
-let abortController: AbortController | null = null;
 
 const confirmBooking = async () => {
   console.log("confirmBooking called");

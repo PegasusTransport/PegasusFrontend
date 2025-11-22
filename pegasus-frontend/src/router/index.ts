@@ -21,6 +21,7 @@ import ForgotPassword from "@/pages/Auth/ForgotPassword.vue";
 import Taxi404 from "@/pages/Taxi404.vue";
 import ResetPassword from "@/pages/Auth/ResetPassword.vue";
 import VerifyEmail from "@/components/auth/VerifyEmail.vue";
+import VerifyEmailBooking from "@/components/customer/VerifyEmailBooking.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -64,7 +65,7 @@ const router = createRouter({
       path: "/booking/confirm",
       name: "VerifyEmail",
       props: (route) => ({ token: route.query.token }),
-      component: VerifyEmail,
+      component: VerifyEmailBooking,
       meta: { guestOnly: true },
     },
     {
