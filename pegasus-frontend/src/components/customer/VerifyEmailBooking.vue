@@ -38,53 +38,25 @@ const confirmBooking = async () => {
     return;
   }
 
-  isLoading.value = true;
-  errorMessage.value = "";
-
   try {
-    const result = await userApi.verifyGuestBooking({ token: token.value });
+    isLoading.value = true;
+    errorMessage.value = "";
+
+    const response = await userApi.verifyGuestBooking({ token: token.value });
     
-    console.log("API Response:", result); // Debug log
-
-    // Check if result has the expected structure
-    if (!result) {
-      throw new Error("No response received from server");
-    }
-
-    const { data, message, succeeded } = result as any;
-
-    // Check for success
-    if (succeeded === true && data) {
-      bookingData.value = data;
+    if (response && response.data) {  
+      bookingData.value = response.data; 
       isConfirmed.value = true;
-      toast.success(message || "Booking confirmed successfully!");
-    } else if (succeeded === false) {
-      // Explicit failure from API
-      isConfirmed.value = false;
-      errorMessage.value = message || "Failed to confirm booking";
-      toast.error(errorMessage.value);
-    } else {
-      // Unexpected response structure
-      console.warn("Unexpected API response structure:", result);
-      isConfirmed.value = false;
-      errorMessage.value = "Unexpected response from server";
-      toast.error(errorMessage.value);
+      toast.success("Booking confirmed successfully!");
     }
-  } catch (e: any) {
-    console.error("Confirmation error:", e); // Debug log
-    
-    if (e?.name === "CanceledError" || e?.name === "AbortError") return;
+  } catch (error: any) {
+    if (error?.name === "CanceledError" || error?.name === "AbortError") return;
     
     isConfirmed.value = false;
-    
-    // Better error message extraction
-    if (e?.response?.data) {
-      const errorData = e.response.data;
-      errorMessage.value = errorData.message || errorData.title || "Failed to confirm booking";
-    } else {
-      errorMessage.value = e?.message || "An unexpected error occurred";
-    }
-    
+    errorMessage.value = 
+      error?.response?.data?.message ||
+      error?.message ||
+      "Failed to confirm booking";
     toast.error(errorMessage.value);
   } finally {
     isLoading.value = false;
