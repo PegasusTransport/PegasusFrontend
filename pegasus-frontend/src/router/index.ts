@@ -60,8 +60,15 @@ const router = createRouter({
       component: ResetPassword,
       meta: { guestOnly: true },
     },
-    {
+     {
       path: "/verify-email",
+      name: "VerifyEmail",
+      props: (route) => ({ email: route.query.token }),
+      component: VerifyEmail,
+      meta: { guestOnly: true },
+    },
+    {
+      path: "/booking/confirm",
       name: "VerifyEmail",
       component: VerifyEmail,
       meta: { guestOnly: true },

@@ -85,4 +85,14 @@ export const userApi = {
     const response = await api.defaultApi.post("/api/User/ConfirmEmail", dto);
     return response.data;
   },
+
+  async verifyGuestBooking(data: {
+    token: string;
+  }): Promise<ApiResponse<BookingResponseDto>> {
+    const response = await api.defaultApi.get<ApiResponse<BookingResponseDto>>(
+      "/api/Booking/confirmBooking",
+      { params: data }
+    );
+    return response.data;
+  },
 };
