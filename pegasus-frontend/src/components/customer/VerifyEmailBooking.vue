@@ -62,6 +62,7 @@ const confirmBooking = async () => {
       e?.response?.data?.message ||
       e?.message ||
       "An unexpected error occurred";
+      console.error(e);
     toast.error("Failed to confirm booking");
   } finally {
     isLoading.value = false;
