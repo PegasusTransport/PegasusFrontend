@@ -43,27 +43,49 @@ const confirmBooking = async () => {
 
   try {
     const result = await userApi.verifyGuestBooking({ token: token.value });
-    const { data, message, succeeded, errors } = result as any;
+    
+    console.log("API Response:", result); // Debug log
 
-    if (succeeded && data) {
+    // Check if result has the expected structure
+    if (!result) {
+      throw new Error("No response received from server");
+    }
+
+    const { data, message, succeeded } = result as any;
+
+    // Check for success
+    if (succeeded === true && data) {
       bookingData.value = data;
       isConfirmed.value = true;
-      toast.success("Booking confirmed successfully!");
-    } else {
+      toast.success(message || "Booking confirmed successfully!");
+    } else if (succeeded === false) {
+      // Explicit failure from API
       isConfirmed.value = false;
-      errorMessage.value =
-        message || (errors?.[0] as string) || "Failed to confirm booking";
+      errorMessage.value = message || "Failed to confirm booking";
+      toast.error(errorMessage.value);
+    } else {
+      // Unexpected response structure
+      console.warn("Unexpected API response structure:", result);
+      isConfirmed.value = false;
+      errorMessage.value = "Unexpected response from server";
       toast.error(errorMessage.value);
     }
   } catch (e: any) {
+    console.error("Confirmation error:", e); // Debug log
+    
     if (e?.name === "CanceledError" || e?.name === "AbortError") return;
     
     isConfirmed.value = false;
-    errorMessage.value =
-      e?.response?.data?.message ||
-      e?.message ||
-      "An unexpected error occurred";
-    toast.error("Failed to confirm booking");
+    
+    // Better error message extraction
+    if (e?.response?.data) {
+      const errorData = e.response.data;
+      errorMessage.value = errorData.message || errorData.title || "Failed to confirm booking";
+    } else {
+      errorMessage.value = e?.message || "An unexpected error occurred";
+    }
+    
+    toast.error(errorMessage.value);
   } finally {
     isLoading.value = false;
   }
