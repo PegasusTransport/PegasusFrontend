@@ -15,6 +15,7 @@ const isConfirmed = ref<boolean | null>(null);
 const bookingData = ref<BookingResponseDto | null>(null);
 const errorMessage = ref("");
 const token = ref<string>((route.query.token as string) || "");
+console.log("Token from URL:", token.value);
 
 const formattedBookingDate = computed(() => {
   if (!bookingData.value?.bookingDateTime) return "";
