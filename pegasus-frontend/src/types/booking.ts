@@ -106,4 +106,5 @@ export const defaultBookingFilter: BookingFilterRequestForAdminDto = {
   sortBy: "pickUpDateTime",
   sortOrder: SortOrder.Asc,
   period: BookingPeriodHelper.Current,
+  status: 1
 };
