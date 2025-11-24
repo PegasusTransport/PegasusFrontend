@@ -62,6 +62,12 @@ const router = createRouter({
       meta: { guestOnly: true },
     },
     {
+      path: "/verify-email",
+      name: "VerifyEmail",
+      component: VerifyEmail,
+      meta: { guestOnly: true },
+    },
+    {
       path: "/booking/confirm",
       name: "VerifyEmail",
       props: (route) => ({ token: route.query.token }),
