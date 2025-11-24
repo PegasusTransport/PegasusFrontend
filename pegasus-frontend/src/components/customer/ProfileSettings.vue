@@ -109,7 +109,7 @@ onMounted(() => getUser());
 
       <div class="divide-y divide-gray-300 p-1">
         <div
-          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8 bg-white rounded-2xl mb-3"
+          class="grid grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8 bg-white rounded-2xl mb-3"
         >
           <div>
             <h2 class="text-3xl font-semibold text-gray-900">
@@ -212,7 +212,7 @@ onMounted(() => getUser());
         class="bg-white rounded-2xl p-2 mb-3 "/>
 
         <div
-          class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8 bg-white rounded-2xl"
+          class="grid  grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8 bg-white rounded-2xl"
         >
           <div>
             <h2 class="text-3xl font-semibold text-gray-900">

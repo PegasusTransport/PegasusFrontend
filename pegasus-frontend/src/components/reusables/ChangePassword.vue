@@ -74,7 +74,7 @@ const changePassword = async () => {
 
 <template>
   <div
-    class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
+    class="grid grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8"
   >
     <div>
       <h2 class="text-3xl font-semibold text-gray-900">Change password</h2>

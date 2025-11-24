@@ -9,7 +9,9 @@ import {
   TransitionRoot,
 } from "@headlessui/vue";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
-import { computed } from "vue";
+import { computed, ref } from "vue";
+
+const sessionId = ref<string>(crypto.randomUUID());
 
 const props = defineProps<{
   open: boolean;
@@ -62,9 +64,14 @@ const chatConfig = {
         signals.onResponse({ error: "No message provided" });
         return;
       }
+      const requestPayload = {
+        input: userMessage,
+        sessionId: sessionId.value,
+      };
 
       const response = await api.defaultApi.post(
-        `/api/Chatbot/Chatbot?input=${encodeURIComponent(userMessage)}`
+        "/api/Chatbot/Chatbot",
+        requestPayload
       );
 
       const apiResponse = response.data;
@@ -116,7 +123,9 @@ const chatConfig = {
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-hidden">
-        <div class="absolute inset-0 flex justify-center items-start sm:items-center p-2">
+        <div
+          class="absolute inset-0 flex justify-center items-start sm:items-center p-2"
+        >
           <TransitionChild
             as="div"
             enter="transform transition ease-in-out duration-300"
@@ -134,7 +143,9 @@ const chatConfig = {
               <div
                 class="bg-pg-primary px-4 py-4 sm:px-6 rounded-t-xl shadow-md flex justify-between items-center"
               >
-                <DialogTitle class="text-lg sm:text-xl font-semibold text-white">
+                <DialogTitle
+                  class="text-lg sm:text-xl font-semibold text-white"
+                >
                   Pegasus AI Assistant
                 </DialogTitle>
 

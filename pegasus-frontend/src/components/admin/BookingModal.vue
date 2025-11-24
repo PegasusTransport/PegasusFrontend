@@ -482,7 +482,15 @@ const driverCarInfo = computed(() => {
                             </p>
                           </div>
                           <div>
-                            <div v-if="!bookingDetails.driverId">
+                            <div v-if="bookingDetails.status === 2"></div>
+                            <div v-else-if="bookingDetails.status === 0">
+                              <span class="text-gray-500">Assign Driver:</span>
+                              <p class="font-medium text-yellow-600 mb-2">
+                                Driver cant be assigned if the customer has not
+                                verified his booking
+                              </p>
+                            </div>
+                            <div v-else-if="!bookingDetails.driverId">
                               <p class="font-medium text-yellow-600 mb-2">
                                 A driver is not assigned yet
                               </p>
@@ -758,13 +766,14 @@ const driverCarInfo = computed(() => {
                           </div>
                         </div>
                       </div>
-                       <div class="mt-2 flex items-end justify-end">
-                      <CancelButton
-                        @click="cancelBoking(bookingDetails?.bookingId!)"
-                        class="mt-2 flex items-end justify-end"
-                        >Cancel booking</CancelButton
-                      >
-                    </div>
+                      <div v-if="bookingDetails.status == 3 || bookingDetails.status === 2"></div>
+                      <div v-else class="mt-2 flex items-end justify-end">
+                        <CancelButton
+                          @click="cancelBoking(bookingDetails?.bookingId!)"
+                          class="mt-2 flex items-end justify-end"
+                          >Cancel booking</CancelButton
+                        >
+                      </div>
                     </div>
                   </div>
                 </div>

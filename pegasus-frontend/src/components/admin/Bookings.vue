@@ -54,16 +54,17 @@ const filterQuery = ref<BookingFilterRequestForAdminDto>({
 const activeFiltersCount = computed(() => {
   let count = 0;
   if (filterQuery.value.search) count++;
-  if (filterQuery.value.status !== undefined) count++;
+  if (filterQuery.value.status !== 1) count++;
   if (filterQuery.value.driverAssigned !== undefined) count++;
   if (filterQuery.value.toDate) count++;
-  if (filterQuery.value.period !== undefined && filterQuery.value.period !== defaultBookingFilter.period) count++; // Changed this line
+  if (filterQuery.value.period !== undefined && filterQuery.value.period !== defaultBookingFilter.period) count++;
   if (filterQuery.value.pickupAddress) count++;
   if (filterQuery.value.dropoffAddress) count++;
   if (filterQuery.value.customerName) count++;
   if (filterQuery.value.flightNumber) count++;
   if (filterQuery.value.sortBy !== defaultBookingFilter.sortBy) count++;
   if (filterQuery.value.sortOrder !== defaultBookingFilter.sortOrder) count++;
+
   return count;
 });
 
