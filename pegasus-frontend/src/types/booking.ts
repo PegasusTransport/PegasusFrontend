@@ -19,7 +19,7 @@ export enum BookingStatus {
 export const getBookingStatusString = (status: BookingStatus): string => {
   switch (status) {
     case BookingStatus.PendingEmailConfirmation:
-      return "Pending Email Confirmation";
+      return "Pending";
     case BookingStatus.Confirmed:
       return "Confirmed";
     case BookingStatus.Cancelled:
