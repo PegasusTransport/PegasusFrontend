@@ -653,19 +653,21 @@ const formatDateTimeForInput = (date: Date | string) =>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div
-                      v-if="
-                        bookingDetails?.status === 3 ||
-                        bookingDetails?.status === 2
-                      "
-                    ></div>
-                    <div v-else class="mt-2 flex items-end justify-end">
-                      <CancelButton
-                        @click="cancelBoking(bookingDetails?.bookingId!)"
-                        class="mt-2 flex items-end justify-end"
-                        >Cancel booking</CancelButton
-                      >
+                      <div
+                        v-if="
+                          bookingDetails?.status === 3 ||
+                          bookingDetails?.status === 2
+                        "
+                      ></div>
+                      <div v-else class="mt-2 flex items-end justify-end">
+                        <div v-if="loading"></div>
+                        <CancelButton
+                          v-else
+                          @click="cancelBoking(bookingDetails?.bookingId!)"
+                          class="mt-2 flex items-end justify-end"
+                          >Cancel booking</CancelButton
+                        >
+                      </div>
                     </div>
                   </div>
                 </div>
