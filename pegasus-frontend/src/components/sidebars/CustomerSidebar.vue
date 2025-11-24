@@ -21,6 +21,7 @@ import {
 } from "@headlessui/vue";
 import { useAuthStore } from "@/stores/authStore";
 import AiChat from "../aiChat/AiChat.vue";
+import TaxiIcon from "../reusables/icons/TaxiIcon.vue";
 
 const navigation = ref([
   {
@@ -46,6 +47,7 @@ const mobileActions = ref([
     action: "menu",
     icon: Bars3Icon,
   },
+  
 ]);
 
 const isSidebarOpen = ref(false);
@@ -200,6 +202,15 @@ const authStore = useAuthStore();
                   <GlobeAltIcon class="h-6 w-6" />
                   <span>Home page</span>
                 </a>
+                <a
+                  href="https://pegasustransport.se/Booking"
+                  target="_blank"
+                  class="flex items-center gap-x-3 rounded-md p-3 text-sm font-semibold text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
+                  @click="closeSidebar"
+                >
+                  <TaxiIcon class="h-6 w-6" />
+                  <span>Book a ride</span>
+                </a>
               </nav>
             </div>
           </DialogPanel>
@@ -253,6 +264,15 @@ const authStore = useAuthStore();
         </ul>
       </nav>
       <div class="flex flex-col items-bottom">
+         <li class="-mx-6 mt-auto flex">
+          <a
+            href="https://pegasustransport.se/Booking"
+            target="_blank"
+            class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-white/5 w-full"
+          >
+            <span aria-hidden="true">Book a ride</span>
+          </a>
+        </li>
         <li class="-mx-6 mt-auto">
           <a
             @click="openChat"
@@ -278,6 +298,7 @@ const authStore = useAuthStore();
             <span aria-hidden="true">Home page</span>
           </a>
         </li>
+        
       </div>
     </div>
   </div>
