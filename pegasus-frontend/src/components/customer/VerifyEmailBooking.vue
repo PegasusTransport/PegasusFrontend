@@ -64,7 +64,6 @@ const confirmBooking = async () => {
 };
 
 const goToHome = () => router.push({ name: "Home" });
-const goToLogin = () => router.push({ name: "Login" });
 
 onMounted(() => {
   confirmBooking();
@@ -72,10 +71,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8 h-screen">
+  <div class="flex flex-col justify-center p-4 lg:px-8 h-screen">
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
       <div
-        class="bg-pg-secondary px-6 py-6 shadow sm:rounded-lg sm:px-12 border-2 border-white"
+        class="bg-pg-secondary px-6 py-6 shadow rounded-lg sm:px-12 border-2 border-white"
       >
         <div class="space-y-6">
           <div class="sm:mx-auto sm:w-full sm:max-w-md">
@@ -207,15 +206,7 @@ onMounted(() => {
       </div>
 
       <div class="mt-10 text-center text-sm/6 text-white space-y-2">
-        <p>
-          Need help?
-          <RouterLink
-            :to="{ name: 'Contact' }"
-            class="font-semibold text-pg-secondary hover:text-pg-accent"
-          >
-            Contact Support
-          </RouterLink>
-        </p>
+       
         <p>
           <RouterLink
             :to="{ name: 'Login' }"
