@@ -72,9 +72,14 @@ const acceptBooking = async (bookingId: number) => {
     await driverApi.acceptJob(bookingId);
 
     toast.success("The booking was assigned to you!");
-  } catch (error) {
-    console.error("Error accepting booking:", error);
-    toast.error("Error accepting the booking");
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.message ||
+      "Failed to accept booking";
+
+    toast.error(errorMessage);
   } finally {
     isLoading.value = false;
     fetchBookings();
