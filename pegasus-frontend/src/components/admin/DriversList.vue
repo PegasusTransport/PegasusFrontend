@@ -25,20 +25,51 @@ const selectedDriverId = ref<string>();
 const { createDefaultField, validateField, validateEmail, isValidForm } =
   useFormValidation();
 
+// Driver fields
 const driverEmail = ref<DefaultField>(createDefaultField());
 const driverPlateNumber = ref<DefaultField>(createDefaultField());
 const driverProfilePicture = ref<DefaultField>(createDefaultField());
 
+// Car fields
+const driverCarMake = ref<DefaultField>(createDefaultField());
+const driverCarModel = ref<DefaultField>(createDefaultField());
+const driverCarType = ref<DefaultField>(createDefaultField());
+const driverCarCapacity = ref<DefaultField>(createDefaultField());
+
+// Validation functions
 const validateEmailField = () => validateEmail(driverEmail.value);
 const validatePlateNumberField = () =>
   validateField(driverPlateNumber.value, "Plate Number");
 const validateProfilePictureField = () =>
   validateField(driverProfilePicture.value, "Profile Picture URL");
+const validateCarMakeField = () =>
+  validateField(driverCarMake.value, "Car Make");
+const validateCarModelField = () =>
+  validateField(driverCarModel.value, "Car Model");
+const validateCarTypeField = () =>
+  validateField(driverCarType.value, "Car Type");
+const validateCarCapacityField = () => {
+  if (
+    driverCarCapacity.value.value &&
+    (isNaN(Number(driverCarCapacity.value.value)) ||
+      Number(driverCarCapacity.value.value) < 1)
+  ) {
+    driverCarCapacity.value.isValid = false;
+    driverCarCapacity.value.errorMessage =
+      "Capacity must be a valid number greater than 0";
+    return;
+  }
+  validateField(driverCarCapacity.value, "Car Capacity");
+};
 
 const resetForm = () => {
   driverEmail.value = createDefaultField();
   driverPlateNumber.value = createDefaultField();
   driverProfilePicture.value = createDefaultField();
+  driverCarMake.value = createDefaultField();
+  driverCarModel.value = createDefaultField();
+  driverCarType.value = createDefaultField();
+  driverCarCapacity.value = createDefaultField();
 };
 
 const selectDriver = computed(() => {
@@ -48,11 +79,26 @@ const selectDriver = computed(() => {
 const createDriver = async () => {
   if (loading.value) return;
 
+  // Validate all fields
   validateEmailField();
   validatePlateNumberField();
   validateProfilePictureField();
+  validateCarMakeField();
+  validateCarModelField();
+  validateCarTypeField();
+  validateCarCapacityField();
 
-  if (!isValidForm([driverEmail, driverPlateNumber, driverProfilePicture])) {
+  if (
+    !isValidForm([
+      driverEmail,
+      driverPlateNumber,
+      driverProfilePicture,
+      driverCarMake,
+      driverCarModel,
+      driverCarType,
+      driverCarCapacity,
+    ])
+  ) {
     return;
   }
 
@@ -63,6 +109,10 @@ const createDriver = async () => {
       email: driverEmail.value.value,
       profilePicture: driverProfilePicture.value.value,
       licensePlate: driverPlateNumber.value.value,
+      carMake: driverCarMake.value.value,
+      carModel: driverCarModel.value.value,
+      carType: driverCarType.value.value,
+      carCapacity: Number(driverCarCapacity.value.value),
     };
 
     await adminApi.addDriver(driver);
@@ -395,6 +445,80 @@ onMounted(() => {
           </p>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <TextInput
+              name="car-make"
+              v-model="driverCarMake.value"
+              :editing-field="true"
+              :is-valid="driverCarMake.isValid"
+              placeholder="e.g. Toyota"
+              :type="'text'"
+              @blur="validateCarMakeField"
+            >
+              Car Make
+            </TextInput>
+            <p v-if="!driverCarMake.isValid" class="mt-2 text-sm text-red-600">
+              {{ driverCarMake.errorMessage }}
+            </p>
+          </div>
+
+          <div>
+            <TextInput
+              name="car-model"
+              v-model="driverCarModel.value"
+              :editing-field="true"
+              :is-valid="driverCarModel.isValid"
+              placeholder="e.g. Corolla"
+              :type="'text'"
+              @blur="validateCarModelField"
+            >
+              Car Model
+            </TextInput>
+            <p v-if="!driverCarModel.isValid" class="mt-2 text-sm text-red-600">
+              {{ driverCarModel.errorMessage }}
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <TextInput
+              name="car-type"
+              v-model="driverCarType.value"
+              :editing-field="true"
+              :is-valid="driverCarType.isValid"
+              placeholder="e.g. Sedan"
+              :type="'text'"
+              @blur="validateCarTypeField"
+            >
+              Car Type
+            </TextInput>
+            <p v-if="!driverCarType.isValid" class="mt-2 text-sm text-red-600">
+              {{ driverCarType.errorMessage }}
+            </p>
+          </div>
+
+          <div>
+            <TextInput
+              name="car-capacity"
+              v-model="driverCarCapacity.value"
+              :editing-field="true"
+              :is-valid="driverCarCapacity.isValid"
+              placeholder="e.g. 4"
+              :type="'number'"
+              @blur="validateCarCapacityField"
+            >
+              Passenger Capacity
+            </TextInput>
+            <p
+              v-if="!driverCarCapacity.isValid"
+              class="mt-2 text-sm text-red-600"
+            >
+              {{ driverCarCapacity.errorMessage }}
+            </p>
+          </div>
+        </div>
         <div class="mt-6 flex justify-end gap-3">
           <CancelButton
             type="button"
