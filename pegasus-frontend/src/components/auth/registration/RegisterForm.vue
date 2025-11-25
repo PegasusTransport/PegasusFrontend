@@ -126,12 +126,14 @@ const register = async () => {
             <div>
               <TextInput
                 name="first-name"
+                autocomplete="given-name"
                 :isValid="firstName.isValid"
                 v-model="firstName.value"
                 @blur="validateFirstNameField"
               >
                 First name
               </TextInput>
+
               <p v-if="!firstName.isValid" class="mt-2 text-sm text-red-600">
                 {{ firstName.errorMessage }}
               </p>
@@ -140,12 +142,14 @@ const register = async () => {
             <div>
               <TextInput
                 name="last-name"
+                autocomplete="family-name"
                 :isValid="lastName.isValid"
                 v-model="lastName.value"
                 @blur="validateLastNameField"
               >
                 Last name
               </TextInput>
+
               <p v-if="!lastName.isValid" class="mt-2 text-sm text-red-600">
                 {{ lastName.errorMessage }}
               </p>
@@ -153,13 +157,15 @@ const register = async () => {
 
             <div>
               <TextInput
-                name="Username"
+                name="username"
+                autocomplete="username"
                 :isValid="username.isValid"
                 v-model="username.value"
                 @blur="validateUsernameField"
               >
                 Username
               </TextInput>
+
               <p v-if="!username.isValid" class="mt-2 text-sm text-red-600">
                 {{ username.errorMessage }}
               </p>
@@ -168,12 +174,16 @@ const register = async () => {
             <div>
               <TextInput
                 name="email"
+                type="email"
+                autocomplete="email"
+                inputmode="email"
                 :isValid="email.isValid"
                 v-model="email.value"
                 @blur="validateEmailField"
               >
                 Email
               </TextInput>
+
               <p v-if="!email.isValid" class="mt-2 text-sm text-red-600">
                 {{ email.errorMessage }}
               </p>
@@ -182,12 +192,16 @@ const register = async () => {
             <div>
               <TextInput
                 name="phone-number"
+                type="tel"
+                inputmode="tel"
+                autocomplete="tel"
                 :isValid="phoneNumber.isValid"
                 v-model="phoneNumber.value"
                 @blur="validatePhoneNumberField"
               >
                 Phone number
               </TextInput>
+
               <p v-if="!phoneNumber.isValid" class="mt-2 text-sm text-red-600">
                 {{ phoneNumber.errorMessage }}
               </p>
@@ -197,6 +211,7 @@ const register = async () => {
               <TextInput
                 name="password"
                 type="password"
+                autocomplete="new-password"
                 :isValid="password.isValid"
                 v-model="password.value"
                 @blur="validatePasswordField"
@@ -204,6 +219,7 @@ const register = async () => {
               >
                 Password
               </TextInput>
+
               <p v-if="!password.isValid" class="mt-2 text-sm text-red-600">
                 {{ password.errorMessage }}
               </p>
@@ -213,6 +229,7 @@ const register = async () => {
               <TextInput
                 name="confirmed-password"
                 type="password"
+                autocomplete="new-password"
                 :isValid="confirmedPassword.isValid"
                 v-model="confirmedPassword.value"
                 @blur="validateConfirmedPasswordField"
@@ -220,6 +237,7 @@ const register = async () => {
               >
                 Confirm password
               </TextInput>
+
               <p
                 v-if="!confirmedPassword.isValid"
                 class="mt-2 text-sm text-red-600"
