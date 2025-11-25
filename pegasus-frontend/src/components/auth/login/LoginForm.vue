@@ -96,6 +96,7 @@ const login = async (isProd: boolean) => {
             <div>
               <TextInput
                 name="email"
+                autocomplete="email"
                 :isValid="email.isValid"
                 v-model="email.value"
                 @blur="validateEmailField"
@@ -110,6 +111,7 @@ const login = async (isProd: boolean) => {
             <div>
               <TextInput
                 name="password"
+                autocomplete="current-password"
                 :type="showPassword ? 'text' : 'password'"
                 :isValid="password.isValid"
                 v-model="password.value"
