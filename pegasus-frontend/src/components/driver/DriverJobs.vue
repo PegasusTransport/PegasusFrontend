@@ -758,6 +758,7 @@ onMounted(() => {
           :placeholder="'Select pickup time'"
           :clearable="false"
           auto-apply
+          class="mb-2"
         />
       </div>
 
@@ -792,12 +793,13 @@ onMounted(() => {
         >Total Price (SEK)</NumberInput
       >
     </div>
-    <div class="mt-5 flex justify-end gap-3">
+    <div class="my-5 flex justify-end gap-3">
       <Button @click="submitReceipt">Send</Button>
       <Button @click="openReceiptModal = false" variant="secondary"
         >Cancel</Button
       >
     </div>
+    
   </Modal>
 
   <CustomerBookingFilter
