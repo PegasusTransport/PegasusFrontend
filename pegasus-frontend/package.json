@@ -17,6 +17,7 @@
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.2.0",
     "@tailwindcss/vite": "^4.1.14",
+    "@vuepic/vue-datepicker": "^12.0.5",
     "axios": "^1.12.2",
     "deep-chat": "^2.3.0",
     "lodash-es": "^4.17.21",

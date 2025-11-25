@@ -31,6 +31,9 @@ import type { DriverResponseDto, ReceiptRequestDto } from "@/types/driver-info";
 import TextInput from "../reusables/Forms/TextInput.vue";
 import NumberInput from "../reusables/Forms/NumberInput.vue";
 import TaxiSpinner from "../reusables/TaxiSpinner.vue";
+import '@vuepic/vue-datepicker/dist/main.css'
+import { VueDatePicker } from "@vuepic/vue-datepicker";
+
 
 const bookings = ref<BookingResponseDto[]>([]);
 const driverInfo = ref<DriverResponseDto>();
@@ -72,6 +75,7 @@ const selectedBooking = computed(() => {
   );
 });
 
+// Initialize with a Date object instead of ISO string
 const receiptForm = ref<ReceiptRequestDto>({
   bookingId: 0,
   customerFirstname: "",
@@ -81,11 +85,14 @@ const receiptForm = ref<ReceiptRequestDto>({
   driverFirstname: "",
   licensePlate: "",
   driverImageUrl: undefined,
-  pickupTime: new Date().toISOString(),
+  pickupTime: new Date().toISOString(), // Keep as string for the interface
   distanceKm: 0,
   durationMinutes: "",
   totalPrice: 0,
 });
+
+// Add a separate ref for the date picker that uses Date object
+const pickupDateTime = ref<Date>(new Date());
 
 // Dropdown functions
 const openDropdown = (event: MouseEvent, bookingId: number) => {
@@ -203,12 +210,9 @@ const openReceiptForm = async (bookingId: number) => {
   }
 
   const pickupDate = new Date(booking.pickUpDateTime);
-  const year = pickupDate.getFullYear();
-  const month = String(pickupDate.getMonth() + 1).padStart(2, "0");
-  const day = String(pickupDate.getDate()).padStart(2, "0");
-  const hours = String(pickupDate.getHours()).padStart(2, "0");
-  const minutes = String(pickupDate.getMinutes()).padStart(2, "0");
-  const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+  
+  // Set the date picker value
+  pickupDateTime.value = pickupDate;
 
   receiptForm.value = {
     bookingId: booking.bookingId,
@@ -219,7 +223,7 @@ const openReceiptForm = async (bookingId: number) => {
     driverFirstname: driverInfo.value?.firstName ?? "",
     licensePlate: driverInfo.value?.carLicensePlate ?? "",
     driverImageUrl: driverInfo.value?.profilePicture,
-    pickupTime: formattedDateTime,
+    pickupTime: pickupDate.toISOString(),
     distanceKm: booking.distanceKm ?? 0,
     durationMinutes: Math.round(
       Number(booking.durationMinutes) || 0
@@ -235,7 +239,7 @@ const submitReceipt = async () => {
   try {
     const submitData = {
       ...receiptForm.value,
-      pickupTime: new Date(receiptForm.value.pickupTime).toISOString(),
+      pickupTime: pickupDateTime.value.toISOString(),
       durationMinutes: Math.round(
         parseFloat(receiptForm.value.durationMinutes) || 0
       ).toString(),
@@ -289,6 +293,13 @@ const previousPage = () => {
   searchQuery.value.page = prev;
   fetchBookings();
 };
+
+// Watch for changes to the date picker and sync with form
+watch(pickupDateTime, (newDate) => {
+  if (newDate) {
+    receiptForm.value.pickupTime = newDate.toISOString();
+  }
+});
 
 watch(sortBy, (newSortBy) => {
   searchQuery.value.sortBy = newSortBy;
@@ -634,7 +645,7 @@ onMounted(() => {
               closeDropdown();
             }
           "
-          class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+          class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-900"
         >
           <XMarkIcon class="mr-3 h-5 w-5 text-gray-400" />
           Cancel
@@ -731,23 +742,22 @@ onMounted(() => {
     </DialogPanel>
   </Modal>
 
-  <Modal
-    :open="openReceiptModal"
-    @close="openReceiptModal = false"
-    lg
-    class="w-fit"
-  >
+  <Modal :open="openReceiptModal" @close="openReceiptModal = false">
     <h3 class="mb-5 font-bold text-2xl">Send Receipt</h3>
     <div class="space-y-4">
-      <div class="flex flex-col w-full max-w-sm mx-auto">
-        <label for="pickup-time" class="mb-1 text-sm font-medium text-gray-700">
+      <div class="flex flex-col">
+        <label for="pickup-time" class="text-sm font-medium text-gray-700 mb-1">
           Pickup Time
         </label>
-        <input
-          id="pickup-time"
-          type="datetime-local"
-          v-model="receiptForm.pickupTime"
-          class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-pg-persian focus:border-pg-persian"
+        <VueDatePicker
+          v-model="pickupDateTime"
+          :enable-time-picker="true"
+          :format="'yyyy-MM-dd HH:mm'"
+          :input-class-name="'w-full text-sm rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-pg-persian focus:border-pg-persian'"
+          :menu-class-name="'rounded-lg shadow-lg'"
+          :placeholder="'Select pickup time'"
+          :clearable="false"
+          auto-apply
         />
       </div>
 
