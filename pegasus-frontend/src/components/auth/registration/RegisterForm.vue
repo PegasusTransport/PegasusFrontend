@@ -107,7 +107,7 @@ const register = async () => {
     <div class="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
         <div
-          class="bg-pg-secondary px-3 py-3 shadow sm:rounded-lg sm:px-12 border-2 border-white"
+          class="bg-pg-secondary px-3 py-3 shadow rounded-lg sm:px-12 border-2 border-white"
         >
           <form class="space-y-4" @submit.prevent="register">
             <div class="sm:mx-auto sm:w-full sm:max-w-md">

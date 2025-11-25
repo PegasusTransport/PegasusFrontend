@@ -76,7 +76,7 @@ const login = async (isProd: boolean) => {
     >
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
         <div
-          class="bg-pg-secondary px-6 py-6 shadow sm:rounded-lg sm:px-12 border-2 border-white"
+          class="bg-pg-secondary px-6 py-6 shadow rounded-lg sm:px-12 border-2 border-white"
         >
           <!-- Set to false when in development -->
           <form class="space-y-2" @submit.prevent="login(true)">
