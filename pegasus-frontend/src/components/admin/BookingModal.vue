@@ -72,9 +72,18 @@ const canSubmit = computed(() => {
 const canEditBooking = computed(() => {
   if (!bookingDetails.value) return false;
   const status = bookingDetails.value.status;
+  const pickupDateTime = bookingDetails.value.pickUpDateTime;
   return (
-    status !== BookingStatus.Completed && status !== BookingStatus.Cancelled
+    status !== BookingStatus.Completed &&
+    status !== BookingStatus.Cancelled &&
+    new Date(pickupDateTime) > new Date()
   );
+});
+
+const dateInPast = computed(() => {
+  if (!bookingDetails.value) return false;
+  const pickupDateTime = bookingDetails.value.pickUpDateTime;
+  return new Date(pickupDateTime) > new Date();
 });
 
 watch(
@@ -355,13 +364,30 @@ const driverCarInfo = computed(() => {
                           "
                           class="text-sm text-gray-500"
                         >
-                          Cannot edit
-                          {{
-                            getBookingStatusString(
-                              bookingDetails.status
-                            ).toLowerCase()
-                          }}
-                          booking
+                          <template
+                            v-if="
+                              bookingDetails.status ===
+                                BookingStatus.Completed ||
+                              bookingDetails.status === BookingStatus.Cancelled
+                            "
+                          >
+                            Cannot edit
+                            {{
+                              getBookingStatusString(
+                                bookingDetails.status
+                              ).toLowerCase()
+                            }}
+                            booking
+                          </template>
+                          <template
+                            v-else-if="
+                              new Date(bookingDetails.pickUpDateTime) <=
+                              new Date()
+                            "
+                          >
+                            Cannot edit past booking
+                          </template>
+                          <template v-else> Cannot edit booking </template>
                         </div>
                         <button
                           type="button"
@@ -395,6 +421,7 @@ const driverCarInfo = computed(() => {
                     <!-- Booking Details -->
                     <div v-else-if="bookingDetails" class="space-y-6">
                       <!-- Status Alert -->
+                      <!-- Status Alert -->
                       <div
                         v-if="!canEditBooking"
                         class="rounded-md bg-yellow-50 p-4"
@@ -404,12 +431,32 @@ const driverCarInfo = computed(() => {
                           {{ getBookingStatusString(bookingDetails.status) }}
                         </h3>
                         <p class="mt-2 text-sm text-yellow-700">
-                          This booking cannot be edited because it is
-                          {{
-                            getBookingStatusString(
-                              bookingDetails.status
-                            ).toLowerCase()
-                          }}.
+                          <template
+                            v-if="
+                              bookingDetails.status ===
+                                BookingStatus.Completed ||
+                              bookingDetails.status === BookingStatus.Cancelled
+                            "
+                          >
+                            This booking cannot be edited because it is
+                            {{
+                              getBookingStatusString(
+                                bookingDetails.status
+                              ).toLowerCase()
+                            }}.
+                          </template>
+                          <template
+                            v-else-if="
+                              new Date(bookingDetails.pickUpDateTime) <=
+                              new Date()
+                            "
+                          >
+                            This booking cannot be edited because the pickup
+                            time has passed.
+                          </template>
+                          <template v-else>
+                            This booking cannot be edited.
+                          </template>
                         </p>
                       </div>
 
@@ -482,7 +529,9 @@ const driverCarInfo = computed(() => {
                             </p>
                           </div>
                           <div>
+                            
                             <div v-if="bookingDetails.status === 2"></div>
+                            <div v-else-if="!dateInPast && bookingDetails.driverId == null"></div>
                             <div v-else-if="bookingDetails.status === 0">
                               <span class="text-gray-500">Assign Driver:</span>
                               <p class="font-medium text-yellow-600 mb-2">
@@ -766,7 +815,12 @@ const driverCarInfo = computed(() => {
                           </div>
                         </div>
                       </div>
-                      <div v-if="bookingDetails.status == 3 || bookingDetails.status === 2"></div>
+                      <div
+                        v-if="
+                          bookingDetails.status == 3 ||
+                          bookingDetails.status === 2
+                        "
+                      ></div>
                       <div v-else class="mt-2 flex items-end justify-end">
                         <CancelButton
                           @click="cancelBoking(bookingDetails?.bookingId!)"

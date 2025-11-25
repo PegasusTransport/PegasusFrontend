@@ -78,6 +78,12 @@ const canEditBooking = computed(() => {
     status !== BookingStatus.Completed && status !== BookingStatus.Cancelled
   );
 });
+
+const dateInPast = computed(() => {
+  if (!bookingDetails.value) return false;
+  const pickupDateTime = bookingDetails.value.pickUpDateTime;
+  return new Date(pickupDateTime).getTime() < new Date().getTime();
+});
 const getStatusColor = (status: BookingStatus) => {
   const colors = {
     [BookingStatus.Completed]:
@@ -582,31 +588,43 @@ const formatDateTimeForInput = (date: Date | string) =>
                               }}</span
                             >
                           </div>
-                          <div v-if="!bookingDetails.driverId">
-                            <span class="text-gray-500">Driver:</span>
-                            <p class="font-medium text-yellow-600">
-                              A driver is not assigned yet, we are working on it
-                            </p>
-                          </div>
-                          <div v-else class="space-y-2">
-                            <span class="text-gray-500">Driver:</span>
-                            <div class="flex items-center justify-between">
-                              <div>
-                                <p class="font-medium">
-                                  {{ bookingDetails.driverName }}
-                                </p>
-                                <p
-                                  v-if="driverCarInfo"
-                                  class="text-sm text-gray-600"
-                                ></p>
+                          <div v-if="bookingDetails.driverId || !dateInPast">
+                            <div v-if="!bookingDetails.driverId">
+                              <span class="text-gray-500">Driver:</span>
+                              <p class="font-medium text-yellow-600">
+                                A driver is not assigned yet, we are working on
+                                it
+                              </p>
+                            </div>
+                            <div v-else-if="dateInPast">
+                              <span class="text-gray-500">Driver:</span>
+                              <p class="font-medium">
+                                {{ bookingDetails.driverName }}
+                              </p>
+                              <!-- No contact button for past bookings -->
+                            </div>
+                            <div v-else class="space-y-2">
+                              <span class="text-gray-500">Driver:</span>
+                              <div class="flex items-center justify-between">
+                                <div>
+                                  <p class="font-medium">
+                                    {{ bookingDetails.driverName }}
+                                  </p>
+                                  <p
+                                    v-if="driverCarInfo"
+                                    class="text-sm text-gray-600"
+                                  >
+                                    {{ driverCarInfo }}
+                                  </p>
+                                </div>
+                                <Button
+                                  @click="showDriverInfo"
+                                  class="text-sm px-3 py-1"
+                                  variant="outline"
+                                >
+                                  Contact Driver
+                                </Button>
                               </div>
-                              <Button
-                                @click="showDriverInfo"
-                                class="text-sm px-3 py-1"
-                                variant="outline"
-                              >
-                                Contact Driver
-                              </Button>
                             </div>
                           </div>
                         </div>
