@@ -731,22 +731,33 @@ onMounted(() => {
     </DialogPanel>
   </Modal>
 
-  <Modal :open="openReceiptModal" @close="openReceiptModal = false">
+  <Modal
+    :open="openReceiptModal"
+    @close="openReceiptModal = false"
+    lg
+    class="w-fit"
+  >
     <h3 class="mb-5 font-bold text-2xl">Send Receipt</h3>
     <div class="space-y-4">
-      <TextInput
-        :editing-field="true"
-        type="datetime-local"
-        name="pickup-time"
-        v-model="receiptForm.pickupTime"
-        >Pickup Time</TextInput
-      >
+      <div class="flex flex-col w-full max-w-sm mx-auto">
+        <label for="pickup-time" class="mb-1 text-sm font-medium text-gray-700">
+          Pickup Time
+        </label>
+        <input
+          id="pickup-time"
+          type="datetime-local"
+          v-model="receiptForm.pickupTime"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-pg-persian focus:border-pg-persian"
+        />
+      </div>
+
       <NumberInput
         v-model.number="receiptForm.distanceKm"
         name="distance-km"
         type="number"
         :min-value="1"
         :max-value="300"
+        :step="'0.01'"
         :editing-field="true"
         :is-valid="true"
         class="outline-gray-300! focus:outline-pg-persian!"
@@ -763,6 +774,7 @@ onMounted(() => {
         type="number"
         :min-value="1"
         :max-value="10000"
+        :step="'0.01'"
         :editing-field="true"
         :is-valid="true"
         class="outline-gray-300! focus:outline-pg-persian!"
